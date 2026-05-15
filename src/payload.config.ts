@@ -3,17 +3,30 @@ import { fileURLToPath } from "node:url";
 
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { formBuilderPlugin } from "@payloadcms/plugin-form-builder";
+import { seoPlugin } from "@payloadcms/plugin-seo";
+import { nestedDocsPlugin } from "@payloadcms/plugin-nested-docs";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
+import { Categories } from "./collections/Categories";
+import { Media } from "./collections/Media";
+import { Pages } from "./collections/Pages";
 import { Users } from "./collections/Users";
+import { FloatingContact } from "./globals/FloatingContact";
+import { FooterCaracolNext } from "./globals/FooterCaracolNext";
+import { FooterDitu } from "./globals/FooterDitu";
+import { HeaderCaracolNext } from "./globals/HeaderCaracolNext";
+import { HeaderDitu } from "./globals/HeaderDitu";
+import { SiteSettings } from "./globals/SiteSettings";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 /**
- * Payload v3 config — Fase 0 (setup mínimo).
- * Collections, Globals y Blocks se agregan en Fase 2/3 del Prompt 3.
+ * Payload v3 config — Fase 2.
+ * Collections, Globals, Blocks declarados.
+ * Render de blocks llega en Fase 3.
  */
 export default buildConfig({
   admin: {
@@ -25,7 +38,15 @@ export default buildConfig({
       titleSuffix: " · Caracol Next + Ditu CMS",
     },
   },
-  collections: [Users],
+  collections: [Pages, Media, Categories, Users],
+  globals: [
+    HeaderCaracolNext,
+    HeaderDitu,
+    FooterCaracolNext,
+    FooterDitu,
+    FloatingContact,
+    SiteSettings,
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
@@ -40,4 +61,61 @@ export default buildConfig({
   cors: process.env.PAYLOAD_PUBLIC_SERVER_URL
     ? [process.env.PAYLOAD_PUBLIC_SERVER_URL]
     : "*",
+  plugins: [
+    /**
+     * Form Builder — formularios editables desde admin.
+     * Usado por `ContactBlock` para el form de contacto.
+     */
+    formBuilderPlugin({
+      fields: {
+        text: true,
+        textarea: true,
+        select: true,
+        email: true,
+        checkbox: true,
+        message: true,
+        // payment / number / state / country desactivados para MVP
+      },
+      formOverrides: {
+        admin: {
+          group: "Configuración",
+        },
+      },
+      formSubmissionOverrides: {
+        admin: {
+          group: "Configuración",
+        },
+      },
+    }),
+
+    /**
+     * SEO — añade meta title / description / OG image en Pages.
+     */
+    seoPlugin({
+      collections: ["pages"],
+      uploadsCollection: "media",
+      generateTitle: ({ doc }) =>
+        doc?.title ? `${doc.title} · Caracol Next + Ditu` : "Caracol Next + Ditu",
+      generateDescription: ({ doc }) =>
+        typeof doc?.title === "string"
+          ? `${doc.title} — Mediakit oficial Caracol Next + Ditu.`
+          : "Mediakit oficial Caracol Next + Ditu.",
+    }),
+
+    /**
+     * Nested Docs — preparado para sub-páginas con jerarquía.
+     * No se usa activamente en MVP pero queda configurado por si el cliente
+     * crea sub-páginas en el futuro (ej. /pauta/specs, /pauta/casos).
+     */
+    nestedDocsPlugin({
+      collections: ["pages"],
+      generateLabel: (_, doc) => (typeof doc.title === "string" ? doc.title : "Untitled"),
+      generateURL: (docs) =>
+        docs.reduce((url, doc) => {
+          const slug =
+            typeof doc.slug === "string" && doc.slug !== "home" ? `/${doc.slug}` : "";
+          return `${url}${slug}`;
+        }, ""),
+    }),
+  ],
 });
