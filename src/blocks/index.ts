@@ -1,6 +1,7 @@
 /**
- * Barrel de Payload Block configs.
- * Importar todos para registrarlos en el field `blocks` de la collection Pages.
+ * Barrel de Payload Block configs + componentes de render.
+ * - Configs (schemas) usados por payload.config.ts (Pages.layout).
+ * - Componentes usados por src/blocks/RenderBlocks.tsx.
  */
 import { AdFormatsBlock } from "./AdFormats/config";
 import { AIRecommendationBlock } from "./AIRecommendation/config";
@@ -38,3 +39,5 @@ export {
   OurChannelsBlock,
   SportsEventsBlock,
 };
+
+export { RenderBlocks } from "./RenderBlocks";

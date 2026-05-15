@@ -28,3 +28,27 @@ export {
   DialogTitle,
   DialogTrigger,
 } from "./dialog";
+export { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
+export {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./accordion";
+export { Badge, badgeVariants, type BadgeProps } from "./badge";
+export {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./card";
+export {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  type CarouselApi,
+} from "./carousel";
