@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-colors disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-[background,color,box-shadow,transform] duration-150 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -17,11 +17,23 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        /**
+         * Variantes brand fijas — útiles cuando hay que forzar el azul Caracol Next
+         * o el violeta Ditu independientemente del theme activo de la página.
+         * Para la mayoría de casos usa `default`, que respeta `.theme-ditu`.
+         */
+        "brand-caracolnext":
+          "bg-caracolnext text-white hover:bg-caracolnext-dark focus-visible:ring-caracolnext",
+        "brand-ditu":
+          "bg-ditu text-white hover:bg-ditu-dark focus-visible:ring-ditu shadow-ditu-glow hover:shadow-none",
+        "brand-outline":
+          "border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-primary-foreground",
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3 text-xs",
-        lg: "h-11 rounded-md px-8 text-base",
+        lg: "h-11 rounded-lg px-8 text-base",
+        xl: "h-14 rounded-lg px-10 text-lg",
         icon: "h-10 w-10",
       },
     },

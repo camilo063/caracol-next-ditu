@@ -68,14 +68,14 @@ Definitivo para Fase 2 del Prompt 3. Cada block tendrá su collection field corr
 
 ### Blocks compartidos (ambas landings)
 
-| Block                                         | Usado en                     | Campos principales                                                                                                                                                                                           |
-| --------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `HeroBlock`                                   | Ambas (variante por landing) | `landing: select [caracol-next \| ditu]`, `eyebrow`, `heading`, `subheading`, `tagline`, `keyStats: array<{ value, label, suffix? }>`, `backgroundImage`, `primaryCta`, `secondaryCta?`                      |
-| `AudienceNetworksBlock`                       | Ambas                        | `landing: select`, `heading`, `audience: { reach, breakdown?: array<{ label, value }> }`, `networks: array<{ network, followers, growth?, apiSource? }>`, `apiIntegration: { enabled, lastSync, sourceUrl }` |
-| `KeyMomentsCalendarBlock`                     | Ambas                        | `heading`, `description`, `events: array<{ name, dateStart, dateEnd?, description, image?, importance: select, ctaLabel?, ctaHref? }>`                                                                       |
-| `AdFormatsBlock` (Formatos de pauta globales) | Ambas                        | `heading`, `description`, `formats: array<{ name, brand?, specs: richText, image?, category, downloadUrl? }>`, `displayMode: select [grid \| table \| accordion]`                                            |
-| `ContactBlock`                                | Ambas                        | `id: text (ancla)`, `heading`, `description`, `formId: relation<forms>`, `representatives: array<{ name, role, email, whatsapp, photo }>`                                                                    |
-| `AIRecommendationBlock` ⭐                    | Ambas                        | `heading`, `description`, `placeholder`, `aiModel: text (default openai/gpt-4o-mini via AI Gateway)`, `outputSchema: { brand, format, reasoning }`, `examples: array<{ prompt, expectedOutput }>`            |
+| Block                                         | Usado en                     | Campos principales                                                                                                                                                                                                                                                          |
+| --------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HeroBlock`                                   | Ambas (variante por landing) | `landing: select [caracol-next \| ditu]`, `eyebrow`, `heading`, `subheading`, `tagline`, `keyStats: array<{ value, label, suffix? }>`, `backgroundImage`, `primaryCta`, `secondaryCta?`                                                                                     |
+| `AudienceNetworksBlock`                       | Ambas                        | `landing: select`, `heading`, `audience: { reach: number, reachLabel: text, breakdown?: array<{ label, value, suffix? }> }`, `networks: array<{ network: select, handle?: text, followers: number, growth?: number, url?: text }>` — **todo editable manual desde Payload** |
+| `KeyMomentsCalendarBlock`                     | Ambas                        | `heading`, `description`, `events: array<{ name, dateStart, dateEnd?, description, image?, importance: select, ctaLabel?, ctaHref? }>`                                                                                                                                      |
+| `AdFormatsBlock` (Formatos de pauta globales) | Ambas                        | `heading`, `description`, `formats: array<{ name, brand?, specs: richText, image?, category, downloadUrl? }>`, `displayMode: select [grid \| table \| accordion]`                                                                                                           |
+| `ContactBlock`                                | Ambas                        | `id: text (ancla)`, `heading`, `description`, `formId: relation<forms>`, `representatives: array<{ name, role, email, whatsapp, photo }>`                                                                                                                                   |
+| `AIRecommendationBlock` ⭐                    | Ambas                        | `heading`, `description`, `placeholder`, `aiModel: text (default openai/gpt-4o-mini via AI Gateway)`, `outputSchema: { brand, format, reasoning }`, `examples: array<{ prompt, expectedOutput }>`                                                                           |
 
 ### Blocks exclusivos Caracol Next
 
@@ -98,7 +98,7 @@ Definitivo para Fase 2 del Prompt 3. Cada block tendrá su collection field corr
 | `HeaderGlobal`          | `landing: select`, `logo: media`, `navAnchors: array<{ label, anchorId }>`, `ctaButton: { label, href }`, `theme: select`                                                                                |
 | `FooterGlobal`          | `landing: select`, `description?: richText`, `columns: array<{ heading, links: array<{ label, href }> }>`, `socialLinks: array<{ network, url }>`, `bottomLine: text` (con onda visual en variante Ditu) |
 | `FloatingContactGlobal` | `enabled: boolean`, `representatives: array<{ name, email, whatsapp, photo?, role? }>` — implementa NOTA TÉCNICA `899:4832`                                                                              |
-| `SiteSettings`          | `defaultMetadata`, `ogImageDefault`, `apiIntegrations: { audienceApiUrl, networksApiUrl, refreshIntervalMinutes }`                                                                                       |
+| `SiteSettings`          | `defaultMetadata`, `ogImageDefault`, `contactEmailFallback`                                                                                                                                              |
 
 ### Anclas estándar (slugs)
 
@@ -109,7 +109,7 @@ Definitivo para Fase 2 del Prompt 3. Cada block tendrá su collection field corr
 
 ## Notas técnicas relevantes
 
-- **API de audiencia/redes:** El cliente confirma "integración automática vía APIs". Se debe definir con el cliente cuál es la fuente (¿Google Analytics? ¿Plataforma propia de Caracol? ¿Meta/Instagram/TikTok APIs?). MVP: dejar el campo `apiSource: text` configurable + valores hardcodeados editables desde CMS hasta confirmar fuente real.
+- **API de audiencia/redes:** descartada en MVP (decisión 2026-05-15). Todos los valores son editables manualmente desde Payload. Si en el futuro se conecta una API, se agrega como campo opcional sin migración disruptiva.
 - **IA de recomendación:** usar **Vercel AI Gateway** con `openai/gpt-4o-mini` o `anthropic/claude-haiku-4-5` por costo. Output estructurado con `generateObject` + Zod schema `{ brand, format, reasoning }`.
 - **Tabs por marca:** mantener accesibilidad — usar Radix Tabs o `@radix-ui/react-tabs` (shadcn), no carrousel, no scroll horizontal en mobile.
 - **Calendario / Momentos clave:** considerar timeline horizontal con scroll en desktop + vertical en mobile. Admin desde Payload.
