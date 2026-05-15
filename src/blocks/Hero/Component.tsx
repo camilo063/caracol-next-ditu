@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Button, Container, Section, Stat } from "@/components/ui";
-import { mediaAlt, mediaUrl, isMediaVideo } from "@/lib/media";
+import { brandMeta } from "@/lib/brand";
+import { isMediaVideo, mediaAlt, mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import type { HeroBlockProps } from "../types";
 
@@ -19,6 +20,7 @@ export function HeroBlockComponent({
   heading,
   subheading,
   keyStats,
+  brandIcons,
   backgroundImage,
   backgroundVideo,
   primaryCta,
@@ -29,6 +31,15 @@ export function HeroBlockComponent({
   const bgImageUrl = mediaUrl(backgroundImage);
   const bgVideoUrl = mediaUrl(backgroundVideo);
   const hasBackground = Boolean(bgImageUrl || bgVideoUrl);
+  const isDarkTone = hasBackground || sectionTone !== "default";
+
+  // Estilo especial para el hero "Caracol Next" (deep blue con gradiente sutil + scoring)
+  const heroBg =
+    tone === "caracolnext-deep"
+      ? "linear-gradient(180deg, #003380 0%, #003CCA 50%, #0D3AA0 100%)"
+      : tone === "ditu-deep"
+        ? "linear-gradient(180deg, #1F1647 0%, #2A1F5E 60%, #1F1647 100%)"
+        : undefined;
 
   return (
     <Section
@@ -36,6 +47,7 @@ export function HeroBlockComponent({
       tone={sectionTone}
       padding="xl"
       className="relative overflow-hidden"
+      style={heroBg ? { background: heroBg } : undefined}
     >
       {hasBackground ? (
         <div className="absolute inset-0 -z-10">
@@ -68,9 +80,7 @@ export function HeroBlockComponent({
             <p
               className={cn(
                 "text-xs font-bold tracking-[0.18em] uppercase",
-                hasBackground || sectionTone !== "default"
-                  ? "text-white/80"
-                  : "text-primary",
+                isDarkTone ? "text-white/80" : "text-primary",
               )}
             >
               {eyebrow}
@@ -78,10 +88,8 @@ export function HeroBlockComponent({
           ) : null}
           <h1
             className={cn(
-              "font-display text-5xl leading-[1.05] font-black tracking-tight sm:text-6xl md:text-7xl lg:text-[clamp(3.5rem,6vw,4.5rem)]",
-              hasBackground || sectionTone !== "default"
-                ? "text-white"
-                : "text-foreground",
+              "font-display text-4xl leading-[1.05] font-black tracking-tight sm:text-5xl md:text-6xl lg:text-[clamp(3rem,5.5vw,4rem)]",
+              isDarkTone ? "text-white" : "text-foreground",
             )}
           >
             {heading}
@@ -90,14 +98,51 @@ export function HeroBlockComponent({
             <p
               className={cn(
                 "max-w-2xl text-base leading-relaxed sm:text-lg",
-                hasBackground || sectionTone !== "default"
-                  ? "text-white/90"
-                  : "text-muted-foreground",
+                isDarkTone ? "text-white/85" : "text-muted-foreground",
               )}
             >
               {subheading}
             </p>
           ) : null}
+
+          {brandIcons && brandIcons.length > 0 ? (
+            <ul
+              className={cn(
+                "mt-4 flex flex-wrap items-center justify-center gap-3",
+                isDarkTone ? "" : "",
+              )}
+            >
+              {brandIcons.map((b, i) => {
+                const meta = brandMeta(b.brand);
+                const iconUrl = mediaUrl(b.icon);
+                return (
+                  <li
+                    key={(b as { id?: string }).id ?? i}
+                    className="flex items-center justify-center rounded-xl border border-white/15 bg-white/10 p-3 backdrop-blur-sm"
+                    style={{ width: 56, height: 56 }}
+                    title={meta.label}
+                  >
+                    {iconUrl ? (
+                      <Image
+                        src={iconUrl}
+                        alt={meta.label}
+                        width={36}
+                        height={36}
+                        className="h-7 w-auto object-contain"
+                      />
+                    ) : (
+                      <span
+                        className="inline-block h-6 w-6 rounded-md"
+                        style={{ backgroundColor: meta.color }}
+                        aria-label={meta.label}
+                      />
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : null}
+
           {primaryCta?.label || secondaryCta?.label ? (
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
               {primaryCta?.label && primaryCta?.href ? (
@@ -143,7 +188,7 @@ export function HeroBlockComponent({
                 label={stat.label}
                 hint={stat.hint ?? undefined}
                 size="2xl"
-                tone={hasBackground || sectionTone !== "default" ? "inverse" : "default"}
+                tone={isDarkTone ? "inverse" : "default"}
                 align="center"
               />
             ))}

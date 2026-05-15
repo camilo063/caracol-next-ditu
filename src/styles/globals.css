@@ -9,36 +9,62 @@
 
 @layer base {
   :root {
-    /* ===== Caracol Next — paleta base (azul) ===== */
-    --color-brand-caracolnext-50: #e6f3ff;
-    --color-brand-caracolnext-100: #cce6ff;
-    --color-brand-caracolnext-200: #99ccff;
-    --color-brand-caracolnext-300: #66b3ff;
-    --color-brand-caracolnext-400: #339aff;
-    --color-brand-caracolnext-500: #015bc4; /* primary */
-    --color-brand-caracolnext-600: #014ba1;
-    --color-brand-caracolnext-700: #013b7e;
-    --color-brand-caracolnext-800: #00305e;
-    --color-brand-caracolnext-900: #003381;
-    --color-brand-caracolnext-light: #00acff;
+    /* ===== Caracol Next — usa la paleta de CaracolTV (Primario + Digital) ===== */
+    /* CaracolTV/Primario — azules de marca */
+    --color-caracoltv-azul-oscuro: #003380;
+    --color-caracoltv-azul-medio: #015bc4;
+    --color-caracoltv-azul-claro: #00acff;
+    /* CaracolTV/Digital — sub-palette digital (cards, gradientes hero hub) */
+    --color-caracoldigital-azul-oscuro: #0d3aa0;
+    --color-caracoldigital-azul-medio: #003cca;
+    --color-caracoldigital-azul-claro: #2862ff;
 
-    /* ===== Ditu — paleta violeta ===== */
+    /* Alias semánticos Caracol Next */
+    --color-brand-caracolnext-50: #e6f1ff;
+    --color-brand-caracolnext-100: #cce3ff;
+    --color-brand-caracolnext-200: #99c7ff;
+    --color-brand-caracolnext-300: #66abff;
+    --color-brand-caracolnext-400: #338fff;
+    --color-brand-caracolnext-500: var(--color-caracoltv-azul-medio); /* primary */
+    --color-brand-caracolnext-600: var(--color-caracoldigital-azul-medio);
+    --color-brand-caracolnext-700: var(--color-caracoldigital-azul-oscuro);
+    --color-brand-caracolnext-800: var(--color-caracoltv-azul-oscuro);
+    --color-brand-caracolnext-900: var(--color-caracoltv-azul-oscuro);
+    --color-brand-caracolnext-light: var(--color-caracoltv-azul-claro);
+    --color-brand-caracolnext-digital: var(--color-caracoldigital-azul-claro);
+
+    /* Gradiente hero hub: profundo azul Caracol Digital */
+    --color-brand-caracolnext-gradient: linear-gradient(
+      135deg,
+      #0d3aa0 0%,
+      #003cca 50%,
+      #003380 100%
+    );
+
+    /* ===== Ditu — Primario + Complementario ===== */
+    --color-ditu-violeta: #8232f0;
+    --color-ditu-violeta-oscuro: #1f1647;
+    --color-ditu-violeta-medio: #561bdb; /* complementario */
+    --color-ditu-azul-claro: #77eded; /* complementario (cyan accent) */
+    --color-ditu-blanco: #ffffff;
+
     --color-brand-ditu-50: #f3eafe;
     --color-brand-ditu-100: #e3d2fd;
     --color-brand-ditu-200: #c7a4fb;
     --color-brand-ditu-300: #ab77f9;
     --color-brand-ditu-400: #9249f3;
-    --color-brand-ditu-500: #8232f0; /* primary Ditu */
+    --color-brand-ditu-500: var(--color-ditu-violeta); /* primary Ditu */
     --color-brand-ditu-600: #6b1ad9;
-    --color-brand-ditu-700: #561bdb;
+    --color-brand-ditu-700: var(--color-ditu-violeta-medio);
     --color-brand-ditu-800: #3a138c;
-    --color-brand-ditu-900: #1f1647;
+    --color-brand-ditu-900: var(--color-ditu-violeta-oscuro);
+    --color-brand-ditu-accent: var(--color-ditu-azul-claro);
     --color-brand-ditu-gradient: linear-gradient(135deg, #8232f0 0%, #561bdb 100%);
     --color-brand-ditu-gradient-deep: linear-gradient(
-      135deg,
-      #8232f0 0%,
-      #561bdb 60%,
-      rgba(31, 22, 71, 0.15) 100%
+      180deg,
+      #1f1647 0%,
+      #2a1f5e 40%,
+      #1f1647 100%
     );
 
     /* ===== Neutros compartidos (base CaracolTV) ===== */
@@ -195,9 +221,18 @@
   .theme-ditu {
     --color-primary: var(--color-brand-ditu-500);
     --color-primary-foreground: var(--color-neutral-0);
-    --color-accent: var(--color-brand-ditu-900);
-    --color-accent-foreground: var(--color-neutral-0);
+    --color-accent: var(--color-brand-ditu-accent);
+    --color-accent-foreground: var(--color-ditu-violeta-oscuro);
     --color-ring: var(--color-brand-ditu-500);
+  }
+
+  /* Theme override Caracol Next — refuerza primary digital cuando se desea */
+  .theme-caracol-next {
+    --color-primary: var(--color-caracoltv-azul-medio);
+    --color-primary-foreground: var(--color-neutral-0);
+    --color-accent: var(--color-caracoltv-azul-claro);
+    --color-accent-foreground: var(--color-neutral-900);
+    --color-ring: var(--color-caracoltv-azul-medio);
   }
 }
 
@@ -231,8 +266,16 @@
   --color-caracolnext: var(--color-brand-caracolnext-500);
   --color-caracolnext-light: var(--color-brand-caracolnext-light);
   --color-caracolnext-dark: var(--color-brand-caracolnext-900);
+  --color-caracoltv-azul-oscuro: var(--color-caracoltv-azul-oscuro);
+  --color-caracoltv-azul-medio: var(--color-caracoltv-azul-medio);
+  --color-caracoltv-azul-claro: var(--color-caracoltv-azul-claro);
+  --color-caracoldigital-azul-oscuro: var(--color-caracoldigital-azul-oscuro);
+  --color-caracoldigital-azul-medio: var(--color-caracoldigital-azul-medio);
+  --color-caracoldigital-azul-claro: var(--color-caracoldigital-azul-claro);
   --color-ditu: var(--color-brand-ditu-500);
   --color-ditu-dark: var(--color-brand-ditu-900);
+  --color-ditu-medio: var(--color-ditu-violeta-medio);
+  --color-ditu-cyan: var(--color-ditu-azul-claro);
   --color-screamin-green: var(--color-accent-screamin-green);
   --color-cat-01: var(--color-category-01);
   --color-cat-02: var(--color-category-02);

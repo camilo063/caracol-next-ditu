@@ -1,130 +1,125 @@
 "use client";
 
+import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Play } from "lucide-react";
 
-import {
-  Badge,
-  Card,
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  Container,
-  Section,
-  SectionHeading,
-} from "@/components/ui";
-import { brandMeta } from "@/lib/brand";
+import { Container, Section } from "@/components/ui";
 import { mediaAlt, mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import type { BrandedContentBlockProps } from "../types";
 
+/**
+ * BrandedContentBlock — vista "feature" (matching Figma `caracol-next.png`).
+ * Heading + lista de pills (categorías) + thumbnail/preview grande del item activo.
+ * Si layout=carousel, mantenemos el carrusel legacy.
+ */
 export function BrandedContentBlockComponent({
   anchorId,
   eyebrow,
   heading,
   description,
   items,
-  layout,
 }: BrandedContentBlockProps) {
+  const [activeIndex, setActiveIndex] = React.useState(0);
   if (!items || items.length === 0) return null;
-
-  if (layout === "carousel") {
-    return (
-      <Section id={anchorId ?? undefined} tone="default" padding="lg">
-        <Container size="xl">
-          <SectionHeading
-            eyebrow={eyebrow ?? undefined}
-            title={heading}
-            description={description ?? undefined}
-          />
-          <Carousel opts={{ align: "start" }} className="mt-10">
-            <CarouselContent>
-              {items.map((item) => (
-                <CarouselItem
-                  key={item.id ?? item.headline}
-                  className="md:basis-1/2 lg:basis-1/3"
-                >
-                  <BrandedItemCard item={item} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className="mt-6 flex justify-end gap-2">
-              <CarouselPrevious />
-              <CarouselNext />
-            </div>
-          </Carousel>
-        </Container>
-      </Section>
-    );
-  }
+  const active = items[Math.min(activeIndex, items.length - 1)]!;
+  const url = mediaUrl(active.image);
 
   return (
     <Section id={anchorId ?? undefined} tone="default" padding="lg">
       <Container size="xl">
-        <SectionHeading
-          eyebrow={eyebrow ?? undefined}
-          title={heading}
-          description={description ?? undefined}
-        />
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
-            <BrandedItemCard key={item.id ?? item.headline} item={item} />
-          ))}
+        <div className="grid gap-10 lg:grid-cols-[2fr_3fr] lg:items-center">
+          {/* Columna izquierda */}
+          <div>
+            <p className="text-primary text-xs font-bold tracking-[0.18em] uppercase">
+              {eyebrow ?? "Branded Content"}
+            </p>
+            <h2 className="font-display mt-3 text-4xl leading-[1.1] font-black sm:text-5xl">
+              {heading}
+            </h2>
+            {description ? (
+              <p className="text-muted-foreground mt-4 max-w-prose text-base leading-relaxed">
+                {description}
+              </p>
+            ) : null}
+
+            {/* Tabs/buttons categorías */}
+            <ul className="mt-8 flex flex-wrap gap-2">
+              {items.map((item, i) => (
+                <li key={item.id ?? i}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveIndex(i)}
+                    className={cn(
+                      "border-border rounded-full border px-4 py-2 text-xs font-bold transition-colors",
+                      activeIndex === i
+                        ? "bg-primary border-primary text-primary-foreground"
+                        : "text-foreground hover:bg-muted",
+                    )}
+                  >
+                    {item.headline.split(":")[0]?.trim() ?? `Item ${i + 1}`}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Columna derecha — preview */}
+          <div className="border-border bg-muted relative overflow-hidden rounded-2xl border">
+            <div className="bg-foreground/5 relative aspect-[16/10] w-full">
+              {url ? (
+                <Image
+                  src={url}
+                  alt={mediaAlt(active.image, active.headline)}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  className="object-cover"
+                />
+              ) : (
+                <div
+                  className="absolute inset-0 flex items-center justify-center"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #FFC200 0%, #FF6F00 50%, #B23E00 100%)",
+                  }}
+                >
+                  <span className="font-display text-2xl font-black text-white opacity-90">
+                    {active.headline}
+                  </span>
+                </div>
+              )}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/95 shadow-lg">
+                  <Play className="text-foreground ml-1 h-6 w-6 fill-current" />
+                </span>
+              </div>
+              {active.eyebrow ? (
+                <span className="bg-primary text-primary-foreground absolute top-4 left-4 rounded-full px-3 py-1 text-[10px] font-bold uppercase">
+                  {active.eyebrow}
+                </span>
+              ) : null}
+            </div>
+            {active.description ? (
+              <div className="border-border bg-background border-t p-5">
+                <p className="font-display text-lg leading-tight font-extrabold">
+                  {active.headline}
+                </p>
+                <p className="text-muted-foreground mt-1 text-sm">{active.description}</p>
+                {active.href ? (
+                  <Link
+                    href={active.href}
+                    className="text-primary mt-3 inline-block text-sm font-bold"
+                  >
+                    Ver más →
+                  </Link>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
         </div>
       </Container>
     </Section>
-  );
-}
-
-type Item = NonNullable<BrandedContentBlockProps["items"]>[number];
-
-function BrandedItemCard({ item }: { item: Item }) {
-  const url = mediaUrl(item.image);
-  const href = item.href ?? undefined;
-  const brand = item.brand ? brandMeta(item.brand) : null;
-
-  const inner = (
-    <Card className={cn("group h-full overflow-hidden")}>
-      {url ? (
-        <div className="bg-muted relative aspect-[4/3] w-full overflow-hidden">
-          <Image
-            src={url}
-            alt={mediaAlt(item.image, item.headline)}
-            fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        </div>
-      ) : null}
-      <div className="space-y-3 p-6">
-        <div className="flex flex-wrap items-center gap-2">
-          {item.eyebrow ? <Badge variant="outline">{item.eyebrow}</Badge> : null}
-          {brand ? (
-            <span
-              className="text-xs font-bold tracking-wide uppercase"
-              style={{ color: brand.color }}
-            >
-              {brand.label}
-            </span>
-          ) : null}
-        </div>
-        <h3 className="text-lg leading-tight font-bold">{item.headline}</h3>
-        {item.description ? (
-          <p className="text-muted-foreground text-sm">{item.description}</p>
-        ) : null}
-        {href ? (
-          <span className="text-primary inline-block text-sm font-bold">Ver caso →</span>
-        ) : null}
-      </div>
-    </Card>
-  );
-
-  if (!href) return inner;
-  return (
-    <Link href={href} className="block focus-visible:outline-none">
-      {inner}
-    </Link>
   );
 }

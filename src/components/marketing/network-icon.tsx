@@ -24,13 +24,13 @@ const ICONS: Record<string, LucideIcon> = {
   web: Globe,
 };
 
-export function NetworkIcon({
-  network,
-  className,
-}: {
+export interface NetworkIconProps {
   network: string | null | undefined;
   className?: string;
-}) {
+  style?: React.CSSProperties;
+}
+
+export function NetworkIcon({ network, className, style }: NetworkIconProps) {
   const Comp = (network && ICONS[network]) || Globe;
-  return <Comp className={cn("h-5 w-5", className)} aria-hidden="true" />;
+  return <Comp className={cn("h-5 w-5", className)} style={style} aria-hidden="true" />;
 }

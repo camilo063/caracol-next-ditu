@@ -1,6 +1,6 @@
 import type { Block } from "payload";
 
-import { anchorIdField, ctaField } from "../shared-fields";
+import { anchorIdField, brandOptions, ctaField } from "../shared-fields";
 
 /**
  * HeroBlock — sección hero principal de cada landing.
@@ -79,6 +79,26 @@ export const HeroBlock: Block = {
         description:
           "Si está presente, sustituye la imagen de fondo. Se reproduce muteado en loop.",
       },
+    },
+    {
+      name: "brandIcons",
+      type: "array",
+      label: "Fila de íconos de marca (opcional)",
+      labels: { singular: "Marca", plural: "Marcas" },
+      admin: {
+        description:
+          "Fila de íconos del ecosistema bajo el subtítulo (Caracol Next). 6–10 marcas máximo.",
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: "brand",
+          type: "select",
+          options: brandOptions as unknown as { label: string; value: string }[],
+          required: true,
+        },
+        { name: "icon", type: "upload", relationTo: "media" },
+      ],
     },
     ctaField({ name: "primaryCta", label: "CTA primario" }),
     ctaField({ name: "secondaryCta", label: "CTA secundario (opcional)" }),
