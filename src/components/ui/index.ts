@@ -52,3 +52,4 @@ export {
   CarouselNext,
   type CarouselApi,
 } from "./carousel";
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";

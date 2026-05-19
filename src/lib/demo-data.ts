@@ -1072,11 +1072,12 @@ export const caracolNextHeaderDemo = {
     { label: "Pauta", anchorId: "pauta" },
     { label: "Contacto", anchorId: "contacto" },
   ],
+  // Spec: el CTA del navbar redirige a la landing Ditu.
   ctaButton: {
     enabled: true,
-    label: "Inicio",
-    href: "/",
-    variant: "outline" as const,
+    label: "Conoce ditu",
+    href: "/ditu",
+    variant: "brand-ditu" as const,
   },
   sticky: true,
 };

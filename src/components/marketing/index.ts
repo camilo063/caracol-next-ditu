@@ -4,6 +4,7 @@ export { DituMascot } from "./ditu-mascot";
 export { EventCard, type EventCardProps } from "./event-card";
 export { FloatingContact, type FloatingContactProps } from "./floating-contact";
 export { FormatCard, type FormatCardProps } from "./format-card";
+export { FullscreenToggle, type FullscreenToggleProps } from "./fullscreen-toggle";
 export {
   HubLanding,
   CaracolNextWordmark,

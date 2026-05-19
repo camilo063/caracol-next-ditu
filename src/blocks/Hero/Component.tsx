@@ -3,9 +3,9 @@ import Link from "next/link";
 
 import { ParallaxBackground } from "@/components/animations";
 import { Button, Container, Section, Stat } from "@/components/ui";
-import { brandMeta } from "@/lib/brand";
 import { isMediaVideo, mediaAlt, mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
+import { BrandIconsRow } from "./BrandIconsRow";
 import type { HeroBlockProps } from "../types";
 
 const TONE_TO_SECTION = {
@@ -109,36 +109,7 @@ export function HeroBlockComponent({
           ) : null}
 
           {brandIcons && brandIcons.length > 0 ? (
-            <ul className="mt-4 flex flex-wrap items-center justify-center gap-3">
-              {brandIcons.map((b, i) => {
-                const meta = brandMeta(b.brand);
-                const iconUrl = mediaUrl(b.icon);
-                return (
-                  <li
-                    key={(b as { id?: string }).id ?? i}
-                    className="flex items-center justify-center rounded-xl border border-white/15 bg-white/10 p-3 backdrop-blur-sm"
-                    style={{ width: 56, height: 56 }}
-                    title={meta.label}
-                  >
-                    {iconUrl ? (
-                      <Image
-                        src={iconUrl}
-                        alt={meta.label}
-                        width={36}
-                        height={36}
-                        className="h-7 w-auto object-contain"
-                      />
-                    ) : (
-                      <span
-                        className="inline-block h-6 w-6 rounded-md"
-                        style={{ backgroundColor: meta.color }}
-                        aria-label={meta.label}
-                      />
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+            <BrandIconsRow items={brandIcons} className="mt-4" />
           ) : null}
 
           {primaryCta?.label || secondaryCta?.label ? (

@@ -3,15 +3,16 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 import { Button, Container } from "@/components/ui";
 import { cn } from "@/lib/utils";
+import { FullscreenToggle } from "./fullscreen-toggle";
 
 export interface SiteHeaderProps {
   landing: "caracol-next" | "ditu";
   logoUrl?: string | null;
-  /** Wordmark inline cuando no hay logo subido. */
   fallbackWordmark?: React.ReactNode;
   navAnchors: Array<{ label: string; anchorId: string }>;
   ctaButton?: {
@@ -21,13 +22,18 @@ export interface SiteHeaderProps {
     variant?: "default" | "outline" | "brand-caracolnext" | "brand-ditu" | "ghost" | null;
   } | null;
   sticky?: boolean;
+  /** Si `false`, el botón fullscreen no se muestra. */
+  showFullscreenToggle?: boolean;
 }
 
 /**
- * SiteHeader — header sticky con logo + nav anchors + CTA.
- * Estilizado distinto por landing:
- *  - caracol-next: fondo blanco con sombra al scrollear
- *  - ditu: fondo violeta oscuro con texto blanco
+ * SiteHeader — sticky con behaviors avanzados:
+ *
+ * - Hide on scroll down, show on scroll up (300ms ease, Framer Motion).
+ * - Siempre visible en top de la página (`scrollY < 80`).
+ * - Active state automático en anclas (IntersectionObserver con rootMargin -40/-55%).
+ * - Botón FullscreenToggle junto al CTA — modo presentación.
+ * - CTA configurable (en Caracol Next apunta a /ditu por spec).
  */
 export function SiteHeader({
   landing,
@@ -36,23 +42,65 @@ export function SiteHeader({
   navAnchors,
   ctaButton,
   sticky = true,
+  showFullscreenToggle = true,
 }: SiteHeaderProps) {
   const [open, setOpen] = React.useState(false);
+  const [hidden, setHidden] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const [activeId, setActiveId] = React.useState<string | null>(null);
 
+  // --- Hide on scroll down, show on scroll up ---
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    setScrolled(latest > 8);
+    if (latest <= 80) {
+      // En el top, siempre visible.
+      setHidden(false);
+      return;
+    }
+    if (latest > previous + 4)
+      setHidden(true); // scroll down
+    else if (latest < previous - 4) setHidden(false); // scroll up
+  });
+
+  // --- Active anchor tracking ---
   React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    if (navAnchors.length === 0) return;
+    const observers: IntersectionObserver[] = [];
+    const visibility = new Map<string, boolean>();
+    navAnchors.forEach((anchor) => {
+      const el = document.getElementById(anchor.anchorId);
+      if (!el) return;
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            visibility.set(anchor.anchorId, entry.isIntersecting);
+          });
+          // El primer ancla visible (en orden del nav) gana el active.
+          const firstVisible = navAnchors.find((a) => visibility.get(a.anchorId));
+          if (firstVisible) setActiveId(firstVisible.anchorId);
+        },
+        {
+          rootMargin: "-40% 0px -55% 0px",
+          threshold: 0,
+        },
+      );
+      io.observe(el);
+      observers.push(io);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, [navAnchors]);
 
   const isDitu = landing === "ditu";
 
   return (
-    <header
+    <motion.header
+      initial={{ y: 0 }}
+      animate={{ y: hidden ? "-100%" : "0%" }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
       className={cn(
-        "z-40 w-full transition-colors",
+        "z-40 w-full",
         sticky && "sticky top-0",
         isDitu ? "text-white" : "text-foreground",
         scrolled
@@ -62,6 +110,7 @@ export function SiteHeader({
           : isDitu
             ? "bg-[#1F1647]"
             : "bg-background",
+        "transition-colors duration-300 ease-in-out",
       )}
     >
       <Container size="xl" className="flex h-16 items-center justify-between gap-4">
@@ -87,21 +136,40 @@ export function SiteHeader({
         <nav
           className={cn(
             "hidden items-center gap-6 md:flex",
-            isDitu ? "text-white/90" : "text-foreground/80",
+            isDitu ? "text-white/85" : "text-foreground/75",
           )}
         >
-          {navAnchors.map((a) => (
-            <Link
-              key={a.anchorId}
-              href={`#${a.anchorId}`}
-              className="text-sm font-semibold tracking-wide uppercase transition-colors hover:opacity-80"
-            >
-              {a.label}
-            </Link>
-          ))}
+          {navAnchors.map((a) => {
+            const isActive = activeId === a.anchorId;
+            return (
+              <Link
+                key={a.anchorId}
+                href={`#${a.anchorId}`}
+                aria-current={isActive ? "true" : undefined}
+                className={cn(
+                  "relative text-sm font-semibold tracking-wide uppercase transition-colors",
+                  isActive
+                    ? isDitu
+                      ? "text-white"
+                      : "text-primary"
+                    : "hover:opacity-80",
+                )}
+              >
+                {a.label}
+                <span
+                  className={cn(
+                    "pointer-events-none absolute right-0 -bottom-1 left-0 mx-auto h-0.5 origin-center rounded-full transition-transform duration-300",
+                    isActive ? "scale-x-100" : "scale-x-0",
+                    isDitu ? "bg-[#77EDED]" : "bg-primary",
+                  )}
+                  aria-hidden="true"
+                />
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           {ctaButton?.enabled !== false && ctaButton?.label ? (
             <Button
               size="sm"
@@ -111,6 +179,9 @@ export function SiteHeader({
             >
               <Link href={ctaButton.href}>{ctaButton.label}</Link>
             </Button>
+          ) : null}
+          {showFullscreenToggle ? (
+            <FullscreenToggle tone={isDitu ? "dark" : "light"} />
           ) : null}
           <button
             type="button"
@@ -137,16 +208,27 @@ export function SiteHeader({
           )}
         >
           <Container size="xl" className="flex flex-col gap-2 py-4">
-            {navAnchors.map((a) => (
-              <Link
-                key={a.anchorId}
-                href={`#${a.anchorId}`}
-                className="rounded-md px-2 py-2 text-sm font-semibold tracking-wide uppercase hover:bg-white/10"
-                onClick={() => setOpen(false)}
-              >
-                {a.label}
-              </Link>
-            ))}
+            {navAnchors.map((a) => {
+              const isActive = activeId === a.anchorId;
+              return (
+                <Link
+                  key={a.anchorId}
+                  href={`#${a.anchorId}`}
+                  aria-current={isActive ? "true" : undefined}
+                  className={cn(
+                    "rounded-md px-2 py-2 text-sm font-semibold tracking-wide uppercase transition-colors",
+                    isActive
+                      ? isDitu
+                        ? "bg-white/10 text-white"
+                        : "bg-primary/10 text-primary"
+                      : "hover:bg-white/10",
+                  )}
+                  onClick={() => setOpen(false)}
+                >
+                  {a.label}
+                </Link>
+              );
+            })}
             {ctaButton?.enabled !== false && ctaButton?.label ? (
               <Button
                 size="sm"
@@ -160,6 +242,6 @@ export function SiteHeader({
           </Container>
         </div>
       ) : null}
-    </header>
+    </motion.header>
   );
 }
