@@ -125,7 +125,8 @@ export const caracolNextDemoLayout: AnyBlock[] = [
     blockType: "brand-tabs",
     anchorId: "marcas",
     eyebrow: "El ecosistema Caracol",
-    heading: "Una marca para cada audiencia",
+    // Convención "|" → primera parte Regular, segunda parte Bold (patrón Figma).
+    heading: "Una marca para|cada audiencia",
     description: undefined,
     tabs: [
       {

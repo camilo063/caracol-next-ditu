@@ -43,15 +43,33 @@ export function BrandTabsBlockComponent({
   const safeIndex = Math.min(Math.max(active, 0), tabs.length - 1);
   const current = tabs[safeIndex]!;
 
+  // Heading split: si el editor pone "Una marca para|cada audiencia",
+  // la primera parte se renderiza Regular y la segunda Bold (patrón Figma).
+  const [headingRegular, headingBoldPart] = (heading ?? "")
+    .split("|")
+    .map((s) => s.trim());
+
   return (
     <section id={anchorId ?? "marcas"} className="py-6 sm:py-8 lg:py-10">
       <div className="bg-muted w-full overflow-hidden rounded-[2rem] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
         <Container size="xl">
-          <p className="text-primary text-fluid-tag font-bold tracking-[0.18em] uppercase">
+          <p
+            className="text-fluid-tag font-bold tracking-[0.18em] uppercase"
+            style={{ color: "#00ACFF" }}
+          >
             {eyebrow ?? "El ecosistema Caracol"}
           </p>
-          <h2 className="font-display text-fluid-h2 text-foreground mt-3 font-black">
-            {heading}
+          <h2
+            className="font-display text-fluid-h1 mt-3 leading-[1.05] tracking-tight"
+            style={{ color: "#003380" }}
+          >
+            <span className="font-normal">{headingRegular}</span>
+            {headingBoldPart ? (
+              <>
+                <br />
+                <span className="font-bold">{headingBoldPart}</span>
+              </>
+            ) : null}
           </h2>
           {description ? (
             <p className="text-muted-foreground text-fluid-body mt-2">{description}</p>
@@ -67,7 +85,9 @@ export function BrandTabsBlockComponent({
               {tabs.map((tab, i) => {
                 const meta = brandMeta(tab.brand);
                 const isActive = i === safeIndex;
-                const color = tab.brandColor ?? meta.color;
+                // Tabs uniformes en azul Caracol Next (#003380 = navy) — el color
+                // por marca solo se aplica dentro del content card, no en las tabs.
+                const NAVY = "#003380";
                 return (
                   <button
                     key={tab.brand}
@@ -82,14 +102,14 @@ export function BrandTabsBlockComponent({
                     style={
                       isActive
                         ? {
-                            backgroundColor: color,
-                            borderColor: color,
+                            backgroundColor: NAVY,
+                            borderColor: NAVY,
                             color: "white",
                           }
                         : {
                             backgroundColor: "white",
-                            borderColor: color,
-                            color: color,
+                            borderColor: NAVY,
+                            color: NAVY,
                           }
                     }
                   >

@@ -1,91 +1,88 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-
 import { CountUp } from "@/components/animations";
 import { Container } from "@/components/ui";
 import { NetworkIcon } from "@/components/marketing";
-import { formatCompact, formatNumber, formatPercent } from "@/lib/format";
-import { cn } from "@/lib/utils";
+import { formatCompact, formatNumber } from "@/lib/format";
 import type { AudienceNetworksBlockProps } from "../types";
 
-/**
- * AudienceNetworksBlock — "Nuestro Alcance" + stats horizontales + Líderes en redes.
- * Matching Figma `home caracol next.pdf`:
- *  - Sección con rounded corners + side margins (card-like).
- *  - Big number izquierda + 4 stat cards en una fila horizontal a la derecha.
- *  - Redes en una fila horizontal (6 networks).
- *  - Mobile = todo apilado vertical.
- *
- * Animaciones: CountUp en cada número (arranca al entrar al viewport).
- *
- * Convención de breakdown.label "TÍTULO | Subtítulo".
- */
+const NAVY = "#003380";
+const ACCENT_LIGHT_BLUE = "#00ACFF";
+
 export function AudienceNetworksBlockComponent({
   anchorId,
-  eyebrow,
   heading,
-  description,
   audience,
   networks,
 }: AudienceNetworksBlockProps) {
+  const totalFollowers = (networks ?? []).reduce((sum, n) => sum + (n.followers ?? 0), 0);
+
   return (
     <section id={anchorId ?? "audiencia"} className="py-6 sm:py-8 lg:py-10">
-      <div className="bg-card w-full overflow-hidden rounded-[2rem] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
+      <div className="w-full overflow-hidden rounded-[2rem] bg-white py-12 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
         <Container size="xl">
-          {(eyebrow || description) && (
-            <div className="mb-8">
-              {eyebrow ? (
-                <p className="text-primary text-fluid-tag font-bold tracking-[0.18em] uppercase">
-                  {eyebrow}
-                </p>
-              ) : null}
-              {description ? (
-                <p className="text-muted-foreground text-fluid-body mt-2 max-w-3xl">
-                  {description}
-                </p>
-              ) : null}
-            </div>
-          )}
-
-          {/* Nuestro Alcance: big number + 4 stat cards en grid 4-col (lg). */}
-          <div className="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end lg:gap-10">
+          {/* TOP: Nuestro Alcance + 4 stat cards */}
+          <div className="grid items-start gap-10 lg:grid-cols-[1fr_2fr] lg:gap-12">
             <div>
-              <p className="text-foreground text-2xl leading-tight font-bold">
+              <h2
+                className="font-display text-3xl leading-tight font-bold sm:text-4xl"
+                style={{ color: NAVY }}
+              >
                 {heading || "Nuestro Alcance"}
-              </p>
-              <p className="font-display text-primary mt-3 text-5xl font-black tracking-tight sm:text-6xl">
+              </h2>
+              <p
+                className="font-display mt-6 text-5xl leading-none font-extrabold tracking-tight sm:text-6xl lg:text-7xl"
+                style={{ color: NAVY }}
+              >
                 <CountUp
                   value={audience.reach}
                   format={(v) => formatNumber(Math.round(v))}
                 />
                 {audience.reachSuffix ?? ""}
               </p>
-              <p className="text-muted-foreground mt-1 text-sm font-semibold">
+              <p className="mt-3 text-base font-semibold" style={{ color: NAVY }}>
                 {audience.reachLabel ?? "Usuarios mensuales"}
               </p>
-              <p className="text-muted-foreground mt-3 text-xs">
-                ● Fuente: Comscore Feb 2026
+              <p className="text-muted-foreground mt-4 text-xs">
+                <span style={{ color: "#16a34a" }}>●</span> Fuente: Comscore Feb 2026
               </p>
             </div>
 
             {audience.breakdown && audience.breakdown.length > 0 ? (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {audience.breakdown.slice(0, 4).map((item) => {
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-3">
+                {audience.breakdown.slice(0, 4).map((item, idx) => {
                   const isPercent = (item.suffix ?? "").trim() === "%";
-                  const [mainLabel, subLabel] = item.label
+                  const isOrdinal =
+                    !item.suffix && item.value > 0 && item.value < 10 && idx === 0;
+                  const [pillLabel, subLabel] = item.label
                     .split("|")
                     .map((s) => s.trim());
                   return (
                     <div
                       key={item.id ?? item.label}
-                      className="border-border bg-background rounded-2xl border p-5"
+                      className="flex flex-col rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-5"
                     >
-                      <p className="text-muted-foreground text-xs font-bold tracking-wide uppercase">
-                        {mainLabel ?? item.label}
-                      </p>
-                      <p className="font-display text-primary mt-2 text-2xl leading-tight font-extrabold sm:text-3xl">
-                        {isPercent ? (
+                      {pillLabel ? (
+                        <span
+                          className="inline-block self-start rounded-md px-2 py-1 text-[10px] font-bold tracking-wider whitespace-nowrap text-white uppercase"
+                          style={{ backgroundColor: ACCENT_LIGHT_BLUE }}
+                        >
+                          {pillLabel}
+                        </span>
+                      ) : null}
+                      <p
+                        className="font-display mt-4 text-3xl leading-none font-extrabold tracking-tight sm:text-4xl"
+                        style={{ color: NAVY }}
+                      >
+                        {isOrdinal ? (
+                          <>
+                            #
+                            <CountUp
+                              value={item.value}
+                              format={(v) => Math.round(v).toString()}
+                            />
+                          </>
+                        ) : isPercent ? (
                           <>
                             <CountUp value={item.value} format={(v) => v.toFixed(1)} />%
                           </>
@@ -100,7 +97,9 @@ export function AudienceNetworksBlockComponent({
                         )}
                       </p>
                       {subLabel ? (
-                        <p className="text-muted-foreground mt-1 text-xs">{subLabel}</p>
+                        <p className="text-muted-foreground mt-2 text-xs leading-snug">
+                          {subLabel}
+                        </p>
                       ) : null}
                     </div>
                   );
@@ -109,53 +108,53 @@ export function AudienceNetworksBlockComponent({
             ) : null}
           </div>
 
-          {/* Líderes en redes — 6 networks en una fila horizontal (lg). */}
+          {/* BOTTOM: Líderes en redes — title + total + 6 networks row */}
           {networks && networks.length > 0 ? (
-            <div className="mt-10 lg:mt-14">
-              <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-                <p className="text-foreground text-xl font-bold sm:text-2xl">
-                  Líderes en redes
-                </p>
-                <p className="text-muted-foreground text-sm font-semibold">
-                  +
-                  <CountUp
-                    value={networks.reduce((sum, n) => sum + (n.followers ?? 0), 0)}
-                    format={(v) => formatCompact(v)}
-                  />{" "}
-                  de seguidores
-                </p>
-              </div>
-              <div className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="mt-16 lg:mt-24">
+              <h3
+                className="font-display text-3xl leading-tight font-bold sm:text-4xl lg:text-5xl"
+                style={{ color: NAVY }}
+              >
+                Líderes en redes
+              </h3>
+              <p
+                className="font-display mt-3 text-2xl font-bold sm:text-3xl lg:text-4xl"
+                style={{ color: NAVY }}
+              >
+                +
+                <CountUp value={totalFollowers} format={(v) => formatCompact(v)} /> de
+                seguidores
+              </p>
+
+              <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
                 {networks.slice(0, 6).map((net) => (
-                  <div
-                    key={net.id ?? net.network}
-                    className="border-border bg-background flex flex-col items-center gap-2 rounded-xl border p-4 text-center"
-                  >
-                    <div className="bg-primary/10 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
-                      <NetworkIcon network={net.network} className="h-4 w-4" />
+                  <div key={net.id ?? net.network} className="flex items-center gap-3">
+                    <div
+                      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-white sm:h-16 sm:w-16"
+                      style={{ backgroundColor: NAVY }}
+                    >
+                      <NetworkIcon
+                        network={net.network}
+                        className="h-7 w-7 sm:h-8 sm:w-8"
+                      />
                     </div>
-                    <p className="font-display text-base leading-none font-extrabold">
-                      <CountUp value={net.followers} format={(v) => formatCompact(v)} />
-                    </p>
-                    <p className="text-muted-foreground text-[10px] font-semibold uppercase">
-                      Seguidores
-                    </p>
-                    {typeof net.growth === "number" && net.growth !== 0 ? (
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-1 text-[10px] font-bold",
-                          net.growth >= 0 ? "text-success" : "text-destructive",
-                        )}
+                    <div className="leading-tight">
+                      <p
+                        className="font-display text-xl font-extrabold sm:text-2xl"
+                        style={{ color: NAVY }}
                       >
-                        <TrendingUp className="h-3 w-3" />
-                        {formatPercent(net.growth)}
-                      </span>
-                    ) : null}
+                        <CountUp value={net.followers} format={(v) => formatCompact(v)} />
+                      </p>
+                      <p className="text-muted-foreground text-xs font-medium">
+                        Seguidores
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
-              <p className="text-muted-foreground mt-3 text-right text-xs">
-                ● Fuente: Abril 8 2026
+
+              <p className="text-muted-foreground mt-6 text-right text-xs">
+                <span style={{ color: "#16a34a" }}>●</span> Fuente: Abril 6 2026
               </p>
             </div>
           ) : null}

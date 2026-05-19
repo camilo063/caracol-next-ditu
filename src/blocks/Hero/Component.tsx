@@ -90,12 +90,11 @@ export function HeroBlockComponent({
               {eyebrow}
             </p>
           ) : null}
-          {/* Heading: dos líneas Montserrat 64px (max), línea 1 Regular + línea 2 Bold, ambas blancas. */}
+          {/* Heading: dos líneas Montserrat 64px (max), línea 1 Regular + línea 2 Bold, ambas blancas.
+              Nota: twMerge colapsa `text-fluid-*` con `text-white`, así que aplicamos el color via style. */}
           <h1
-            className={cn(
-              "text-fluid-display font-display tracking-tight",
-              isDarkTone ? "text-white" : "text-foreground",
-            )}
+            className="text-fluid-display font-display tracking-tight"
+            style={{ color: isDarkTone ? "#FFFFFF" : undefined }}
           >
             <span className="font-normal">{heading}</span>
             {headingBold ? (
@@ -108,10 +107,8 @@ export function HeroBlockComponent({
           {subheading ? (
             // Subheading: Montserrat Medium 32px (max), blanco.
             <p
-              className={cn(
-                "text-fluid-h3 font-display max-w-2xl leading-snug font-medium",
-                isDarkTone ? "text-white" : "text-muted-foreground",
-              )}
+              className="text-fluid-h3 font-display max-w-2xl leading-snug font-medium"
+              style={{ color: isDarkTone ? "#FFFFFF" : undefined }}
             >
               {subheading}
             </p>
