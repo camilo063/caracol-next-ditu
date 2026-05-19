@@ -19,6 +19,7 @@ export function HeroBlockComponent({
   anchorId,
   eyebrow,
   heading,
+  headingBold,
   subheading,
   keyStats,
   brandIcons,
@@ -80,28 +81,36 @@ export function HeroBlockComponent({
       <Container size="xl" className="relative">
         <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 text-center">
           {eyebrow ? (
+            // Tipografía exacta Figma: Poppins Bold 20px, color #00ACFF (CaracolTV/Primario/Azul Claro).
+            // Fluid clamp 18→20px para preservar legibilidad en mobile.
             <p
-              className={cn(
-                "text-fluid-tag font-bold tracking-[0.18em] uppercase",
-                isDarkTone ? "text-white/80" : "text-primary",
-              )}
+              className="font-poppins text-fluid-subtitle font-bold"
+              style={{ color: "#00ACFF" }}
             >
               {eyebrow}
             </p>
           ) : null}
+          {/* Heading: dos líneas Montserrat 64px (max), línea 1 Regular + línea 2 Bold, ambas blancas. */}
           <h1
             className={cn(
-              "text-fluid-display font-display font-black tracking-tight",
+              "text-fluid-display font-display tracking-tight",
               isDarkTone ? "text-white" : "text-foreground",
             )}
           >
-            {heading}
+            <span className="font-normal">{heading}</span>
+            {headingBold ? (
+              <>
+                <br />
+                <span className="font-bold">{headingBold}</span>
+              </>
+            ) : null}
           </h1>
           {subheading ? (
+            // Subheading: Montserrat Medium 32px (max), blanco.
             <p
               className={cn(
-                "text-fluid-subtitle max-w-2xl leading-relaxed",
-                isDarkTone ? "text-white/85" : "text-muted-foreground",
+                "text-fluid-h3 font-display max-w-2xl leading-snug font-medium",
+                isDarkTone ? "text-white" : "text-muted-foreground",
               )}
             >
               {subheading}

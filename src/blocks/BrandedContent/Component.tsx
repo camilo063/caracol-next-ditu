@@ -41,11 +41,8 @@ export function BrandedContentBlockComponent({
 
   const safeDefault = Math.min(Math.max(defaultIndex ?? 0, 0), categories.length - 1);
   return (
-    <section
-      id={anchorId ?? "branded"}
-      className="px-2 py-6 sm:px-4 sm:py-8 lg:px-8 lg:py-10"
-    >
-      <div className="mx-auto overflow-hidden rounded-[2rem] bg-[#FAFAFA] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
+    <section id={anchorId ?? "branded"} className="py-6 sm:py-8 lg:py-10">
+      <div className="w-full overflow-hidden rounded-[2rem] bg-[#FAFAFA] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
         <Container size="xl">
           {eyebrow ? (
             <p className="text-fluid-tag text-primary font-bold tracking-[0.18em] uppercase">

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Montserrat, Spline_Sans } from "next/font/google";
+import { Montserrat, Poppins, Spline_Sans } from "next/font/google";
 
 import "@/styles/globals.css";
 
@@ -9,6 +9,14 @@ const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
+/** Poppins — eyebrow/tags Caracol Next (Figma). */
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -55,7 +63,7 @@ export default function FrontendLayout({
   return (
     <html
       lang="es-CO"
-      className={`${montserrat.variable} ${splineSans.variable} ${dituDisplay.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${poppins.variable} ${splineSans.variable} ${dituDisplay.variable} h-full antialiased`}
     >
       <body className="bg-background text-foreground flex min-h-full flex-col font-sans">
         {children}

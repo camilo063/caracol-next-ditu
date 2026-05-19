@@ -16,7 +16,9 @@ export const caracolNextDemoLayout: AnyBlock[] = [
     blockType: "hero",
     anchorId: "inicio",
     eyebrow: "Donde el contenido conecta",
-    heading: "Nuestro ecosistema digital al servicio de tu marca.",
+    // Heading dividido en 2 líneas (Figma): Regular + Bold mismo tamaño 64.
+    heading: "Nuestro ecosistema digital al",
+    headingBold: "servicio de tu marca.",
     subheading: "Vamos más allá de la pauta tradicional.",
     keyStats: [],
     brandIcons: [

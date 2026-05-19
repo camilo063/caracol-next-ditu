@@ -159,6 +159,7 @@
     /* Default = Caracol Next: Montserrat para sans y display. */
     --font-family-sans: var(--font-montserrat), "Montserrat", system-ui, sans-serif;
     --font-family-display: var(--font-montserrat), "Montserrat", system-ui, sans-serif;
+    --font-family-poppins: var(--font-poppins), "Poppins", system-ui, sans-serif;
     --font-family-mobile-button: var(--font-spline-sans), "Spline Sans", sans-serif;
 
     --font-size-xs: 0.75rem; /* 12 */
@@ -292,6 +293,7 @@
   /* Tipografía */
   --font-sans: var(--font-family-sans);
   --font-display: var(--font-family-display);
+  --font-poppins: var(--font-family-poppins);
   --font-mobile-btn: var(--font-family-mobile-button);
 
   /* Radius (mapping a Tailwind radius scale) */

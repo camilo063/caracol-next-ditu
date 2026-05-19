@@ -20,8 +20,18 @@ export const HeroBlock: Block = {
     {
       name: "heading",
       type: "text",
-      label: "Título principal",
+      label: "Título principal (línea 1, Regular)",
       required: true,
+    },
+    {
+      name: "headingBold",
+      type: "text",
+      label: "Título principal — línea 2 (Bold)",
+      admin: {
+        description:
+          "Segunda línea del título en bold. Para el patrón Figma: línea 1 Regular + línea 2 Bold, mismo tamaño.",
+        placeholder: "servicio de tu marca.",
+      },
     },
     {
       name: "subheading",

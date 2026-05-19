@@ -44,11 +44,8 @@ export function BrandTabsBlockComponent({
   const current = tabs[safeIndex]!;
 
   return (
-    <section
-      id={anchorId ?? "marcas"}
-      className="px-2 py-6 sm:px-4 sm:py-8 lg:px-8 lg:py-10"
-    >
-      <div className="bg-muted mx-auto overflow-hidden rounded-[2rem] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
+    <section id={anchorId ?? "marcas"} className="py-6 sm:py-8 lg:py-10">
+      <div className="bg-muted w-full overflow-hidden rounded-[2rem] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
         <Container size="xl">
           <p className="text-primary text-fluid-tag font-bold tracking-[0.18em] uppercase">
             {eyebrow ?? "El ecosistema Caracol"}

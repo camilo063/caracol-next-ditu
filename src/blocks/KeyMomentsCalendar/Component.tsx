@@ -59,9 +59,9 @@ export function KeyMomentsCalendarComponent({
   const ctaHref = ctaText?.href ?? "#contacto";
 
   return (
-    <section id={anchorId ?? "momentos"} className="px-2 py-6 sm:px-4 sm:py-10 lg:px-8">
+    <section id={anchorId ?? "momentos"} className="py-6 sm:py-10">
       <div
-        className="relative mx-auto overflow-hidden rounded-[2rem] py-14 text-white sm:rounded-[2.5rem] sm:py-20"
+        className="relative w-full overflow-hidden rounded-[2rem] py-14 text-white sm:rounded-[2.5rem] sm:py-20"
         style={{
           background: "linear-gradient(180deg, #003380 0%, #003CCA 50%, #003380 100%)",
         }}
