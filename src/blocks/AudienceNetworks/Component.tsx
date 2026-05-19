@@ -1,5 +1,8 @@
+"use client";
+
 import { TrendingUp } from "lucide-react";
 
+import { CountUp } from "@/components/animations";
 import { Container, Section, SectionHeading } from "@/components/ui";
 import { NetworkIcon } from "@/components/marketing";
 import { formatCompact, formatNumber, formatPercent } from "@/lib/format";
@@ -8,10 +11,14 @@ import type { AudienceNetworksBlockProps } from "../types";
 
 /**
  * AudienceNetworksBlock — "Nuestro Alcance" + 4 stat cards + Líderes en redes.
- * Matching Figma `caracol-next.png`.
+ * Matching Figma `caracol-next.png`. Mobile = todo apilado en una columna.
  *
- * Convención de breakdown.label para mostrar título + sublabel:
- *   "#1 | Unidad digital Colombia"  → "#1" grande, "Unidad digital Colombia" pequeño.
+ * Animaciones:
+ *  - Big number, breakdown stats y followers de cada red usan <CountUp>
+ *    (Framer Motion `animate()` con onUpdate) — arranca cuando el bloque
+ *    entra al viewport, una sola vez.
+ *
+ * Convención de breakdown.label "TÍTULO | Subtítulo" para mostrar 2 líneas.
  */
 export function AudienceNetworksBlockComponent({
   anchorId,
@@ -31,14 +38,17 @@ export function AudienceNetworksBlockComponent({
           titleLevel="h2"
         />
 
-        {/* Nuestro Alcance: big number + 4 stat cards */}
+        {/* Nuestro Alcance: big number + 4 stat cards. Mobile = 1 columna. */}
         <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_2fr] lg:items-end">
           <div>
             <p className="text-foreground text-2xl leading-tight font-bold">
               Nuestro Alcance
             </p>
             <p className="font-display text-primary mt-3 text-5xl font-black tracking-tight sm:text-6xl">
-              {formatNumber(audience.reach)}
+              <CountUp
+                value={audience.reach}
+                format={(v) => formatNumber(Math.round(v))}
+              />
               {audience.reachSuffix ?? ""}
             </p>
             <p className="text-muted-foreground mt-1 text-sm font-semibold">
@@ -53,9 +63,6 @@ export function AudienceNetworksBlockComponent({
             <div className="grid gap-3 sm:grid-cols-2">
               {audience.breakdown.slice(0, 4).map((item) => {
                 const isPercent = (item.suffix ?? "").trim() === "%";
-                const valueDisplay = isPercent
-                  ? `${item.value}%`
-                  : `${formatCompact(item.value)}${item.suffix ?? ""}`;
                 const [mainLabel, subLabel] = item.label.split("|").map((s) => s.trim());
                 return (
                   <div
@@ -66,7 +73,16 @@ export function AudienceNetworksBlockComponent({
                       {mainLabel ?? item.label}
                     </p>
                     <p className="font-display text-primary mt-2 text-3xl leading-tight font-extrabold">
-                      {valueDisplay}
+                      {isPercent ? (
+                        <>
+                          <CountUp value={item.value} format={(v) => v.toFixed(1)} />%
+                        </>
+                      ) : (
+                        <>
+                          <CountUp value={item.value} format={(v) => formatCompact(v)} />
+                          {item.suffix ?? ""}
+                        </>
+                      )}
                     </p>
                     {subLabel ? (
                       <p className="text-muted-foreground mt-1 text-xs">{subLabel}</p>
@@ -78,12 +94,16 @@ export function AudienceNetworksBlockComponent({
           ) : null}
         </div>
 
-        {/* Líderes en redes */}
+        {/* Líderes en redes — mobile = 1 col, sm = 2, lg = 3. */}
         {networks && networks.length > 0 ? (
           <div className="mt-12">
             <p className="text-foreground text-2xl font-bold">Líderes en redes</p>
             <p className="text-muted-foreground mt-1 text-sm">
-              +{formatCompact(networks.reduce((sum, n) => sum + (n.followers ?? 0), 0))}{" "}
+              +
+              <CountUp
+                value={networks.reduce((sum, n) => sum + (n.followers ?? 0), 0)}
+                format={(v) => formatCompact(v)}
+              />{" "}
               de seguidores
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -97,13 +117,13 @@ export function AudienceNetworksBlockComponent({
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="font-display text-xl leading-none font-extrabold">
-                      {formatCompact(net.followers)}
+                      <CountUp value={net.followers} format={(v) => formatCompact(v)} />
                     </p>
                     <p className="text-muted-foreground text-xs font-semibold">
                       Seguidores · <span className="capitalize">{net.network}</span>
                     </p>
                   </div>
-                  {typeof net.growth === "number" ? (
+                  {typeof net.growth === "number" && net.growth !== 0 ? (
                     <span
                       className={cn(
                         "inline-flex items-center gap-1 text-xs font-bold whitespace-nowrap",
