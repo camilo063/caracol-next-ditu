@@ -1,4 +1,5 @@
 export { Avatar, type AvatarProps } from "./avatar";
+export { BrandIconSvg, type BrandIconSvgProps } from "./brand-icon-svg";
 export { BrandLogoBadge, type BrandLogoBadgeProps } from "./brand-logo-badge";
 export { DituMascot } from "./ditu-mascot";
 export { EventCard, type EventCardProps } from "./event-card";

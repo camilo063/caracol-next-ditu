@@ -3,22 +3,23 @@
 import { TrendingUp } from "lucide-react";
 
 import { CountUp } from "@/components/animations";
-import { Container, Section, SectionHeading } from "@/components/ui";
+import { Container } from "@/components/ui";
 import { NetworkIcon } from "@/components/marketing";
 import { formatCompact, formatNumber, formatPercent } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { AudienceNetworksBlockProps } from "../types";
 
 /**
- * AudienceNetworksBlock — "Nuestro Alcance" + 4 stat cards + Líderes en redes.
- * Matching Figma `caracol-next.png`. Mobile = todo apilado en una columna.
+ * AudienceNetworksBlock — "Nuestro Alcance" + stats horizontales + Líderes en redes.
+ * Matching Figma `home caracol next.pdf`:
+ *  - Sección con rounded corners + side margins (card-like).
+ *  - Big number izquierda + 4 stat cards en una fila horizontal a la derecha.
+ *  - Redes en una fila horizontal (6 networks).
+ *  - Mobile = todo apilado vertical.
  *
- * Animaciones:
- *  - Big number, breakdown stats y followers de cada red usan <CountUp>
- *    (Framer Motion `animate()` con onUpdate) — arranca cuando el bloque
- *    entra al viewport, una sola vez.
+ * Animaciones: CountUp en cada número (arranca al entrar al viewport).
  *
- * Convención de breakdown.label "TÍTULO | Subtítulo" para mostrar 2 líneas.
+ * Convención de breakdown.label "TÍTULO | Subtítulo".
  */
 export function AudienceNetworksBlockComponent({
   anchorId,
@@ -29,120 +30,140 @@ export function AudienceNetworksBlockComponent({
   networks,
 }: AudienceNetworksBlockProps) {
   return (
-    <Section id={anchorId ?? "audiencia"} tone="default" padding="lg">
-      <Container size="xl">
-        <SectionHeading
-          eyebrow={eyebrow ?? undefined}
-          title={heading}
-          description={description ?? undefined}
-          titleLevel="h2"
-        />
+    <section
+      id={anchorId ?? "audiencia"}
+      className="px-2 py-6 sm:px-4 sm:py-8 lg:px-8 lg:py-10"
+    >
+      <div className="bg-card mx-auto overflow-hidden rounded-[2rem] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
+        <Container size="xl">
+          {(eyebrow || description) && (
+            <div className="mb-8">
+              {eyebrow ? (
+                <p className="text-primary text-fluid-tag font-bold tracking-[0.18em] uppercase">
+                  {eyebrow}
+                </p>
+              ) : null}
+              {description ? (
+                <p className="text-muted-foreground text-fluid-body mt-2 max-w-3xl">
+                  {description}
+                </p>
+              ) : null}
+            </div>
+          )}
 
-        {/* Nuestro Alcance: big number + 4 stat cards. Mobile = 1 columna. */}
-        <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_2fr] lg:items-end">
-          <div>
-            <p className="text-foreground text-2xl leading-tight font-bold">
-              Nuestro Alcance
-            </p>
-            <p className="font-display text-primary mt-3 text-5xl font-black tracking-tight sm:text-6xl">
-              <CountUp
-                value={audience.reach}
-                format={(v) => formatNumber(Math.round(v))}
-              />
-              {audience.reachSuffix ?? ""}
-            </p>
-            <p className="text-muted-foreground mt-1 text-sm font-semibold">
-              {audience.reachLabel ?? "Usuarios mensuales"}
-            </p>
-            <p className="text-muted-foreground mt-3 text-xs">
-              ● Fuente: Comscore Feb 2026
-            </p>
+          {/* Nuestro Alcance: big number + 4 stat cards en grid 4-col (lg). */}
+          <div className="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end lg:gap-10">
+            <div>
+              <p className="text-foreground text-2xl leading-tight font-bold">
+                {heading || "Nuestro Alcance"}
+              </p>
+              <p className="font-display text-primary mt-3 text-5xl font-black tracking-tight sm:text-6xl">
+                <CountUp
+                  value={audience.reach}
+                  format={(v) => formatNumber(Math.round(v))}
+                />
+                {audience.reachSuffix ?? ""}
+              </p>
+              <p className="text-muted-foreground mt-1 text-sm font-semibold">
+                {audience.reachLabel ?? "Usuarios mensuales"}
+              </p>
+              <p className="text-muted-foreground mt-3 text-xs">
+                ● Fuente: Comscore Feb 2026
+              </p>
+            </div>
+
+            {audience.breakdown && audience.breakdown.length > 0 ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {audience.breakdown.slice(0, 4).map((item) => {
+                  const isPercent = (item.suffix ?? "").trim() === "%";
+                  const [mainLabel, subLabel] = item.label
+                    .split("|")
+                    .map((s) => s.trim());
+                  return (
+                    <div
+                      key={item.id ?? item.label}
+                      className="border-border bg-background rounded-2xl border p-5"
+                    >
+                      <p className="text-muted-foreground text-xs font-bold tracking-wide uppercase">
+                        {mainLabel ?? item.label}
+                      </p>
+                      <p className="font-display text-primary mt-2 text-2xl leading-tight font-extrabold sm:text-3xl">
+                        {isPercent ? (
+                          <>
+                            <CountUp value={item.value} format={(v) => v.toFixed(1)} />%
+                          </>
+                        ) : (
+                          <>
+                            <CountUp
+                              value={item.value}
+                              format={(v) => formatCompact(v)}
+                            />
+                            {item.suffix ?? ""}
+                          </>
+                        )}
+                      </p>
+                      {subLabel ? (
+                        <p className="text-muted-foreground mt-1 text-xs">{subLabel}</p>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
 
-          {audience.breakdown && audience.breakdown.length > 0 ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {audience.breakdown.slice(0, 4).map((item) => {
-                const isPercent = (item.suffix ?? "").trim() === "%";
-                const [mainLabel, subLabel] = item.label.split("|").map((s) => s.trim());
-                return (
+          {/* Líderes en redes — 6 networks en una fila horizontal (lg). */}
+          {networks && networks.length > 0 ? (
+            <div className="mt-10 lg:mt-14">
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                <p className="text-foreground text-xl font-bold sm:text-2xl">
+                  Líderes en redes
+                </p>
+                <p className="text-muted-foreground text-sm font-semibold">
+                  +
+                  <CountUp
+                    value={networks.reduce((sum, n) => sum + (n.followers ?? 0), 0)}
+                    format={(v) => formatCompact(v)}
+                  />{" "}
+                  de seguidores
+                </p>
+              </div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                {networks.slice(0, 6).map((net) => (
                   <div
-                    key={item.id ?? item.label}
-                    className="border-border bg-card rounded-2xl border p-5"
+                    key={net.id ?? net.network}
+                    className="border-border bg-background flex flex-col items-center gap-2 rounded-xl border p-4 text-center"
                   >
-                    <p className="text-muted-foreground text-xs font-bold tracking-wide uppercase">
-                      {mainLabel ?? item.label}
-                    </p>
-                    <p className="font-display text-primary mt-2 text-3xl leading-tight font-extrabold">
-                      {isPercent ? (
-                        <>
-                          <CountUp value={item.value} format={(v) => v.toFixed(1)} />%
-                        </>
-                      ) : (
-                        <>
-                          <CountUp value={item.value} format={(v) => formatCompact(v)} />
-                          {item.suffix ?? ""}
-                        </>
-                      )}
-                    </p>
-                    {subLabel ? (
-                      <p className="text-muted-foreground mt-1 text-xs">{subLabel}</p>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
-          ) : null}
-        </div>
-
-        {/* Líderes en redes — mobile = 1 col, sm = 2, lg = 3. */}
-        {networks && networks.length > 0 ? (
-          <div className="mt-12">
-            <p className="text-foreground text-2xl font-bold">Líderes en redes</p>
-            <p className="text-muted-foreground mt-1 text-sm">
-              +
-              <CountUp
-                value={networks.reduce((sum, n) => sum + (n.followers ?? 0), 0)}
-                format={(v) => formatCompact(v)}
-              />{" "}
-              de seguidores
-            </p>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {networks.map((net) => (
-                <div
-                  key={net.id ?? net.network}
-                  className="border-border bg-card flex items-center gap-3 rounded-xl border p-4"
-                >
-                  <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
-                    <NetworkIcon network={net.network} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-display text-xl leading-none font-extrabold">
+                    <div className="bg-primary/10 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
+                      <NetworkIcon network={net.network} className="h-4 w-4" />
+                    </div>
+                    <p className="font-display text-base leading-none font-extrabold">
                       <CountUp value={net.followers} format={(v) => formatCompact(v)} />
                     </p>
-                    <p className="text-muted-foreground text-xs font-semibold">
-                      Seguidores · <span className="capitalize">{net.network}</span>
+                    <p className="text-muted-foreground text-[10px] font-semibold uppercase">
+                      Seguidores
                     </p>
+                    {typeof net.growth === "number" && net.growth !== 0 ? (
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1 text-[10px] font-bold",
+                          net.growth >= 0 ? "text-success" : "text-destructive",
+                        )}
+                      >
+                        <TrendingUp className="h-3 w-3" />
+                        {formatPercent(net.growth)}
+                      </span>
+                    ) : null}
                   </div>
-                  {typeof net.growth === "number" && net.growth !== 0 ? (
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1 text-xs font-bold whitespace-nowrap",
-                        net.growth >= 0 ? "text-success" : "text-destructive",
-                      )}
-                    >
-                      <TrendingUp className="h-3 w-3" />
-                      {formatPercent(net.growth)}
-                    </span>
-                  ) : null}
-                </div>
-              ))}
+                ))}
+              </div>
+              <p className="text-muted-foreground mt-3 text-right text-xs">
+                ● Fuente: Abril 8 2026
+              </p>
             </div>
-            <p className="text-muted-foreground mt-3 text-right text-xs">
-              ● Fuente: Abril 8 2026
-            </p>
-          </div>
-        ) : null}
-      </Container>
-    </Section>
+          ) : null}
+        </Container>
+      </div>
+    </section>
   );
 }

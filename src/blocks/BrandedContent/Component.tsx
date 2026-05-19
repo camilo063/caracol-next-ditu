@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
 
-import { Container, Section } from "@/components/ui";
+import { Container } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/lib/hooks/use-media-query";
 import type { BrandedContentBlockProps } from "../types";
@@ -41,36 +41,36 @@ export function BrandedContentBlockComponent({
 
   const safeDefault = Math.min(Math.max(defaultIndex ?? 0, 0), categories.length - 1);
   return (
-    <Section
+    <section
       id={anchorId ?? "branded"}
-      tone="default"
-      padding="lg"
-      className="bg-[#FAFAFA]"
+      className="px-2 py-6 sm:px-4 sm:py-8 lg:px-8 lg:py-10"
     >
-      <Container size="xl">
-        {eyebrow ? (
-          <p className="text-fluid-tag text-primary font-bold tracking-[0.18em] uppercase">
-            {eyebrow}
-          </p>
-        ) : null}
-        {heading ? (
-          <h2 className="text-muted-foreground text-fluid-tag mt-1 font-semibold">
-            {heading}
-          </h2>
-        ) : null}
-        {description ? (
-          <p className="text-muted-foreground text-fluid-body mt-2 max-w-prose">
-            {description}
-          </p>
-        ) : null}
+      <div className="mx-auto overflow-hidden rounded-[2rem] bg-[#FAFAFA] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
+        <Container size="xl">
+          {eyebrow ? (
+            <p className="text-fluid-tag text-primary font-bold tracking-[0.18em] uppercase">
+              {eyebrow}
+            </p>
+          ) : null}
+          {heading ? (
+            <h2 className="text-muted-foreground text-fluid-tag mt-1 font-semibold">
+              {heading}
+            </h2>
+          ) : null}
+          {description ? (
+            <p className="text-muted-foreground text-fluid-body mt-2 max-w-prose">
+              {description}
+            </p>
+          ) : null}
 
-        {isMobile ? (
-          <MobileSlider categories={categories} defaultIndex={safeDefault} />
-        ) : (
-          <DesktopLayout categories={categories} defaultIndex={safeDefault} />
-        )}
-      </Container>
-    </Section>
+          {isMobile ? (
+            <MobileSlider categories={categories} defaultIndex={safeDefault} />
+          ) : (
+            <DesktopLayout categories={categories} defaultIndex={safeDefault} />
+          )}
+        </Container>
+      </div>
+    </section>
   );
 }
 

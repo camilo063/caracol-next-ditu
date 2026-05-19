@@ -4,6 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 
+import { BrandIconSvg } from "@/components/marketing/brand-icon-svg";
 import { brandMeta } from "@/lib/brand";
 import { useIsMobile } from "@/lib/hooks/use-media-query";
 import { mediaUrl } from "@/lib/media";
@@ -132,24 +133,20 @@ function BrandIconCell({ item }: { item: BrandIconItem }) {
   const meta = brandMeta(item.brand);
   const iconUrl = mediaUrl(item.icon);
   return (
-    <span
-      className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/15 bg-white/10 p-3 backdrop-blur-sm"
-      title={meta.label}
-    >
+    <span className="block h-14 w-14 overflow-hidden rounded-[12px]" title={meta.label}>
       {iconUrl ? (
-        <Image
-          src={iconUrl}
-          alt={meta.label}
-          width={36}
-          height={36}
-          className="h-7 w-auto object-contain"
-        />
+        <span className="flex h-full w-full items-center justify-center rounded-[12px] border border-white/15 bg-white p-2">
+          <Image
+            src={iconUrl}
+            alt={meta.label}
+            width={48}
+            height={48}
+            className="h-full w-full object-contain"
+          />
+        </span>
       ) : (
-        <span
-          className="inline-block h-6 w-6 rounded-md"
-          style={{ backgroundColor: meta.color }}
-          aria-label={meta.label}
-        />
+        // Cuando no hay logo subido al admin, usamos el SVG inline por brand.
+        <BrandIconSvg brand={item.brand} />
       )}
     </span>
   );

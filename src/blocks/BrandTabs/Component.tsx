@@ -6,7 +6,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { CountUp } from "@/components/animations";
-import { Button, Container, Section } from "@/components/ui";
+import { Button, Container } from "@/components/ui";
 import { NetworkIcon } from "@/components/marketing";
 import { brandMeta } from "@/lib/brand";
 import { formatNumber } from "@/lib/format";
@@ -44,77 +44,82 @@ export function BrandTabsBlockComponent({
   const current = tabs[safeIndex]!;
 
   return (
-    <Section id={anchorId ?? "marcas"} tone="muted" padding="lg">
-      <Container size="xl">
-        <p className="text-primary text-fluid-tag font-bold tracking-[0.18em] uppercase">
-          {eyebrow ?? "El ecosistema Caracol"}
-        </p>
-        <h2 className="font-display text-fluid-h2 text-foreground mt-3 font-black">
-          {heading}
-        </h2>
-        {description ? (
-          <p className="text-muted-foreground text-fluid-body mt-2">{description}</p>
-        ) : null}
+    <section
+      id={anchorId ?? "marcas"}
+      className="px-2 py-6 sm:px-4 sm:py-8 lg:px-8 lg:py-10"
+    >
+      <div className="bg-muted mx-auto overflow-hidden rounded-[2rem] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
+        <Container size="xl">
+          <p className="text-primary text-fluid-tag font-bold tracking-[0.18em] uppercase">
+            {eyebrow ?? "El ecosistema Caracol"}
+          </p>
+          <h2 className="font-display text-fluid-h2 text-foreground mt-3 font-black">
+            {heading}
+          </h2>
+          {description ? (
+            <p className="text-muted-foreground text-fluid-body mt-2">{description}</p>
+          ) : null}
 
-        {/* Tabs pill row — horizontal scroll on mobile */}
-        <div
-          className="-mx-4 mt-8 [scrollbar-width:none] overflow-x-auto px-4 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-          role="tablist"
-          aria-label="Marcas del ecosistema"
-        >
-          <div className="flex w-max gap-2">
-            {tabs.map((tab, i) => {
-              const meta = brandMeta(tab.brand);
-              const isActive = i === safeIndex;
-              const color = tab.brandColor ?? meta.color;
-              return (
-                <button
-                  key={tab.brand}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => setActive(i)}
-                  className={cn(
-                    "rounded-lg border-2 px-5 py-2.5 text-sm font-bold whitespace-nowrap transition-colors",
-                    "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
-                  )}
-                  style={
-                    isActive
-                      ? {
-                          backgroundColor: color,
-                          borderColor: color,
-                          color: "white",
-                        }
-                      : {
-                          backgroundColor: "white",
-                          borderColor: color,
-                          color: color,
-                        }
-                  }
-                >
-                  {tab.displayName ?? meta.label}
-                </button>
-              );
-            })}
+          {/* Tabs pill row — horizontal scroll on mobile */}
+          <div
+            className="-mx-4 mt-8 [scrollbar-width:none] overflow-x-auto px-4 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            role="tablist"
+            aria-label="Marcas del ecosistema"
+          >
+            <div className="flex w-max gap-2">
+              {tabs.map((tab, i) => {
+                const meta = brandMeta(tab.brand);
+                const isActive = i === safeIndex;
+                const color = tab.brandColor ?? meta.color;
+                return (
+                  <button
+                    key={tab.brand}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    onClick={() => setActive(i)}
+                    className={cn(
+                      "rounded-lg border-2 px-5 py-2.5 text-sm font-bold whitespace-nowrap transition-colors",
+                      "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+                    )}
+                    style={
+                      isActive
+                        ? {
+                            backgroundColor: color,
+                            borderColor: color,
+                            color: "white",
+                          }
+                        : {
+                            backgroundColor: "white",
+                            borderColor: color,
+                            color: color,
+                          }
+                    }
+                  >
+                    {tab.displayName ?? meta.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
-        {/* Tab content — fade 300ms ease entre tabs */}
-        <div className="mt-6">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={current.brand}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              <TabPanel tab={current} />
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </Container>
-    </Section>
+          {/* Tab content — fade 300ms ease entre tabs */}
+          <div className="mt-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={current.brand}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <TabPanel tab={current} />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </Container>
+      </div>
+    </section>
   );
 }
 

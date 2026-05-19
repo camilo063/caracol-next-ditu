@@ -31,12 +31,8 @@ export const caracolNextDemoLayout: AnyBlock[] = [
     ],
     backgroundImage: null,
     backgroundVideo: null,
-    primaryCta: {
-      label: "Conoce más",
-      href: "#audiencia",
-      variant: "default",
-      openInNewTab: false,
-    },
+    // Sin CTAs en el Hero: el Figma muestra solo heading + subheading + brand icons.
+    primaryCta: { label: "", href: "", variant: "default", openInNewTab: false },
     secondaryCta: { label: "", href: "", variant: "outline", openInNewTab: false },
     tone: "caracolnext-deep",
     blockName: "Hero Caracol Next",

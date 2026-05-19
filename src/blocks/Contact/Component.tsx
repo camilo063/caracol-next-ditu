@@ -259,30 +259,35 @@ function CtaSimpleLayout({
   const ctaHref = ctaButton?.href || "#contacto";
 
   return (
-    <section id={anchorId ?? "contacto"} className="bg-[#F2F2F2] py-16 sm:py-20 lg:py-28">
-      <Container size="xl">
-        <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 text-center">
-          <h2 className="font-display text-fluid-display leading-[1.1] tracking-tight text-[#003380]">
-            {heading}
-            {headingEmphasis ? (
-              <>
-                <br />
-                <strong className="font-black">{headingEmphasis}</strong>
-              </>
+    <section
+      id={anchorId ?? "contacto"}
+      className="px-2 py-6 sm:px-4 sm:py-8 lg:px-8 lg:py-10"
+    >
+      <div className="mx-auto overflow-hidden rounded-[2rem] bg-[#F2F2F2] py-16 sm:rounded-[2.5rem] sm:py-20 lg:py-28">
+        <Container size="xl">
+          <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 text-center">
+            <h2 className="font-display text-fluid-display leading-[1.1] tracking-tight text-[#003380]">
+              {heading}
+              {headingEmphasis ? (
+                <>
+                  <br />
+                  <strong className="font-black">{headingEmphasis}</strong>
+                </>
+              ) : null}
+            </h2>
+            {description ? (
+              <p className="text-fluid-body max-w-2xl text-neutral-600">{description}</p>
             ) : null}
-          </h2>
-          {description ? (
-            <p className="text-fluid-body max-w-2xl text-neutral-600">{description}</p>
-          ) : null}
-          <Button
-            asChild
-            size="lg"
-            className="mt-4 bg-[#2862FF] text-white hover:bg-[#003CCA]"
-          >
-            <Link href={ctaHref}>{ctaLabel}</Link>
-          </Button>
-        </div>
-      </Container>
+            <Button
+              asChild
+              size="lg"
+              className="mt-4 bg-[#2862FF] text-white hover:bg-[#003CCA]"
+            >
+              <Link href={ctaHref}>{ctaLabel}</Link>
+            </Button>
+          </div>
+        </Container>
+      </div>
     </section>
   );
 }
