@@ -2,12 +2,14 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ChevronRight, Play } from "lucide-react";
+import { motion } from "framer-motion";
+import { Check, ChevronRight, Play } from "lucide-react";
 
-import { Button, Container, Section } from "@/components/ui";
+import { Container, Section } from "@/components/ui";
 import { brandMeta } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import type { AdFormatsBlockProps } from "../types";
+import { FormatModal } from "./FormatModal";
 
 const CATEGORY_GROUP: Record<string, "display" | "video"> = {
   display: "display",
@@ -18,15 +20,14 @@ const CATEGORY_GROUP: Record<string, "display" | "video"> = {
   audio: "video",
 };
 
+type FormatItem = NonNullable<AdFormatsBlockProps["formats"]>[number];
+
 /**
- * AdFormatsBlock — soporta 4 displayModes:
- * - grid       → cards 3-col
- * - table      → tabla
- * - accordion  → acordeón
- * - vertical-tabs → lista vertical izquierda + preview grande derecha (Ditu).
- *
- * El default `grid` se renderiza en fondo azul Caracol Next.
- * El `vertical-tabs` se renderiza en fondo violeta Ditu.
+ * AdFormatsBlock — 4 displayModes:
+ * - grid          → default Caracol Next (2-col split + checkmarks + modal).
+ * - table         → tabla
+ * - accordion     → acordeón
+ * - vertical-tabs → lista vertical + preview (Ditu).
  */
 export function AdFormatsBlockComponent(props: AdFormatsBlockProps) {
   const mode = props.displayMode ?? "grid";
@@ -36,14 +37,25 @@ export function AdFormatsBlockComponent(props: AdFormatsBlockProps) {
   return <AdFormatsDefault {...props} />;
 }
 
+/* =============================================================================
+   DEFAULT — "Pauta Digital" (Caracol Next)
+   Layout: rounded section azul deep, 2-col (Display | Video & Audio).
+   Cada item es un pill outline con checkmark + chevron, hover Framer Motion
+   200ms, click → FormatModal.
+   ============================================================================= */
+
 function AdFormatsDefault({
   anchorId,
   eyebrow,
   heading,
   description,
   formats,
+  footerCta,
 }: AdFormatsBlockProps) {
+  const [selectedFormat, setSelectedFormat] = React.useState<FormatItem | null>(null);
+
   if (!formats || formats.length === 0) return null;
+
   const displayFormats = formats.filter(
     (f) => CATEGORY_GROUP[f.category ?? "display"] === "display",
   );
@@ -51,48 +63,148 @@ function AdFormatsDefault({
     (f) => CATEGORY_GROUP[f.category ?? "display"] === "video",
   );
 
+  const ctaHeading =
+    footerCta?.heading ??
+    "¡Asegura la presencia de tu marca en los eventos más importantes del país!";
+  const ctaDesc =
+    footerCta?.description ?? "Contáctanos ahora y diseñemos juntos tu participación.";
+  const ctaLabel = footerCta?.label ?? "Descargar Especificaciones";
+  const ctaHref = footerCta?.href ?? "#contacto";
+
   return (
-    <Section
-      id={anchorId ?? "pauta"}
-      padding="lg"
-      className="text-white"
-      style={{
-        background: "linear-gradient(180deg, #015BC4 0%, #003CCA 60%, #003380 100%)",
-      }}
-    >
-      <Container size="xl">
-        <p className="text-xs font-bold tracking-[0.18em] text-white/80 uppercase">
-          {eyebrow ?? "Pauta Digital"}
-        </p>
-        <h2 className="font-display mt-3 text-3xl font-black sm:text-4xl">{heading}</h2>
-        {description ? (
-          <p className="mt-3 max-w-3xl text-base text-white/80">{description}</p>
-        ) : null}
+    <>
+      <section id={anchorId ?? "pauta"} className="px-2 py-6 sm:px-4 sm:py-10 lg:px-8">
+        <div
+          className="relative mx-auto overflow-hidden rounded-[2rem] py-14 text-white sm:rounded-[2.5rem] sm:py-20"
+          style={{
+            background: "linear-gradient(180deg, #003380 0%, #003CCA 50%, #003380 100%)",
+          }}
+        >
+          <Container size="xl">
+            {eyebrow ? (
+              <p className="text-fluid-tag font-bold tracking-[0.18em] text-white/80 uppercase">
+                {eyebrow}
+              </p>
+            ) : null}
+            <h2 className="font-display text-fluid-display mt-2 font-black text-white">
+              {heading || "Pauta Digital"}
+            </h2>
+            {description ? (
+              <p className="text-fluid-body mt-3 max-w-2xl text-white/80">
+                {description}
+              </p>
+            ) : null}
 
-        <div className="mt-10 grid gap-6 md:grid-cols-2">
-          <FormatColumn title="Display" items={displayFormats} />
-          <FormatColumn title="Video & Audio" items={videoAudioFormats} />
-        </div>
+            {/* 2-col grid — mobile (<md) stacks vertical */}
+            <div className="mx-auto mt-12 grid max-w-3xl gap-8 md:grid-cols-2 md:gap-10">
+              <FormatColumn
+                title="Display"
+                items={displayFormats}
+                onSelect={setSelectedFormat}
+              />
+              <FormatColumn
+                title="Video & Audio"
+                items={videoAudioFormats}
+                onSelect={setSelectedFormat}
+              />
+            </div>
 
-        <div className="mt-10 flex flex-col items-center gap-3 text-center">
-          <p className="text-sm">
-            ¡Asegura la presencia de tu marca en los eventos más importantes del país!
-          </p>
-          <p className="text-xs text-white/80">
-            Contáctanos ahora y diseñemos juntos tu participación.
-          </p>
-          <Button
-            variant="default"
-            asChild
-            className="bg-white text-[#003380] hover:bg-white/90"
-          >
-            <Link href="#contacto">Descargar Especificaciones</Link>
-          </Button>
+            {/* CTA inferior */}
+            <div className="mt-12 flex flex-col items-center gap-3 text-center">
+              <p className="text-fluid-subtitle max-w-3xl font-bold">{ctaHeading}</p>
+              <p className="text-fluid-body text-white/85">{ctaDesc}</p>
+              <Link
+                href={ctaHref}
+                className={cn(
+                  "mt-2 inline-flex items-center justify-center rounded-md px-8 py-3 text-sm font-bold text-white transition-colors",
+                  "focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:outline-none",
+                )}
+                style={{ backgroundColor: "#2862FF" }}
+              >
+                {ctaLabel}
+              </Link>
+            </div>
+          </Container>
         </div>
-      </Container>
-    </Section>
+      </section>
+
+      {/* Modal global del bloque */}
+      <FormatModal
+        open={selectedFormat !== null}
+        format={selectedFormat}
+        onClose={() => setSelectedFormat(null)}
+      />
+    </>
   );
 }
+
+function FormatColumn({
+  title,
+  items,
+  onSelect,
+}: {
+  title: string;
+  items: FormatItem[];
+  onSelect: (f: FormatItem) => void;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <div>
+      <h3 className="font-display border-b border-white/30 pb-2 text-2xl font-bold text-white">
+        {title}
+      </h3>
+      <ul className="mt-5 space-y-3">
+        {items.map((f) => (
+          <li key={f.id ?? f.name}>
+            <FormatPill format={f} onSelect={onSelect} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function FormatPill({
+  format,
+  onSelect,
+}: {
+  format: FormatItem;
+  onSelect: (f: FormatItem) => void;
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={() => onSelect(format)}
+      initial={false}
+      whileHover={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className={cn(
+        "flex w-full items-center gap-3 rounded-lg border border-white/30 bg-white/[0.02] px-4 py-3 text-left",
+        "focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#003380] focus-visible:outline-none",
+      )}
+    >
+      {/* Checkmark circle azul */}
+      <span
+        aria-hidden="true"
+        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
+        style={{ backgroundColor: "#2862FF" }}
+      >
+        <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
+      </span>
+      <span className="flex-1 text-sm font-semibold text-white">{format.name}</span>
+      <span
+        aria-hidden="true"
+        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/40 text-white"
+      >
+        <ChevronRight className="h-3.5 w-3.5" />
+      </span>
+    </motion.button>
+  );
+}
+
+/* =============================================================================
+   VERTICAL-TABS — Ditu (sin cambios)
+   ============================================================================= */
 
 function AdFormatsVerticalTabs({
   anchorId,
@@ -129,7 +241,6 @@ function AdFormatsVerticalTabs({
         ) : null}
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[260px_1fr]">
-          {/* Vertical tabs */}
           <ul className="space-y-2">
             {formats.map((f, i) => (
               <li key={f.id ?? f.name}>
@@ -150,7 +261,6 @@ function AdFormatsVerticalTabs({
             ))}
           </ul>
 
-          {/* Preview */}
           <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
             <div
               className="relative aspect-[16/9] w-full"
@@ -197,48 +307,5 @@ function AdFormatsVerticalTabs({
   );
 }
 
-type FormatItem = NonNullable<AdFormatsBlockProps["formats"]>[number];
-
-function FormatColumn({ title, items }: { title: string; items: FormatItem[] }) {
-  if (items.length === 0) return null;
-  return (
-    <div>
-      <h3 className="font-display text-2xl font-extrabold">{title}</h3>
-      <ul className="mt-4 space-y-2">
-        {items.map((f) => (
-          <li key={f.id ?? f.name}>
-            <FormatPill format={f} />
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function FormatPill({ format }: { format: FormatItem }) {
-  const brandLabel = format.brand ? brandMeta(format.brand).label : null;
-  return (
-    <button
-      type="button"
-      className={cn(
-        "border-border bg-card text-card-foreground hover:bg-background flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
-      )}
-    >
-      <div className="flex items-center gap-3">
-        <span
-          aria-hidden="true"
-          className="inline-block h-2 w-2 rounded-full bg-[#015BC4]"
-        />
-        <div>
-          <p className="text-sm font-bold">{format.name}</p>
-          {brandLabel ? (
-            <p className="text-muted-foreground text-[10px] font-semibold uppercase">
-              {brandLabel}
-            </p>
-          ) : null}
-        </div>
-      </div>
-      <ChevronRight className="text-muted-foreground h-4 w-4" />
-    </button>
-  );
-}
+// Mantengo el export para no romper imports
+export { FormatModal };

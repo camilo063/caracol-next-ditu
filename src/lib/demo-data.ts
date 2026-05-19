@@ -949,28 +949,58 @@ export const caracolNextDemoLayout: AnyBlock[] = [
     id: "cnx-6",
     blockType: "ad-formats",
     anchorId: "pauta",
-    eyebrow: "Pauta Digital",
-    heading: "Llega a millones de colombianos",
+    eyebrow: null,
+    heading: "Pauta Digital",
     description:
-      "Con los formatos publicitarios del ecosistema digital más grande del país.",
+      "Llega a millones de colombianos con los formatos publicitarios del ecosistema digital más grande del país.",
     formats: [
+      // Columna Display
       {
         id: "f1",
-        name: "Display tradicional y tomas",
+        name: "Display tradicional y toma",
         brand: null,
         category: "display",
         image: null,
         specs: null,
         downloadUrl: null,
+        modal: {
+          title: "Display tradicional y tomas",
+          description:
+            "Formato display estándar — banners IAB en posiciones top y middle del sitio. Alta visibilidad con tomas full screen.",
+          ctaLabel: "Contáctanos",
+          ctaHref: "#contacto",
+          childTabs: [
+            {
+              id: "f1-t1",
+              label: "Top Banner",
+              image: undefined as never,
+              description: "Banner superior visible al cargar la página.",
+            },
+            {
+              id: "f1-t2",
+              label: "Toma Full Screen",
+              image: undefined as never,
+              description: "Toma full screen previo al contenido.",
+            },
+          ],
+        },
       },
       {
         id: "f2",
-        name: "Intersticial",
+        name: "Interestitial",
         brand: null,
         category: "display",
         image: null,
         specs: null,
         downloadUrl: null,
+        modal: {
+          title: "Interestitial",
+          description:
+            "Anuncio de pantalla completa que aparece entre navegación de páginas.",
+          ctaLabel: "Contáctanos",
+          ctaHref: "#contacto",
+          childTabs: [],
+        },
       },
       {
         id: "f3",
@@ -980,6 +1010,14 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         specs: null,
         downloadUrl: null,
+        modal: {
+          title: "Sticky",
+          description:
+            "Banner adhesivo que permanece visible al hacer scroll. Alta atención sostenida.",
+          ctaLabel: "Contáctanos",
+          ctaHref: "#contacto",
+          childTabs: [],
+        },
       },
       {
         id: "f4",
@@ -989,6 +1027,14 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         specs: null,
         downloadUrl: null,
+        modal: {
+          title: "Overlay",
+          description:
+            "Capa flotante sobre el contenido — alto impacto visual con interacción opcional.",
+          ctaLabel: "Contáctanos",
+          ctaHref: "#contacto",
+          childTabs: [],
+        },
       },
       {
         id: "f5",
@@ -998,24 +1044,78 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         specs: null,
         downloadUrl: null,
+        modal: {
+          title: "Banners de Alto Impacto",
+          description:
+            "Formatos interactivos de diseñados para integrar múltiples piezas o imágenes en un único espacio creativo de gran visibilidad.\n\nEsta solución estratégica permite que el usuario interactúe directamente para descubrir información detallada, transformando la pauta en una experiencia de marca.",
+          ctaLabel: "Contáctanos",
+          ctaHref: "#contacto",
+          childTabs: [
+            {
+              id: "f5-t1",
+              label: "Banner Slider",
+              image: undefined as never,
+              description:
+                "Carrusel de banners de alto impacto — varias piezas en un solo espacio creativo.",
+            },
+            {
+              id: "f5-t2",
+              label: "Banner Multigalería",
+              image: undefined as never,
+              description:
+                "Galería multi-banner que el usuario explora con interacción táctil.",
+            },
+            {
+              id: "f5-t3",
+              label: "Expandible Roll Over",
+              image: undefined as never,
+              description:
+                "Banner que se expande al hover, revelando contenido extendido sin salir de la página.",
+            },
+            {
+              id: "f5-t4",
+              label: "Banner Hover Reveal",
+              image: undefined as never,
+              description:
+                "Banner con capa oculta que se revela en hover — efecto sorpresa de alto recall.",
+            },
+          ],
+        },
       },
       {
         id: "f6",
-        name: "Especie en RRSS",
+        name: "Espacio en RRSS",
         brand: null,
         category: "branded",
         image: null,
         specs: null,
         downloadUrl: null,
+        modal: {
+          title: "Espacio en Redes Sociales",
+          description:
+            "Pauta integrada en las redes oficiales del ecosistema Caracol — Facebook, Instagram, TikTok, X, YouTube.",
+          ctaLabel: "Contáctanos",
+          ctaHref: "#contacto",
+          childTabs: [],
+        },
       },
+      // Columna Video & Audio
       {
         id: "f7",
-        name: "Video Banner",
+        name: "Video  Banner",
         brand: null,
         category: "video",
         image: null,
         specs: null,
         downloadUrl: null,
+        modal: {
+          title: "Video Banner",
+          description:
+            "Banner con video auto-play silencioso. Alta retención visual sin invadir la experiencia.",
+          ctaLabel: "Contáctanos",
+          ctaHref: "#contacto",
+          childTabs: [],
+        },
       },
       {
         id: "f8",
@@ -1025,28 +1125,59 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         specs: null,
         downloadUrl: null,
+        modal: {
+          title: "Pre-Roll Video",
+          description:
+            "Anuncio de 15s al inicio de cada video del ecosistema. Atención garantizada.",
+          ctaLabel: "Contáctanos",
+          ctaHref: "#contacto",
+          childTabs: [],
+        },
       },
       {
         id: "f9",
-        name: "Oai Corte Comercial",
+        name: "DAI Corte Comercia",
         brand: null,
         category: "video",
         image: null,
         specs: null,
         downloadUrl: null,
+        modal: {
+          title: "DAI — Corte Comercial",
+          description:
+            "Dynamic Ad Insertion en cortes comerciales del contenido en vivo y on-demand.",
+          ctaLabel: "Contáctanos",
+          ctaHref: "#contacto",
+          childTabs: [],
+        },
       },
       {
         id: "f10",
-        name: "Prebroll y Midroll Audio",
+        name: "PreRoll y MidRoll Audio",
         brand: null,
         category: "audio",
         image: null,
         specs: null,
         downloadUrl: null,
+        modal: {
+          title: "PreRoll y MidRoll Audio",
+          description:
+            "Cuñas pre-roll (antes del contenido) y mid-roll (durante el contenido) en streaming de audio.",
+          ctaLabel: "Contáctanos",
+          ctaHref: "#contacto",
+          childTabs: [],
+        },
       },
     ],
     displayMode: "grid",
     filtersEnabled: false,
+    footerCta: {
+      heading:
+        "¡Asegura la presencia de tu marca en los eventos más importantes del país!",
+      description: "Contáctanos ahora y diseñemos juntos tu participación.",
+      label: "Descargar Especificaciones",
+      href: "#contacto",
+    },
     blockName: null,
   },
   {
