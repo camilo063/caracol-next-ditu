@@ -1185,37 +1185,19 @@ export const caracolNextDemoLayout: AnyBlock[] = [
     blockType: "contact",
     anchorId: "contacto",
     eyebrow: null,
-    heading: "Con nosotros, lleva tu marca al siguiente nivel.",
+    heading: "Con nosotros, lleva tu marca",
+    headingEmphasis: "al siguiente nivel.",
     description:
       "Cuéntanos tus objetivos y armemos juntos la mejor estrategia para conectar tu marca con millones de colombianos.",
     form: null,
-    representatives: [
-      {
-        id: "r1",
-        name: "Daniela Forero",
-        role: "Ejecutiva senior",
-        email: "dforero@caracoltv.com.co",
-        whatsapp: "573001234567",
-        photo: null,
-      },
-      {
-        id: "r2",
-        name: "Carlos Méndez",
-        role: "Brand partnerships",
-        email: "cmendez@caracoltv.com.co",
-        whatsapp: "573009876543",
-        photo: null,
-      },
-      {
-        id: "r3",
-        name: "Andrea Vargas",
-        role: "Pauta digital",
-        email: "avargas@caracoltv.com.co",
-        whatsapp: "573005551234",
-        photo: null,
-      },
-    ],
-    layout: "reps-only",
+    representatives: [],
+    ctaButton: {
+      label: "Contáctenos",
+      href: "#contacto",
+      variant: "default",
+      openInNewTab: false,
+    },
+    layout: "cta-simple",
     blockName: null,
   },
 ];
@@ -1628,6 +1610,7 @@ export const dituDemoLayout: AnyBlock[] = [
     anchorId: "contacto",
     eyebrow: null,
     heading: "¿Hablamos? Lleva tu marca al siguiente nivel.",
+    headingEmphasis: null,
     description: "Cuéntanos tus objetivos y armemos la estrategia más poderosa.",
     form: null,
     representatives: [
@@ -1648,6 +1631,7 @@ export const dituDemoLayout: AnyBlock[] = [
         photo: null,
       },
     ],
+    ctaButton: { label: "", href: "" },
     layout: "stacked",
     blockName: null,
   },
@@ -1739,9 +1723,11 @@ export const caracolNextFooterDemo = {
     { network: "youtube", url: "https://youtube.com/caracolnext" },
     { network: "tiktok", url: "https://tiktok.com/@caracolnext" },
   ],
-  bottomLine: "©2026 Caracol Comercial Digital — Todos los derechos reservados.",
+  bottomLine: "©2026 Caracol Comercial Digital",
   useWave: false,
-  tone: "caracolnext-deep" as const,
+  // Matching Figma "caracol-next": footer minimal con pill gris al fondo.
+  // El cierre rico (heading + CTA) lo provee el ContactBlock con layout="cta-simple".
+  tone: "minimal" as const,
 };
 
 export const dituFooterDemo = {

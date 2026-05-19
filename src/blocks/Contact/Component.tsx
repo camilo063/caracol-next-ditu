@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useForm, type SubmitHandler } from "react-hook-form";
 
 import {
@@ -28,8 +29,30 @@ interface PluginField {
 }
 
 export function ContactBlockComponent(props: ContactBlockProps) {
-  const { anchorId, eyebrow, heading, description, form, representatives, layout } =
-    props;
+  const {
+    anchorId,
+    eyebrow,
+    heading,
+    headingEmphasis,
+    description,
+    form,
+    representatives,
+    layout,
+    ctaButton,
+  } = props;
+
+  // Layout cta-simple → cierre tipo Figma (heading + emphasis bold + descripción + 1 botón).
+  if (layout === "cta-simple") {
+    return (
+      <CtaSimpleLayout
+        anchorId={anchorId}
+        heading={heading}
+        headingEmphasis={headingEmphasis ?? undefined}
+        description={description ?? undefined}
+        ctaButton={ctaButton}
+      />
+    );
+  }
 
   // `form` puede ser ID o objeto populado del plugin form-builder.
   const formObj = typeof form === "object" && form !== null ? form : null;
@@ -208,5 +231,58 @@ function ContactForm({
         </p>
       ) : null}
     </form>
+  );
+}
+
+/* ---------------------------------------------------------------------------
+   CtaSimpleLayout — cierre tipo Figma adjunto caracol-next.
+   "Con nosotros, lleva tu marca" + bold "al siguiente nivel."
+   + descripción + 1 botón centrado. Fondo gris claro (#F2F2F2).
+   --------------------------------------------------------------------------- */
+
+interface CtaSimpleLayoutProps {
+  anchorId?: string | null;
+  heading: string;
+  headingEmphasis?: string;
+  description?: string;
+  ctaButton?: ContactBlockProps["ctaButton"];
+}
+
+function CtaSimpleLayout({
+  anchorId,
+  heading,
+  headingEmphasis,
+  description,
+  ctaButton,
+}: CtaSimpleLayoutProps) {
+  const ctaLabel = ctaButton?.label || "Contáctenos";
+  const ctaHref = ctaButton?.href || "#contacto";
+
+  return (
+    <section id={anchorId ?? "contacto"} className="bg-[#F2F2F2] py-16 sm:py-20 lg:py-28">
+      <Container size="xl">
+        <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 text-center">
+          <h2 className="font-display text-fluid-display leading-[1.1] tracking-tight text-[#003380]">
+            {heading}
+            {headingEmphasis ? (
+              <>
+                <br />
+                <strong className="font-black">{headingEmphasis}</strong>
+              </>
+            ) : null}
+          </h2>
+          {description ? (
+            <p className="text-fluid-body max-w-2xl text-neutral-600">{description}</p>
+          ) : null}
+          <Button
+            asChild
+            size="lg"
+            className="mt-4 bg-[#2862FF] text-white hover:bg-[#003CCA]"
+          >
+            <Link href={ctaHref}>{ctaLabel}</Link>
+          </Button>
+        </div>
+      </Container>
+    </section>
   );
 }

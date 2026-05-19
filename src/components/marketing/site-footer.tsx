@@ -17,7 +17,7 @@ export interface SiteFooterProps {
   socialLinks?: Array<{ network: string; url: string }>;
   bottomLine?: string;
   useWave?: boolean;
-  tone?: "dark" | "caracolnext-deep" | "ditu-deep" | "default";
+  tone?: "dark" | "caracolnext-deep" | "ditu-deep" | "default" | "minimal";
 }
 
 const TONE_BG: Record<NonNullable<SiteFooterProps["tone"]>, string> = {
@@ -25,6 +25,7 @@ const TONE_BG: Record<NonNullable<SiteFooterProps["tone"]>, string> = {
   "caracolnext-deep": "linear-gradient(180deg, #003CCA 0%, #003380 100%)",
   "ditu-deep": "linear-gradient(180deg, #1F1647 0%, #0E0723 100%)",
   default: "var(--color-background)",
+  minimal: "var(--color-background)",
 };
 
 const TONE_WAVE: Record<NonNullable<SiteFooterProps["tone"]>, string> = {
@@ -32,11 +33,16 @@ const TONE_WAVE: Record<NonNullable<SiteFooterProps["tone"]>, string> = {
   "caracolnext-deep": "#003CCA",
   "ditu-deep": "#1F1647",
   default: "var(--color-background)",
+  minimal: "var(--color-background)",
 };
 
 /**
  * SiteFooter — pie de página.
- * Si `useWave=true`, agrega un SVG de onda decorativa arriba (Ditu).
+ * - Tones dark / caracolnext-deep / ditu-deep / default: footer "rico" con
+ *   columnas + tagline + social + bottomLine.
+ * - Tone minimal: solo un pill gris centrado con el bottomLine (matching
+ *   Figma caracol-next.png — cierre simple debajo del CTA final).
+ * - useWave: agrega un SVG decorativo de onda en el tope (Ditu).
  */
 export function SiteFooter({
   landing,
@@ -49,6 +55,22 @@ export function SiteFooter({
   useWave,
   tone = landing === "ditu" ? "ditu-deep" : "caracolnext-deep",
 }: SiteFooterProps) {
+  // Tone minimal — solo pill gris con copyright.
+  if (tone === "minimal") {
+    return (
+      <footer className="bg-background pb-8 sm:pb-12">
+        <Container size="xl">
+          <div className="rounded-full bg-[#E5E5E5] px-6 py-4 text-center">
+            <p className="text-muted-foreground text-xs">
+              {bottomLine ?? "©2026 Caracol Comercial Digital"}
+            </p>
+          </div>
+        </Container>
+      </footer>
+    );
+  }
+
+  // Tones rich — columnas + tagline + social + bottomLine.
   return (
     <footer className="text-white">
       {useWave ? (

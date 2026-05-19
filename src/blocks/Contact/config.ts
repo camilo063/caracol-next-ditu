@@ -1,6 +1,6 @@
 import type { Block } from "payload";
 
-import { anchorIdField, sectionHeaderFields } from "../shared-fields";
+import { anchorIdField, ctaField, sectionHeaderFields } from "../shared-fields";
 
 /**
  * ContactBlock — sección de contacto al final de cada landing.
@@ -15,6 +15,20 @@ export const ContactBlock: Block = {
   fields: [
     anchorIdField,
     ...sectionHeaderFields,
+    {
+      name: "headingEmphasis",
+      type: "text",
+      label: "Heading énfasis (bold, segunda línea)",
+      admin: {
+        description:
+          "Texto que aparece en negrita debajo del heading. Para el cierre tipo 'Con nosotros, lleva tu marca' + 'al siguiente nivel.'",
+        placeholder: "al siguiente nivel.",
+      },
+    },
+    ctaField({
+      name: "ctaButton",
+      label: "Botón CTA (solo layout cta-simple)",
+    }),
     {
       name: "form",
       type: "relationship",
@@ -57,6 +71,10 @@ export const ContactBlock: Block = {
         { label: "Form full width, reps abajo", value: "stacked" },
         { label: "Solo reps (sin form)", value: "reps-only" },
         { label: "Solo form (sin reps)", value: "form-only" },
+        {
+          label: "CTA simple (heading + descripción + botón)",
+          value: "cta-simple",
+        },
       ],
     },
   ],
