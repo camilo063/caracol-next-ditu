@@ -47,7 +47,7 @@ export function HeroBlockComponent({
       id={anchorId ?? undefined}
       tone={sectionTone}
       padding="xl"
-      className="relative overflow-hidden rounded-b-[2rem] sm:rounded-b-[2.5rem]"
+      className="relative overflow-hidden"
       style={heroBg ? { background: heroBg } : undefined}
     >
       {hasBackground ? (

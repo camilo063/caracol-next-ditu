@@ -9,6 +9,21 @@ import type { AudienceNetworksBlockProps } from "../types";
 const NAVY = "#003380";
 const ACCENT_LIGHT_BLUE = "#00ACFF";
 
+/** Formatea cantidades grandes con palabra completa en español: 127_700_000 → "127.7 Millones". */
+function formatMillionsLong(v: number): string {
+  const abs = Math.abs(v);
+  if (abs >= 1_000_000_000) {
+    return `${(v / 1_000_000_000).toFixed(1).replace(/\.0$/, "")} Mil Millones`;
+  }
+  if (abs >= 1_000_000) {
+    return `${(v / 1_000_000).toFixed(1).replace(/\.0$/, "")} Millones`;
+  }
+  if (abs >= 1_000) {
+    return `${(v / 1_000).toFixed(1).replace(/\.0$/, "")} Mil`;
+  }
+  return Math.round(v).toString();
+}
+
 export function AudienceNetworksBlockComponent({
   anchorId,
   heading,
@@ -18,11 +33,13 @@ export function AudienceNetworksBlockComponent({
   const totalFollowers = (networks ?? []).reduce((sum, n) => sum + (n.followers ?? 0), 0);
 
   return (
-    <section id={anchorId ?? "audiencia"} className="py-6 sm:py-8 lg:py-10">
-      <div className="w-full overflow-hidden rounded-[2rem] bg-white py-12 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
+    <section id={anchorId ?? "audiencia"} className="pb-6 sm:pb-8 lg:pb-10">
+      {/* Border radius arriba solamente: el bloque blanco "sube" sobre el hero,
+          matching Figma (curva en la parte superior, no en la inferior). */}
+      <div className="-mt-8 w-full overflow-hidden rounded-t-[2rem] bg-white py-12 sm:-mt-12 sm:rounded-t-[2.5rem] sm:py-16 lg:py-20">
         <Container size="xl">
-          {/* TOP: Nuestro Alcance + 4 stat cards */}
-          <div className="grid items-start gap-10 lg:grid-cols-[1fr_2fr] lg:gap-12">
+          {/* TOP: Nuestro Alcance + 4 stat cards en 2x2 */}
+          <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-16">
             <div>
               <h2
                 className="font-display text-3xl leading-tight font-bold sm:text-4xl"
@@ -30,10 +47,7 @@ export function AudienceNetworksBlockComponent({
               >
                 {heading || "Nuestro Alcance"}
               </h2>
-              <p
-                className="font-display mt-6 text-5xl leading-none font-extrabold tracking-tight sm:text-6xl lg:text-7xl"
-                style={{ color: NAVY }}
-              >
+              <p className="font-display mt-6 text-5xl leading-none font-extrabold tracking-tight text-neutral-900 sm:text-6xl lg:text-7xl">
                 <CountUp
                   value={audience.reach}
                   format={(v) => formatNumber(Math.round(v))}
@@ -49,7 +63,7 @@ export function AudienceNetworksBlockComponent({
             </div>
 
             {audience.breakdown && audience.breakdown.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {audience.breakdown.slice(0, 4).map((item, idx) => {
                   const isPercent = (item.suffix ?? "").trim() === "%";
                   const isOrdinal =
@@ -70,10 +84,7 @@ export function AudienceNetworksBlockComponent({
                           {pillLabel}
                         </span>
                       ) : null}
-                      <p
-                        className="font-display mt-4 text-3xl leading-none font-extrabold tracking-tight sm:text-4xl"
-                        style={{ color: NAVY }}
-                      >
+                      <p className="font-display mt-4 text-3xl leading-none font-extrabold tracking-tight text-neutral-900 sm:text-4xl">
                         {isOrdinal ? (
                           <>
                             #
@@ -122,8 +133,11 @@ export function AudienceNetworksBlockComponent({
                 style={{ color: NAVY }}
               >
                 +
-                <CountUp value={totalFollowers} format={(v) => formatCompact(v)} /> de
-                seguidores
+                <CountUp
+                  value={totalFollowers}
+                  format={(v) => formatMillionsLong(v)}
+                />{" "}
+                de seguidores
               </p>
 
               <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">

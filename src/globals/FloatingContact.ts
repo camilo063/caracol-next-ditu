@@ -29,7 +29,7 @@ export const FloatingContact: GlobalConfig = {
       name: "buttonLabel",
       type: "text",
       label: "Texto del botón flotante",
-      defaultValue: "Quiero pautar",
+      defaultValue: "Contáctanos",
     },
     {
       name: "buttonIcon",

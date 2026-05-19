@@ -1770,7 +1770,7 @@ export const dituFooterDemo = {
 
 export const floatingContactDemo = {
   enabled: true,
-  buttonLabel: "Quiero pautar",
+  buttonLabel: "Contáctanos",
   buttonIcon: "Sparkles",
   panelHeading: "Habla con nuestro equipo",
   panelDescription:
