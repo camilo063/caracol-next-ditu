@@ -156,6 +156,7 @@
     --shadow-ditu-glow: 0 0 32px -8px rgba(130, 50, 240, 0.45);
 
     /* ===== Tipografía ===== */
+    /* Default = Caracol Next: Montserrat para sans y display. */
     --font-family-sans: var(--font-montserrat), "Montserrat", system-ui, sans-serif;
     --font-family-display: var(--font-montserrat), "Montserrat", system-ui, sans-serif;
     --font-family-mobile-button: var(--font-spline-sans), "Spline Sans", sans-serif;
@@ -217,13 +218,17 @@
     --color-ring: var(--color-brand-caracolnext-light);
   }
 
-  /* Theme override: aplica en <html class="theme-ditu"> (ruta /ditu). */
+  /* Theme override: aplica en <html class="theme-ditu"> (ruta /ditu).
+     Cambia colores Y fuentes — Ditu Display para headings, Spline Sans para body. */
   .theme-ditu {
     --color-primary: var(--color-brand-ditu-500);
     --color-primary-foreground: var(--color-neutral-0);
     --color-accent: var(--color-brand-ditu-accent);
     --color-accent-foreground: var(--color-ditu-violeta-oscuro);
     --color-ring: var(--color-brand-ditu-500);
+    --font-family-sans: var(--font-spline-sans), "Spline Sans", system-ui, sans-serif;
+    --font-family-display:
+      var(--font-ditu-display), "Ditu Display", "Montserrat", sans-serif;
   }
 
   /* Theme override Caracol Next — refuerza primary digital cuando se desea */

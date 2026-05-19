@@ -14,6 +14,9 @@ export type BlockOf<T extends LayoutBlocks["blockType"]> = Extract<
 
 export type HeroBlockProps = BlockOf<"hero">;
 export type AudienceNetworksBlockProps = BlockOf<"audience-networks">;
+export type AudienceProfileBlockProps = BlockOf<"audience-profile">;
+export type EstratosBlockProps = BlockOf<"estratos">;
+export type ContentTypeBlockProps = BlockOf<"content-type">;
 export type BrandTabsBlockProps = BlockOf<"brand-tabs">;
 export type KeyMomentsBlockProps = BlockOf<"key-moments">;
 export type AdFormatsBlockProps = BlockOf<"ad-formats">;

@@ -1,9 +1,12 @@
 import { AdFormatsBlockComponent } from "./AdFormats/Component";
 import { AIRecommendationBlockComponent } from "./AIRecommendation/Component";
 import { AudienceNetworksBlockComponent } from "./AudienceNetworks/Component";
+import { AudienceProfileBlockComponent } from "./AudienceProfile/Component";
 import { BrandTabsBlockComponent } from "./BrandTabs/Component";
 import { BrandedContentBlockComponent } from "./BrandedContent/Component";
 import { ContactBlockComponent } from "./Contact/Component";
+import { ContentTypeBlockComponent } from "./ContentType/Component";
+import { EstratosBlockComponent } from "./Estratos/Component";
 import { HeroBlockComponent } from "./Hero/Component";
 import { KeyMomentsCalendarComponent } from "./KeyMomentsCalendar/Component";
 import { OurChannelsBlockComponent } from "./OurChannels/Component";
@@ -13,12 +16,9 @@ import type { AnyBlock } from "./types";
 /**
  * RenderBlocks — orchestrator. Recibe el array `layout` de una Page de Payload
  * y despacha al componente correspondiente según `blockType`.
- *
- * Tipos de blocks añadidos a futuro: agregar el case y registrar el componente.
  */
 export function RenderBlocks({ layout }: { layout: AnyBlock[] | null | undefined }) {
   if (!layout || layout.length === 0) return null;
-
   return (
     <>
       {layout.map((block) => {
@@ -28,6 +28,12 @@ export function RenderBlocks({ layout }: { layout: AnyBlock[] | null | undefined
             return <HeroBlockComponent key={key} {...block} />;
           case "audience-networks":
             return <AudienceNetworksBlockComponent key={key} {...block} />;
+          case "audience-profile":
+            return <AudienceProfileBlockComponent key={key} {...block} />;
+          case "estratos":
+            return <EstratosBlockComponent key={key} {...block} />;
+          case "content-type":
+            return <ContentTypeBlockComponent key={key} {...block} />;
           case "brand-tabs":
             return <BrandTabsBlockComponent key={key} {...block} />;
           case "key-moments":
@@ -45,7 +51,6 @@ export function RenderBlocks({ layout }: { layout: AnyBlock[] | null | undefined
           case "ai-recommendation":
             return <AIRecommendationBlockComponent key={key} {...block} />;
           default:
-            // Block desconocido — silenciar para no romper render.
             console.warn("[RenderBlocks] block desconocido", block);
             return null;
         }

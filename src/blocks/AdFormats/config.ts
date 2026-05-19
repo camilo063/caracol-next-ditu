@@ -58,6 +58,7 @@ export const AdFormatsBlock: Block = {
         { label: "Grid", value: "grid" },
         { label: "Tabla", value: "table" },
         { label: "Acordeón", value: "accordion" },
+        { label: "Tabs verticales (Ditu)", value: "vertical-tabs" },
       ],
     },
     {

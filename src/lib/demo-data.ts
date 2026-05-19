@@ -739,6 +739,80 @@ export const dituDemoLayout: AnyBlock[] = [
     blockName: null,
   },
   {
+    id: "d-adn",
+    blockType: "audience-profile",
+    anchorId: "adn",
+    eyebrow: "ADN Ditu",
+    heading: "Sabemos a quién le hablas.",
+    description: null,
+    genderSplit: {
+      femalePercent: 52,
+      femaleLabel: "Mujeres",
+      maleLabel: "Hombres",
+    },
+    ageBars: [
+      { id: "ab1", label: "TV", value: 52, suffix: "min" },
+      { id: "ab2", label: "Móvil", value: 32, suffix: "min" },
+      { id: "ab3", label: "Conectado", value: 28, suffix: "min" },
+      { id: "ab4", label: "Web", value: 25, suffix: "min" },
+    ],
+    footnote: "● Fuente: Internas Ditu, abril 2026",
+    blockName: null,
+  },
+  {
+    id: "d-donde",
+    blockType: "estratos",
+    anchorId: "donde",
+    eyebrow: "Y dónde encontrarlo",
+    heading:
+      "El nivel socioeconómico de las audiencias Ditu, en línea con las marcas con más confianza del país.",
+    description: null,
+    items: [
+      { id: "es1", label: "Estrato 1 a 2", value: 22.7, suffix: "%", hint: null },
+      { id: "es2", label: "Estrato 3", value: 37.8, suffix: "%", hint: null },
+      { id: "es3", label: "Estrato 4", value: 28.9, suffix: "%", hint: null },
+      { id: "es4", label: "Estrato 5 a 6", value: 10.6, suffix: "%", hint: null },
+    ],
+    footnote: "● Fuente: DANE 2024",
+    blockName: null,
+  },
+  {
+    id: "d-contenido",
+    blockType: "content-type",
+    anchorId: "tipo-contenido",
+    eyebrow: "Tipo de contenido",
+    heading: "Tres formas de habitar la pantalla.",
+    description:
+      "Estudios digitales con una respuesta del 32.1%, evidencia el calidad y al cubrimiento que cada formato necesita para conectar y entrenar a tu audiencia.",
+    types: [
+      {
+        id: "ct1",
+        label: "FAST",
+        description:
+          "Canales lineales gratuitos con publicidad. Programación 24/7 sin suscripción.",
+      },
+      {
+        id: "ct2",
+        label: "Simulcasts",
+        description:
+          "Transmisión simultánea de la señal lineal con audiencia digital activa.",
+      },
+      {
+        id: "ct3",
+        label: "En vivo",
+        description: "Eventos exclusivos con audiencia concentrada en tiempo real.",
+      },
+      {
+        id: "ct4",
+        label: "VOD / Catchup",
+        description:
+          "Contenido a demanda y catchup en cualquier dispositivo, en cualquier momento.",
+      },
+    ],
+    defaultIndex: 1,
+    blockName: null,
+  },
+  {
     id: "d3",
     blockType: "our-channels",
     anchorId: "canales",
@@ -950,7 +1024,7 @@ export const dituDemoLayout: AnyBlock[] = [
         downloadUrl: null,
       },
     ],
-    displayMode: "grid",
+    displayMode: "vertical-tabs",
     filtersEnabled: false,
     blockName: null,
   },
@@ -984,6 +1058,135 @@ export const dituDemoLayout: AnyBlock[] = [
     blockName: null,
   },
 ];
+
+// ===================================================================
+// HEADER & FOOTER demo data (consumirá Payload Globals en Fase 4).
+// ===================================================================
+
+export const caracolNextHeaderDemo = {
+  landing: "caracol-next" as const,
+  navAnchors: [
+    { label: "Marcas", anchorId: "marcas" },
+    { label: "Audiencia", anchorId: "audiencia" },
+    { label: "Momentos", anchorId: "momentos" },
+    { label: "Pauta", anchorId: "pauta" },
+    { label: "Contacto", anchorId: "contacto" },
+  ],
+  ctaButton: {
+    enabled: true,
+    label: "Inicio",
+    href: "/",
+    variant: "outline" as const,
+  },
+  sticky: true,
+};
+
+export const dituHeaderDemo = {
+  landing: "ditu" as const,
+  navAnchors: [
+    { label: "Canales", anchorId: "canales" },
+    { label: "Contenido", anchorId: "tipo-contenido" },
+    { label: "Momentos", anchorId: "momentos" },
+    { label: "Pauta", anchorId: "pauta" },
+    { label: "Contacto", anchorId: "contacto" },
+  ],
+  ctaButton: {
+    enabled: true,
+    label: "Inicio",
+    href: "/",
+    variant: "outline" as const,
+  },
+  sticky: true,
+};
+
+export const caracolNextFooterDemo = {
+  landing: "caracol-next" as const,
+  tagline:
+    "El ecosistema digital más grande de Colombia. Tu marca en los contenidos que mueven al país.",
+  columns: [
+    {
+      heading: "Marcas",
+      links: [
+        { label: "Caracol TV", href: "#marcas" },
+        { label: "Gol Caracol", href: "#marcas" },
+        { label: "BluRadio", href: "#marcas" },
+        { label: "La Kalle", href: "#marcas" },
+      ],
+    },
+    {
+      heading: "Pauta",
+      links: [
+        { label: "Formatos", href: "#pauta" },
+        { label: "Branded Content", href: "#branded" },
+        { label: "Especificaciones", href: "#pauta" },
+      ],
+    },
+    {
+      heading: "Empresa",
+      links: [
+        { label: "Acerca de", href: "#" },
+        { label: "Trabaja con nosotros", href: "#" },
+        { label: "Términos", href: "#" },
+      ],
+    },
+    {
+      heading: "Contacto",
+      links: [
+        { label: "Comercial", href: "#contacto" },
+        { label: "Prensa", href: "#" },
+      ],
+    },
+  ],
+  socialLinks: [
+    { network: "facebook", url: "https://facebook.com/caracolnext" },
+    { network: "instagram", url: "https://instagram.com/caracolnext" },
+    { network: "x", url: "https://x.com/caracolnext" },
+    { network: "youtube", url: "https://youtube.com/caracolnext" },
+    { network: "tiktok", url: "https://tiktok.com/@caracolnext" },
+  ],
+  bottomLine: "©2026 Caracol Comercial Digital — Todos los derechos reservados.",
+  useWave: false,
+  tone: "caracolnext-deep" as const,
+};
+
+export const dituFooterDemo = {
+  landing: "ditu" as const,
+  tagline:
+    "Tu marca en todas las pantallas, en todo momento. Entretenimiento y atención real.",
+  columns: [
+    {
+      heading: "Canales",
+      links: [
+        { label: "Ditu Cine", href: "#canales" },
+        { label: "Ditu Series", href: "#canales" },
+        { label: "Ditu Deportes", href: "#canales" },
+      ],
+    },
+    {
+      heading: "Pauta",
+      links: [
+        { label: "Formatos", href: "#pauta" },
+        { label: "Especificaciones", href: "#pauta" },
+      ],
+    },
+    {
+      heading: "Empresa",
+      links: [
+        { label: "Acerca de Ditu", href: "#" },
+        { label: "Términos", href: "#" },
+      ],
+    },
+  ],
+  socialLinks: [
+    { network: "instagram", url: "https://instagram.com/diturl" },
+    { network: "tiktok", url: "https://tiktok.com/@diturl" },
+    { network: "youtube", url: "https://youtube.com/ditu" },
+    { network: "threads", url: "https://threads.net/@diturl" },
+  ],
+  bottomLine: "©2026 Ditu por Caracol Comercial Digital.",
+  useWave: true,
+  tone: "ditu-deep" as const,
+};
 
 export const floatingContactDemo = {
   enabled: true,
