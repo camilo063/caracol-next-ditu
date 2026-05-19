@@ -56,17 +56,53 @@ export const BrandTabsBlock: Block = {
           },
         },
         {
+          name: "tagline",
+          type: "textarea",
+          label: "Tagline / descripción corta",
+          admin: {
+            placeholder:
+              "Referente de entretenimiento y contenido original para todo el país.",
+          },
+        },
+        {
           name: "whyChoose",
           type: "richText",
-          label: "Por qué elegir esta marca",
+          label: "Por qué elegir esta marca (opcional, richText)",
+        },
+        {
+          name: "webMetrics",
+          type: "group",
+          label: "WEB — métricas de la marca",
+          fields: [
+            {
+              name: "usersPerMonth",
+              type: "number",
+              admin: { placeholder: "3076977" },
+            },
+            {
+              name: "usersLabel",
+              type: "text",
+              defaultValue: "Usuarios/mes",
+            },
+            {
+              name: "viewsPerMonth",
+              type: "number",
+              admin: { placeholder: "11803973" },
+            },
+            { name: "viewsLabel", type: "text", defaultValue: "Vistas/mes" },
+          ],
         },
         {
           name: "audience",
           type: "group",
-          label: "Audiencia",
+          label: "Audiencia (legacy reach + nuevos charts)",
           fields: [
             { name: "reach", type: "number", required: true },
-            { name: "reachLabel", type: "text", defaultValue: "Personas alcanzadas" },
+            {
+              name: "reachLabel",
+              type: "text",
+              defaultValue: "Personas alcanzadas",
+            },
             { name: "reachSuffix", type: "text" },
             {
               name: "highlights",
@@ -78,6 +114,62 @@ export const BrandTabsBlock: Block = {
                 { name: "label", type: "text", required: true },
                 { name: "valueSuffix", type: "text" },
               ],
+            },
+            {
+              name: "genderSplit",
+              type: "group",
+              label: "Pie chart — Género",
+              fields: [
+                {
+                  name: "femalePercent",
+                  type: "number",
+                  min: 0,
+                  max: 100,
+                  admin: {
+                    description: "% mujeres (0–100). 77 → 77% mujeres / 23% hombres.",
+                  },
+                },
+                { name: "femaleLabel", type: "text", defaultValue: "Mujeres" },
+                { name: "maleLabel", type: "text", defaultValue: "Hombres" },
+              ],
+            },
+            {
+              name: "agePicks",
+              type: "array",
+              label: "Bar chart — Edad Pico",
+              admin: {
+                description:
+                  "Barras del bar chart. Marca `isPeak` en la franja con pico.",
+                initCollapsed: true,
+              },
+              fields: [
+                {
+                  name: "range",
+                  type: "text",
+                  required: true,
+                  admin: { placeholder: "55-64" },
+                },
+                {
+                  name: "value",
+                  type: "number",
+                  required: true,
+                  admin: { placeholder: "100" },
+                },
+                {
+                  name: "isPeak",
+                  type: "checkbox",
+                  defaultValue: false,
+                  admin: {
+                    description: "Si está activo, esta barra se pinta en color brand.",
+                  },
+                },
+              ],
+            },
+            {
+              name: "peakAgeRange",
+              type: "text",
+              label: "Texto de pico (sub-título del bar chart)",
+              admin: { placeholder: "Pico: 55-64 años" },
             },
           ],
         },
