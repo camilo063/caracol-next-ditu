@@ -25,7 +25,8 @@ export default function DituPage() {
   return (
     <div className="theme-ditu bg-background flex min-h-screen flex-col">
       <SiteHeader {...dituHeaderDemo} fallbackWordmark={<DituWordmark />} />
-      <main className="flex-1">
+      {/* pt-16 = h-16 del SiteHeader fixed para no quedar oculto. */}
+      <main className="flex-1 pt-16">
         <RenderBlocks layout={dituDemoLayout} />
         <DituHablamosSection />
       </main>

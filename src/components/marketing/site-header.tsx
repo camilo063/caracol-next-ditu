@@ -100,8 +100,10 @@ export function SiteHeader({
       animate={{ y: hidden ? "-100%" : "0%" }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className={cn(
-        "z-40 w-full",
-        sticky && "sticky top-0",
+        // `fixed` + top-0 + left-0 + right-0 da el comportamiento "sticky siempre"
+        // sin sufrir el bug de `position: sticky` cuando coexiste con `transform`.
+        // El offset (h-16) se compensa con `pt-16` en el contenido.
+        sticky ? "fixed top-0 right-0 left-0 z-40" : "relative w-full",
         isDitu ? "text-white" : "text-foreground",
         scrolled
           ? isDitu

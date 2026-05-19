@@ -24,7 +24,8 @@ export default function CaracolNextPage() {
         {...caracolNextHeaderDemo}
         fallbackWordmark={<CaracolNextWordmark className="text-[#003380]" />}
       />
-      <main className="flex-1">
+      {/* pt-16 = h-16 del SiteHeader fixed para no quedar oculto. */}
+      <main className="flex-1 pt-16">
         <RenderBlocks layout={caracolNextDemoLayout} />
       </main>
       <SiteFooter {...caracolNextFooterDemo} fallbackWordmark={<CaracolNextWordmark />} />
