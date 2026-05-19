@@ -5,7 +5,8 @@ import { Heading } from "@/components/ui/heading";
 
 /**
  * SectionHeading — patrón recurrente eyebrow + title + description.
- * Aparece en cada bloque del landing (Audiencia, Marcas, Momentos, Pauta…).
+ * Eyebrow usa `.text-fluid-tag` (12 → 14px) y description `.text-fluid-body`
+ * (14 → 18px) — clamp para escalar fluidamente hasta 1440px.
  */
 type SectionHeadingBaseProps = Omit<React.HTMLAttributes<HTMLDivElement>, "title">;
 
@@ -43,7 +44,7 @@ const SectionHeading = React.forwardRef<HTMLDivElement, SectionHeadingProps>(
         {...props}
       >
         {eyebrow ? (
-          <p className="text-primary text-xs font-bold tracking-[0.18em] uppercase">
+          <p className="text-fluid-tag text-primary font-bold tracking-[0.18em] uppercase">
             {eyebrow}
           </p>
         ) : null}
@@ -53,7 +54,7 @@ const SectionHeading = React.forwardRef<HTMLDivElement, SectionHeadingProps>(
         {description ? (
           <p
             className={cn(
-              "text-muted-foreground max-w-3xl text-base leading-relaxed sm:text-lg",
+              "text-fluid-body text-muted-foreground max-w-3xl leading-relaxed",
               align === "center" && "mx-auto",
             )}
           >

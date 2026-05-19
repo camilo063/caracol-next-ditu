@@ -4,21 +4,29 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /**
- * Heading — escala tipográfica unificada para títulos.
- * `as` controla el tag semántico (h1, h2…); `level` la escala visual.
- * Sincronizado con tokens Figma: display 64px, h1 56px, h2 40px, h3 32px, h4 24px.
+ * Heading — escala tipográfica fluida (clamp) calibrada a 1440px de diseño.
+ * Min ↔ max según la spec del cliente:
+ *   - display:   32px → 64px
+ *   - h1:        28px → 56px
+ *   - h2:        24px → 40px (subtítulos grandes)
+ *   - h3:        20px → 32px (subtítulos)
+ *   - h4:        18px → 24px
+ *   - h5:        16px → 18px
+ *   - h6:        14px → 16px (tags/eyebrows)
+ *
+ * Las fórmulas usan `clamp(min, base + slope·vw, max)` y se calibran para
+ * tocar el max en ~1440px de viewport.
  */
 const headingVariants = cva("font-display font-black tracking-tight text-foreground", {
   variants: {
     level: {
-      display:
-        "text-5xl leading-[1.05] sm:text-6xl md:text-7xl lg:text-[clamp(3.5rem,6vw,4rem)]",
-      h1: "text-4xl leading-[1.1] sm:text-5xl md:text-6xl",
-      h2: "text-3xl leading-[1.15] sm:text-4xl md:text-[2.5rem]",
-      h3: "text-2xl leading-tight sm:text-3xl md:text-[1.75rem]",
-      h4: "text-xl leading-tight sm:text-2xl",
-      h5: "text-lg font-extrabold leading-snug",
-      h6: "text-base font-extrabold uppercase tracking-wide leading-snug",
+      display: "text-[clamp(2rem,1.3rem+3vw,4rem)] leading-[1.05]",
+      h1: "text-[clamp(1.75rem,1.1rem+2.5vw,3.5rem)] leading-[1.1]",
+      h2: "text-[clamp(1.5rem,1rem+2vw,2.5rem)] leading-[1.15]",
+      h3: "text-[clamp(1.25rem,0.9rem+1.5vw,2rem)] leading-tight",
+      h4: "text-[clamp(1.125rem,0.85rem+1vw,1.5rem)] leading-tight",
+      h5: "text-[clamp(1rem,0.85rem+0.5vw,1.125rem)] font-extrabold leading-snug",
+      h6: "text-[clamp(0.875rem,0.8rem+0.25vw,1rem)] font-extrabold uppercase tracking-wide leading-snug",
     },
     align: {
       left: "text-left",

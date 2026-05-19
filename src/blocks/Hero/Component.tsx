@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { ParallaxBackground } from "@/components/animations";
 import { Button, Container, Section, Stat } from "@/components/ui";
 import { brandMeta } from "@/lib/brand";
 import { isMediaVideo, mediaAlt, mediaUrl } from "@/lib/media";
@@ -33,7 +34,6 @@ export function HeroBlockComponent({
   const hasBackground = Boolean(bgImageUrl || bgVideoUrl);
   const isDarkTone = hasBackground || sectionTone !== "default";
 
-  // Estilo especial para el hero "Caracol Next" (deep blue con gradiente sutil + scoring)
   const heroBg =
     tone === "caracolnext-deep"
       ? "linear-gradient(180deg, #003380 0%, #003CCA 50%, #0D3AA0 100%)"
@@ -50,7 +50,10 @@ export function HeroBlockComponent({
       style={heroBg ? { background: heroBg } : undefined}
     >
       {hasBackground ? (
-        <div className="absolute inset-0 -z-10">
+        <ParallaxBackground
+          speed={0.4}
+          className="absolute inset-0 -z-10 will-change-transform"
+        >
           {bgVideoUrl && isMediaVideo(backgroundVideo) ? (
             <video
               src={bgVideoUrl}
@@ -71,7 +74,7 @@ export function HeroBlockComponent({
             />
           ) : null}
           <div className="absolute inset-0 bg-black/45" aria-hidden="true" />
-        </div>
+        </ParallaxBackground>
       ) : null}
 
       <Container size="xl" className="relative">
@@ -79,7 +82,7 @@ export function HeroBlockComponent({
           {eyebrow ? (
             <p
               className={cn(
-                "text-xs font-bold tracking-[0.18em] uppercase",
+                "text-fluid-tag font-bold tracking-[0.18em] uppercase",
                 isDarkTone ? "text-white/80" : "text-primary",
               )}
             >
@@ -88,7 +91,7 @@ export function HeroBlockComponent({
           ) : null}
           <h1
             className={cn(
-              "font-display text-4xl leading-[1.05] font-black tracking-tight sm:text-5xl md:text-6xl lg:text-[clamp(3rem,5.5vw,4rem)]",
+              "text-fluid-display font-display font-black tracking-tight",
               isDarkTone ? "text-white" : "text-foreground",
             )}
           >
@@ -97,7 +100,7 @@ export function HeroBlockComponent({
           {subheading ? (
             <p
               className={cn(
-                "max-w-2xl text-base leading-relaxed sm:text-lg",
+                "text-fluid-subtitle max-w-2xl leading-relaxed",
                 isDarkTone ? "text-white/85" : "text-muted-foreground",
               )}
             >
@@ -106,12 +109,7 @@ export function HeroBlockComponent({
           ) : null}
 
           {brandIcons && brandIcons.length > 0 ? (
-            <ul
-              className={cn(
-                "mt-4 flex flex-wrap items-center justify-center gap-3",
-                isDarkTone ? "" : "",
-              )}
-            >
+            <ul className="mt-4 flex flex-wrap items-center justify-center gap-3">
               {brandIcons.map((b, i) => {
                 const meta = brandMeta(b.brand);
                 const iconUrl = mediaUrl(b.icon);
