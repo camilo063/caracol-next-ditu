@@ -28,6 +28,15 @@ export const KeyMomentsCalendarBlock: Block = {
           type: "date",
           admin: { description: "Opcional, para temporadas." },
         },
+        {
+          name: "dateLabelOverride",
+          type: "text",
+          admin: {
+            description:
+              "Override del texto de fecha en la tarjeta. Si vacío, se calcula desde dateStart/dateEnd.",
+            placeholder: "DEL 13 AL 17 DE MARZO",
+          },
+        },
         { name: "description", type: "textarea" },
         { name: "image", type: "upload", relationTo: "media" },
         {
@@ -52,17 +61,54 @@ export const KeyMomentsCalendarBlock: Block = {
             { label: "Otro", value: "other" },
           ],
         },
+        {
+          name: "badgeColor",
+          type: "text",
+          admin: {
+            description:
+              "Color hex del badge CATEGORÍA (override del color por categoría). Ej. #FFC200.",
+            placeholder: "#015BC4",
+          },
+        },
+        {
+          name: "categoryLabel",
+          type: "text",
+          defaultValue: "CATEGORÍA",
+          admin: {
+            description: "Texto del pill superior. Default 'CATEGORÍA'.",
+          },
+        },
         ctaField({ name: "cta", label: "CTA (opcional)" }),
       ],
     },
     {
       name: "displayMode",
       type: "select",
-      defaultValue: "timeline",
+      defaultValue: "grid",
       options: [
+        { label: "Grid 4-col (responsive carrusel en mobile)", value: "grid" },
         { label: "Timeline horizontal", value: "timeline" },
-        { label: "Grid", value: "grid" },
         { label: "Lista", value: "list" },
+      ],
+    },
+    {
+      name: "ctaText",
+      type: "group",
+      label: "CTA del bloque",
+      fields: [
+        {
+          name: "heading",
+          type: "text",
+          defaultValue:
+            "¡Asegura la presencia de tu marca en los eventos más importantes del país!",
+        },
+        {
+          name: "description",
+          type: "text",
+          defaultValue: "Contáctanos ahora y diseñemos juntos tu participación.",
+        },
+        { name: "label", type: "text", defaultValue: "Contáctenos" },
+        { name: "href", type: "text", defaultValue: "#contacto" },
       ],
     },
   ],
