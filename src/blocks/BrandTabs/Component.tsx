@@ -75,18 +75,18 @@ export function BrandTabsBlockComponent({
             <p className="text-muted-foreground text-fluid-body mt-2">{description}</p>
           ) : null}
 
-          {/* Tabs pill row — horizontal scroll on mobile */}
+          {/* Tabs pill row — wrap si no caben en 1 línea, scroll horizontal en mobile. */}
           <div
-            className="-mx-4 mt-8 [scrollbar-width:none] overflow-x-auto px-4 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            className="-mx-4 mt-8 [scrollbar-width:none] overflow-x-auto px-4 [-ms-overflow-style:none] sm:overflow-visible [&::-webkit-scrollbar]:hidden"
             role="tablist"
             aria-label="Marcas del ecosistema"
           >
-            <div className="flex w-max gap-2">
+            <div className="flex w-max gap-2 sm:w-full sm:flex-wrap">
               {tabs.map((tab, i) => {
                 const meta = brandMeta(tab.brand);
                 const isActive = i === safeIndex;
-                // Figma 402:5117: tabs uniformes en Azul Medio #015BC4
-                // (CaracolTV/Primario/Azul Medio). Active = filled, Inactive = outline.
+                // Figma 402:5117: tabs uniformes en Azul Medio #015BC4.
+                // Active = filled, Inactive = outline.
                 const AZUL_MEDIO = "#015BC4";
                 return (
                   <button
@@ -96,7 +96,8 @@ export function BrandTabsBlockComponent({
                     aria-selected={isActive}
                     onClick={() => setActive(i)}
                     className={cn(
-                      "font-display rounded-[4px] border px-[24px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-colors sm:px-[48px]",
+                      // Padding reducido en lg para que 7 tabs entren cómodamente en 1200px.
+                      "font-display rounded-[4px] border px-[20px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-colors sm:px-[28px] lg:px-[32px]",
                       "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
                     )}
                     style={
@@ -165,14 +166,17 @@ const CARD_BORDER = "#95999A";
 const NEUTRO_NEGRO = "#121212";
 const NEUTRO_GRIS_OSCURO = "#464553";
 const AZUL_MEDIO = "#015BC4";
-const NAVY_DARK = "#003381";
 
 function TabPanel({ tab }: { tab: Tab }) {
   const meta = brandMeta(tab.brand);
   const displayName = tab.displayName ?? meta.label;
   const logoUrl = mediaUrl(tab.brandLogo);
-  // El heading + panel derecho usan colorDark del brand (Caracol TV = #003381 navy).
-  const brandDark = meta.colorDark ?? NAVY_DARK;
+  // Colores por brand (Figma): heading usa brand.color, panel usa brand.colorDark,
+  // chart peak usa brand.chartPeak. Cada brand tiene su propia paleta.
+  const brandColor = meta.color;
+  const brandPanelBg = meta.colorDark ?? meta.color;
+  const brandChartPeak = meta.chartPeak ?? meta.color;
+  const brandAccent = meta.colorAccent;
 
   return (
     <div
@@ -185,7 +189,7 @@ function TabPanel({ tab }: { tab: Tab }) {
         {logoUrl ? (
           <div
             className="absolute top-4 right-4 flex h-12 w-12 items-center justify-center rounded-lg md:hidden"
-            style={{ backgroundColor: brandDark }}
+            style={{ backgroundColor: brandPanelBg }}
           >
             <Image
               src={logoUrl}
@@ -201,7 +205,7 @@ function TabPanel({ tab }: { tab: Tab }) {
         <div className="flex flex-col gap-5">
           <h3
             className="font-display text-[40px] leading-[0.95] font-bold tracking-[-1.5px] sm:text-[48px] lg:text-[64px]"
-            style={{ color: brandDark }}
+            style={{ color: brandColor }}
           >
             {displayName}
           </h3>
@@ -288,7 +292,7 @@ function TabPanel({ tab }: { tab: Tab }) {
                     >
                       <span
                         className="flex h-8 w-8 shrink-0 items-center justify-center"
-                        style={{ color: brandDark }}
+                        style={{ color: brandColor }}
                       >
                         <NetworkIcon network={net.network} className="h-8 w-8" />
                       </span>
@@ -354,8 +358,8 @@ function TabPanel({ tab }: { tab: Tab }) {
                   femalePercent={tab.audience.genderSplit.femalePercent}
                   femaleLabel={tab.audience.genderSplit.femaleLabel ?? "Mujeres"}
                   maleLabel={tab.audience.genderSplit.maleLabel ?? "Hombres"}
-                  primaryColor={PILL_BG}
-                  secondaryColor={NAVY_DARK}
+                  primaryColor={brandAccent ?? brandColor}
+                  secondaryColor={brandPanelBg}
                 />
               </div>
 
@@ -390,7 +394,7 @@ function TabPanel({ tab }: { tab: Tab }) {
                       value: a.value,
                       isPeak: a.isPeak,
                     }))}
-                    peakColor={NAVY_DARK}
+                    peakColor={brandChartPeak}
                     baseColor="#D9D9D9"
                   />
                 </div>
@@ -417,7 +421,7 @@ function TabPanel({ tab }: { tab: Tab }) {
       {/* Columna derecha — brand panel. Oculta en mobile. */}
       <div
         className="relative hidden items-center justify-center md:flex"
-        style={{ backgroundColor: brandDark }}
+        style={{ backgroundColor: brandPanelBg }}
       >
         {logoUrl ? (
           <Image
@@ -435,7 +439,10 @@ function TabPanel({ tab }: { tab: Tab }) {
         {/* Small brand icon top-right (Figma: 76x76 bordered) */}
         <div
           className="absolute top-[30px] right-[30px] flex h-[76px] w-[76px] items-center justify-center overflow-hidden rounded-[16px] border-2"
-          style={{ backgroundColor: brandDark, borderColor: AZUL_MEDIO }}
+          style={{
+            backgroundColor: brandPanelBg,
+            borderColor: brandAccent ?? "#FFFFFF",
+          }}
         >
           {logoUrl ? (
             <Image

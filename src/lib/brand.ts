@@ -1,6 +1,12 @@
 /**
  * Helpers de marcas — color, label, slug.
- * Colores oficiales confirmados por cliente (2026-05-15).
+ * Colores Figma extraídos vía MCP (Mediakit Caracol — Design System, 2026-05-19).
+ *
+ * Cada brand tiene 4 colores semánticos:
+ *  - `color`: primario, usado para el HEADING del brand en el tab content.
+ *  - `colorDark`: usado para el PANEL derecho (background del logo).
+ *  - `chartPeak`: color de la barra "peak" del Edad Pico bar chart.
+ *  - `colorAccent` (opcional): accent secundario (ej. cyan, magenta, amarillo).
  */
 
 export type BrandKey =
@@ -17,40 +23,83 @@ export type BrandKey =
 
 interface BrandMeta {
   label: string;
-  /** Color primary del brand (hex). Se inyecta como --color-primary en BrandTabs. */
+  /** Color primario del brand — usado en HEADING del tab. */
   color: string;
-  /** Color secundario para fondo deep. */
+  /** Color oscuro del brand — usado en el PANEL derecho del tab. */
   colorDark?: string;
-  /** Color alterno (accent / soft). */
+  /** Color accent (cyan, amarillo, magenta) — opcional. */
   colorAccent?: string;
+  /** Color usado para la barra peak del Edad Pico bar chart. */
+  chartPeak?: string;
 }
 
 export const BRAND_META: Record<BrandKey, BrandMeta> = {
   ditu: {
     label: "Ditu",
-    color: "#8232F0", // Violeta
-    colorDark: "#1F1647", // Violeta Oscuro
-    colorAccent: "#77EDED", // Azul Claro complementario
+    color: "#8232F0", // Ditu/Primario/Violeta
+    colorDark: "#1F1647", // Ditu/Primario/Violeta Oscuro
+    colorAccent: "#77EDED", // Ditu/Primario/Azul Claro complementario
+    chartPeak: "#8232F0",
   },
   caracoltv: {
     label: "Caracol TV",
-    color: "#015BC4", // Azul Medio
-    colorDark: "#003380", // Azul Oscuro
-    colorAccent: "#00ACFF", // Azul Claro
+    color: "#003381", // CaracolTV/Primario/Azul Oscuro (heading + panel uniforme)
+    colorDark: "#003381",
+    colorAccent: "#00ACFF",
+    chartPeak: "#003381",
   },
   caracoldigital: {
     label: "Caracol Digital",
-    color: "#003CCA", // Digital Azul Medio
-    colorDark: "#0D3AA0", // Digital Azul Oscuro
-    colorAccent: "#2862FF", // Digital Azul Claro
+    color: "#003CCA",
+    colorDark: "#0D3AA0",
+    colorAccent: "#2862FF",
+    chartPeak: "#003CCA",
   },
-  golcaracol: { label: "Gol Caracol", color: "#00C853", colorDark: "#006B2B" },
-  caracolsports: { label: "Caracol Sports", color: "#FF6F00", colorDark: "#B23E00" },
-  bluradio: { label: "Blu Radio", color: "#1976D2", colorDark: "#0D47A1" },
-  lakalle: { label: "La Kalle", color: "#FF1744", colorDark: "#B71C1C" },
-  volk: { label: "Volk", color: "#00B8D4", colorDark: "#006978" },
-  bumbox: { label: "BumBox", color: "#FFC200", colorDark: "#9E6E00" },
-  caracolmedios: { label: "Caracol Medios", color: "#212121", colorDark: "#000000" },
+  golcaracol: {
+    label: "Gol Caracol",
+    color: "#006AEF", // GolCaracol/Primario/Azul 2 — usado en heading
+    colorDark: "#071D49", // GolCaracol/Primario/Azul Oscuro — usado en panel
+    chartPeak: "#006AEF",
+  },
+  caracolsports: {
+    label: "Caracol Sports",
+    color: "#005294", // CaracolSports/Primario/Azul Profundo
+    colorDark: "#005294",
+    colorAccent: "#00B3FB", // CaracolSports/Primario/Azul Celeste
+    chartPeak: "#005294",
+  },
+  bluradio: {
+    label: "Blu Radio",
+    color: "#00AEEF", // BluRadio/Primario/Azul Medio
+    colorDark: "#00AEEF",
+    chartPeak: "#005BAA", // BluRadio/Primario/Azul Oscuro
+  },
+  lakalle: {
+    label: "La Kalle",
+    color: "#353535", // LaKalle/Primario/Negro
+    colorDark: "#353535",
+    colorAccent: "#FEFF00", // LaKalle/Primario/Amarillo
+    chartPeak: "#FEFF00",
+  },
+  volk: {
+    label: "Volk",
+    color: "#0E3DFF", // Volk/Primario/Azul
+    colorDark: "#0E3DFF",
+    colorAccent: "#FF0080", // Volk/Primario/Magenta
+    chartPeak: "#0E3DFF",
+  },
+  bumbox: {
+    label: "BumBox",
+    color: "#1EB1FB", // BumBox/Primario/Azul Claro
+    colorDark: "#1EB1FB",
+    chartPeak: "#042D66", // BumBox/Primario/Azul Oscuro
+  },
+  caracolmedios: {
+    label: "Caracol Medios",
+    color: "#212121",
+    colorDark: "#000000",
+    chartPeak: "#212121",
+  },
 };
 
 /** Si el brand-key viene desconocido, devuelve un fallback neutral. */
