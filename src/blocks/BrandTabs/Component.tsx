@@ -6,7 +6,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { CountUp } from "@/components/animations";
-import { Button, Container } from "@/components/ui";
+import { Container } from "@/components/ui";
 import { NetworkIcon } from "@/components/marketing";
 import { brandMeta } from "@/lib/brand";
 import { formatNumber } from "@/lib/format";
@@ -54,14 +54,14 @@ export function BrandTabsBlockComponent({
       <div className="bg-muted w-full overflow-hidden rounded-[2rem] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
         <Container size="xl">
           <p
-            className="text-fluid-tag font-bold tracking-[0.18em] uppercase"
+            className="font-poppins text-[16px] leading-normal font-bold tracking-[0.18em] uppercase sm:text-[18px] lg:text-[20px]"
             style={{ color: "#00ACFF" }}
           >
             {eyebrow ?? "El ecosistema Caracol"}
           </p>
           <h2
-            className="font-display text-fluid-h1 mt-3 leading-[1.05] tracking-tight"
-            style={{ color: "#003380" }}
+            className="font-display mt-3 text-[40px] leading-[1.05] sm:text-[48px] lg:text-[60px]"
+            style={{ color: "#003381" }}
           >
             <span className="font-normal">{headingRegular}</span>
             {headingBoldPart ? (
@@ -85,9 +85,9 @@ export function BrandTabsBlockComponent({
               {tabs.map((tab, i) => {
                 const meta = brandMeta(tab.brand);
                 const isActive = i === safeIndex;
-                // Tabs uniformes en azul Caracol Next (#003380 = navy) — el color
-                // por marca solo se aplica dentro del content card, no en las tabs.
-                const NAVY = "#003380";
+                // Figma 402:5117: tabs uniformes en Azul Medio #015BC4
+                // (CaracolTV/Primario/Azul Medio). Active = filled, Inactive = outline.
+                const AZUL_MEDIO = "#015BC4";
                 return (
                   <button
                     key={tab.brand}
@@ -96,20 +96,20 @@ export function BrandTabsBlockComponent({
                     aria-selected={isActive}
                     onClick={() => setActive(i)}
                     className={cn(
-                      "rounded-lg border-2 px-5 py-2.5 text-sm font-bold whitespace-nowrap transition-colors",
+                      "font-display rounded-[4px] border px-[24px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-colors sm:px-[48px]",
                       "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
                     )}
                     style={
                       isActive
                         ? {
-                            backgroundColor: NAVY,
-                            borderColor: NAVY,
+                            backgroundColor: AZUL_MEDIO,
+                            borderColor: AZUL_MEDIO,
                             color: "white",
                           }
                         : {
                             backgroundColor: "white",
-                            borderColor: NAVY,
-                            color: NAVY,
+                            borderColor: AZUL_MEDIO,
+                            color: AZUL_MEDIO,
                           }
                     }
                   >
@@ -140,22 +140,52 @@ export function BrandTabsBlockComponent({
   );
 }
 
+/**
+ * TabPanel — implementación 1:1 del frame Figma 402:5117 (Caracol TV variant).
+ *
+ * Estructura:
+ *  - Card outer: bg white, border rgba(207,206,204,0.81), rounded-24
+ *  - Columna izquierda (~60%): content area pl-80 pr-40 py-40
+ *    - Brand heading 64px Bold #003381 tracking -1.5px
+ *    - Tagline 20px Regular #464553
+ *    - WEB + REDES cards side by side
+ *    - AUDIENCIA card (pie + bar charts)
+ *    - "Conoce más" button bottom-right (Medium size)
+ *  - Columna derecha (~40%): bg #003381 navy con logo grande + small brand icon
+ *
+ * Tokens Figma:
+ *  - Pills "WEB"/"REDES"/"AUDIENCIA": bg #00ACFF, white Bold 14px uppercase
+ *  - Card border: #95999A, rounded-8, p-20
+ *  - Numbers WEB: 32px Bold #100201
+ *  - Labels: 20px Regular #121212
+ *  - Networks: icon 32x32 + number 20px Bold/SemiBold + "Seguidores" 16px Regular
+ */
+const PILL_BG = "#00ACFF";
+const CARD_BORDER = "#95999A";
+const NEUTRO_NEGRO = "#121212";
+const NEUTRO_GRIS_OSCURO = "#464553";
+const AZUL_MEDIO = "#015BC4";
+const NAVY_DARK = "#003381";
+
 function TabPanel({ tab }: { tab: Tab }) {
   const meta = brandMeta(tab.brand);
-  const brandColor = tab.brandColor ?? meta.color;
-  const brandDark = meta.colorDark ?? brandColor;
   const displayName = tab.displayName ?? meta.label;
   const logoUrl = mediaUrl(tab.brandLogo);
+  // El heading + panel derecho usan colorDark del brand (Caracol TV = #003381 navy).
+  const brandDark = meta.colorDark ?? NAVY_DARK;
 
   return (
-    <div className="border-border bg-card grid overflow-hidden rounded-2xl border md:grid-cols-[3fr_2fr]">
+    <div
+      className="grid overflow-hidden rounded-[24px] bg-white md:grid-cols-[3fr_2fr]"
+      style={{ border: "1px solid rgba(207,206,204,0.81)" }}
+    >
       {/* Columna izquierda — content */}
-      <div className="relative space-y-6 p-6 sm:p-8 md:p-10">
+      <div className="relative flex flex-col gap-5 p-6 sm:p-8 md:pt-10 md:pr-10 md:pb-10 md:pl-20">
         {/* Brand icon top-right corner — visible solo en mobile */}
         {logoUrl ? (
           <div
             className="absolute top-4 right-4 flex h-12 w-12 items-center justify-center rounded-lg md:hidden"
-            style={{ backgroundColor: brandColor }}
+            style={{ backgroundColor: brandDark }}
           >
             <Image
               src={logoUrl}
@@ -168,100 +198,124 @@ function TabPanel({ tab }: { tab: Tab }) {
         ) : null}
 
         {/* Brand name + tagline */}
-        <div>
+        <div className="flex flex-col gap-5">
           <h3
-            className="font-display text-fluid-h2 font-black"
-            style={{ color: brandColor }}
+            className="font-display text-[40px] leading-[0.95] font-bold tracking-[-1.5px] sm:text-[48px] lg:text-[64px]"
+            style={{ color: brandDark }}
           >
             {displayName}
           </h3>
           {tab.tagline ? (
-            <p className="text-fluid-body text-muted-foreground mt-2 max-w-prose">
+            <p
+              className="font-display text-[16px] leading-normal font-normal lg:text-[20px]"
+              style={{ color: NEUTRO_GRIS_OSCURO }}
+            >
               {tab.tagline}
             </p>
           ) : null}
         </div>
 
-        {/* WEB + REDES */}
-        <div className="grid gap-4 sm:grid-cols-[1fr_2fr]">
+        {/* WEB + REDES side by side */}
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
           {/* WEB box */}
           {tab.webMetrics &&
           (tab.webMetrics.usersPerMonth || tab.webMetrics.viewsPerMonth) ? (
-            <div className="border-border bg-muted/30 rounded-xl border p-5">
-              <span
-                className="inline-block rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase"
-                style={{ backgroundColor: brandColor }}
-              >
-                WEB
-              </span>
-              {tab.webMetrics.usersPerMonth ? (
-                <div className="mt-4">
-                  <p
-                    className="font-display text-2xl leading-tight font-extrabold sm:text-3xl"
-                    style={{ color: brandColor }}
-                  >
-                    <CountUp
-                      value={tab.webMetrics.usersPerMonth}
-                      format={(v) => formatNumber(Math.round(v))}
-                    />
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    {tab.webMetrics.usersLabel ?? "Usuarios/mes"}
-                  </p>
-                </div>
-              ) : null}
-              {tab.webMetrics.viewsPerMonth ? (
-                <div className="border-border mt-4 border-t pt-3">
-                  <p
-                    className="font-display text-2xl leading-tight font-extrabold sm:text-3xl"
-                    style={{ color: brandColor }}
-                  >
-                    <CountUp
-                      value={tab.webMetrics.viewsPerMonth}
-                      format={(v) => formatNumber(Math.round(v))}
-                    />
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    {tab.webMetrics.viewsLabel ?? "Vistas/mes"}
-                  </p>
-                </div>
-              ) : null}
+            <div
+              className="flex flex-col items-start gap-2 rounded-[8px] bg-white p-5"
+              style={{ border: `1px solid ${CARD_BORDER}` }}
+            >
+              <Pill>WEB</Pill>
+              <div className="flex flex-col gap-4 px-5">
+                {tab.webMetrics.usersPerMonth ? (
+                  <div className="flex flex-col items-end justify-center gap-2 whitespace-nowrap">
+                    <p
+                      className="font-display text-[24px] leading-none font-bold sm:text-[28px] lg:text-[32px]"
+                      style={{ color: "#100201" }}
+                    >
+                      <CountUp
+                        value={tab.webMetrics.usersPerMonth}
+                        format={(v) => formatNumber(Math.round(v))}
+                      />
+                    </p>
+                    <p
+                      className="font-display text-right text-[16px] leading-none font-normal lg:text-[20px]"
+                      style={{ color: NEUTRO_NEGRO }}
+                    >
+                      {tab.webMetrics.usersLabel ?? "Usuarios/mes"}
+                    </p>
+                  </div>
+                ) : null}
+                {tab.webMetrics.usersPerMonth && tab.webMetrics.viewsPerMonth ? (
+                  <div className="h-px w-full" style={{ backgroundColor: CARD_BORDER }} />
+                ) : null}
+                {tab.webMetrics.viewsPerMonth ? (
+                  <div className="flex flex-col items-end justify-center gap-2 whitespace-nowrap">
+                    <p
+                      className="font-display text-[24px] leading-none font-bold sm:text-[28px] lg:text-[32px]"
+                      style={{ color: "#100201" }}
+                    >
+                      <CountUp
+                        value={tab.webMetrics.viewsPerMonth}
+                        format={(v) => formatNumber(Math.round(v))}
+                      />
+                    </p>
+                    <p
+                      className="font-display text-right text-[16px] leading-none font-normal lg:text-[20px]"
+                      style={{ color: NEUTRO_NEGRO }}
+                    >
+                      {tab.webMetrics.viewsLabel ?? "Vistas/mes"}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
             </div>
           ) : null}
 
           {/* REDES box */}
           {tab.networks && tab.networks.length > 0 ? (
-            <div className="border-border bg-muted/30 rounded-xl border p-5">
-              <span
-                className="inline-block rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase"
-                style={{ backgroundColor: brandColor }}
-              >
-                REDES
-              </span>
-              <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
-                {tab.networks.map((net) => (
-                  <li key={net.id ?? net.network} className="flex items-start gap-2.5">
-                    <span
-                      className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white"
-                      style={{ backgroundColor: brandColor }}
+            <div
+              className="flex flex-1 flex-col items-start gap-2 rounded-[8px] bg-white p-5"
+              style={{ border: `1px solid ${CARD_BORDER}` }}
+            >
+              <Pill>REDES</Pill>
+              <div className="flex w-full flex-col gap-4 px-5 py-2">
+                {/* 3 rows × 2 cols layout. */}
+                <ul className="grid grid-cols-1 gap-x-[18px] gap-y-4 sm:grid-cols-2">
+                  {tab.networks.slice(0, 6).map((net, i) => (
+                    <li
+                      key={net.id ?? net.network}
+                      className="flex min-w-0 items-start gap-3"
                     >
-                      <NetworkIcon network={net.network} className="h-3.5 w-3.5" />
-                    </span>
-                    <div className="min-w-0">
-                      <p
-                        className="font-display text-base leading-tight font-extrabold"
-                        style={{ color: brandColor }}
+                      <span
+                        className="flex h-8 w-8 shrink-0 items-center justify-center"
+                        style={{ color: brandDark }}
                       >
-                        <CountUp
-                          value={net.followers}
-                          format={(v) => formatNumber(Math.round(v))}
-                        />
-                      </p>
-                      <p className="text-muted-foreground text-[10px]">Seguidores</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                        <NetworkIcon network={net.network} className="h-8 w-8" />
+                      </span>
+                      <div className="flex min-w-0 flex-col items-start justify-center whitespace-nowrap">
+                        <p
+                          className={cn(
+                            "font-display text-[20px] leading-[28px]",
+                            i === 0 ? "font-bold" : "font-semibold",
+                          )}
+                          style={{ color: NEUTRO_NEGRO }}
+                        >
+                          <CountUp
+                            value={net.followers}
+                            format={(v) => formatNumber(Math.round(v))}
+                          />
+                        </p>
+                        <p
+                          className="font-display text-[16px] leading-[20px] font-normal"
+                          style={{ color: NEUTRO_NEGRO }}
+                        >
+                          Seguidores
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ) : null}
         </div>
@@ -269,52 +323,75 @@ function TabPanel({ tab }: { tab: Tab }) {
         {/* AUDIENCIA — pie + bar charts */}
         {tab.audience?.genderSplit?.femalePercent !== undefined &&
         tab.audience?.genderSplit?.femalePercent !== null ? (
-          <div className="border-border bg-muted/30 rounded-xl border p-5">
-            <span
-              className="inline-block rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase"
-              style={{ backgroundColor: brandColor }}
-            >
-              AUDIENCIA
-            </span>
+          <div
+            className="flex flex-col items-start gap-2 rounded-[8px] bg-white p-5"
+            style={{ border: `1px solid ${CARD_BORDER}` }}
+          >
+            <Pill>AUDIENCIA</Pill>
 
-            <div className="mt-4 grid gap-6 sm:grid-cols-2">
-              {/* Género */}
-              <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-4 px-5 sm:flex-row sm:items-start sm:gap-4">
+              {/* Género — text + pie chart side by side */}
+              <div className="flex items-center justify-center gap-[10px]">
+                <div className="flex w-[184px] flex-col items-start">
+                  <p
+                    className="font-display text-[24px] leading-[32px] font-bold whitespace-nowrap"
+                    style={{ color: NEUTRO_NEGRO }}
+                  >
+                    Género
+                  </p>
+                  <p
+                    className="font-display text-[14px] leading-normal font-normal"
+                    style={{ color: NEUTRO_GRIS_OSCURO }}
+                  >
+                    Del total de la audiencia{" "}
+                    <span className="font-semibold">
+                      {tab.audience.genderSplit.femalePercent}% son{" "}
+                      {(tab.audience.genderSplit.femaleLabel ?? "mujeres").toLowerCase()}.
+                    </span>
+                  </p>
+                </div>
                 <GenderPieChart
                   femalePercent={tab.audience.genderSplit.femalePercent}
                   femaleLabel={tab.audience.genderSplit.femaleLabel ?? "Mujeres"}
                   maleLabel={tab.audience.genderSplit.maleLabel ?? "Hombres"}
-                  primaryColor={brandColor}
-                  secondaryColor={brandColor === "#015BC4" ? "#66B3FF" : brandDark}
+                  primaryColor={PILL_BG}
+                  secondaryColor={NAVY_DARK}
                 />
-                <div className="min-w-0">
-                  <p className="font-display text-xl font-bold">Género</p>
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    Del total de la audiencia
-                  </p>
-                  <p className="text-foreground mt-1 text-xs font-bold">
-                    {tab.audience.genderSplit.femalePercent}% son{" "}
-                    {(tab.audience.genderSplit.femaleLabel ?? "mujeres").toLowerCase()}.
-                  </p>
-                </div>
               </div>
+
+              {/* Divisor vertical */}
+              <div
+                className="hidden w-px sm:block"
+                style={{ backgroundColor: CARD_BORDER }}
+              />
 
               {/* Edad Pico */}
               {tab.audience?.agePicks && tab.audience.agePicks.length > 0 ? (
-                <div>
-                  <p className="font-display text-xl font-bold">Edad Pico</p>
-                  {tab.audience.peakAgeRange ? (
-                    <p className="text-muted-foreground mt-1 text-xs">
-                      {tab.audience.peakAgeRange}
+                <div className="flex flex-col items-start gap-[10px]">
+                  <div className="flex flex-col items-end whitespace-nowrap">
+                    <p
+                      className="font-display text-[24px] leading-[32px] font-bold"
+                      style={{ color: NEUTRO_NEGRO }}
+                    >
+                      Edad Pico
                     </p>
-                  ) : null}
+                    {tab.audience.peakAgeRange ? (
+                      <p
+                        className="font-display text-right text-[14px] leading-normal font-normal"
+                        style={{ color: NEUTRO_GRIS_OSCURO }}
+                      >
+                        {tab.audience.peakAgeRange}
+                      </p>
+                    ) : null}
+                  </div>
                   <AgePeakBarChart
                     data={tab.audience.agePicks.map((a) => ({
                       range: a.range,
                       value: a.value,
                       isPeak: a.isPeak,
                     }))}
-                    peakColor={brandColor}
+                    peakColor={NAVY_DARK}
+                    baseColor="#D9D9D9"
                   />
                 </div>
               ) : null}
@@ -322,31 +399,25 @@ function TabPanel({ tab }: { tab: Tab }) {
           </div>
         ) : null}
 
-        {/* CTA Conoce más bottom-right */}
+        {/* CTA "Conoce más" bottom-right — bg #015BC4 size Medium */}
         {tab.ctaContact?.label && tab.ctaContact?.href ? (
           <div className="flex justify-end pt-2">
-            <Button
-              size="default"
-              asChild
-              style={{ backgroundColor: brandColor, color: "white" }}
+            <Link
+              href={tab.ctaContact.href}
+              target={tab.ctaContact.openInNewTab ? "_blank" : undefined}
+              className="font-display inline-flex items-center justify-center rounded-[4px] px-[32px] py-[8px] text-[14px] leading-[20px] font-semibold text-white"
+              style={{ backgroundColor: AZUL_MEDIO }}
             >
-              <Link
-                href={tab.ctaContact.href}
-                target={tab.ctaContact.openInNewTab ? "_blank" : undefined}
-              >
-                {tab.ctaContact.label}
-              </Link>
-            </Button>
+              {tab.ctaContact.label}
+            </Link>
           </div>
         ) : null}
       </div>
 
-      {/* Columna derecha — big brand card. Oculta en mobile. */}
+      {/* Columna derecha — brand panel. Oculta en mobile. */}
       <div
         className="relative hidden items-center justify-center md:flex"
-        style={{
-          background: `linear-gradient(160deg, ${brandColor} 0%, ${brandDark} 100%)`,
-        }}
+        style={{ backgroundColor: brandDark }}
       >
         {logoUrl ? (
           <Image
@@ -361,7 +432,38 @@ function TabPanel({ tab }: { tab: Tab }) {
             {displayName.toUpperCase()}
           </span>
         )}
+        {/* Small brand icon top-right (Figma: 76x76 bordered) */}
+        <div
+          className="absolute top-[30px] right-[30px] flex h-[76px] w-[76px] items-center justify-center overflow-hidden rounded-[16px] border-2"
+          style={{ backgroundColor: brandDark, borderColor: AZUL_MEDIO }}
+        >
+          {logoUrl ? (
+            <Image
+              src={logoUrl}
+              alt={displayName}
+              width={72}
+              height={72}
+              className="h-[72px] w-[72px] object-cover"
+            />
+          ) : (
+            <span className="text-[10px] font-bold text-white">
+              {meta.label.split(" ")[0]}
+            </span>
+          )}
+        </div>
       </div>
     </div>
+  );
+}
+
+/** Pill badge — bg #00ACFF, text Bold 14px white uppercase (Figma 402:8110). */
+function Pill({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className="font-display inline-flex items-center justify-center rounded-[4px] px-2 py-1 text-[14px] leading-[16px] font-bold text-white uppercase"
+      style={{ backgroundColor: PILL_BG }}
+    >
+      {children}
+    </span>
   );
 }

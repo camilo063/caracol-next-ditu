@@ -17,23 +17,23 @@ export interface AgePeakBarChartProps {
  */
 export function AgePeakBarChart({
   data,
-  peakColor = "#015BC4",
-  baseColor = "#CFCECC",
+  peakColor = "#003381",
+  baseColor = "#D9D9D9",
 }: AgePeakBarChartProps) {
   return (
-    <div className="h-32 w-full">
+    <div className="h-[88px] w-full min-w-[260px]">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 12, right: 6, left: 6, bottom: 0 }}>
+        <BarChart data={data} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
           <XAxis
             dataKey="range"
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 10, fill: "#676B6F" }}
+            tick={{ fontSize: 10, fill: "#121212", fontWeight: 500 }}
           />
           <YAxis hide domain={[0, "dataMax"]} />
           <Bar
             dataKey="value"
-            radius={[4, 4, 0, 0]}
+            radius={[2, 2, 0, 0]}
             isAnimationActive
             animationBegin={0}
             animationDuration={400}

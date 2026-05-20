@@ -35,9 +35,11 @@ export function HeroBlockComponent({
   const hasBackground = Boolean(bgImageUrl || bgVideoUrl);
   const isDarkTone = hasBackground || sectionTone !== "default";
 
+  // Background Figma 347:2015: solid navy #003381 con halo radial central azul claro.
+  // Replica el radial gradient SVG del Figma (centro ~50% 50%, glow → fade a navy).
   const heroBg =
     tone === "caracolnext-deep"
-      ? "linear-gradient(180deg, #003380 0%, #003CCA 50%, #0D3AA0 100%)"
+      ? "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,172,255,0.55) 0%, rgba(0,112,192,0.3) 45%, rgba(0,51,129,0) 100%), #003381"
       : tone === "ditu-deep"
         ? "linear-gradient(180deg, #1F1647 0%, #2A1F5E 60%, #1F1647 100%)"
         : undefined;
@@ -79,43 +81,47 @@ export function HeroBlockComponent({
       ) : null}
 
       <Container size="xl" className="relative">
-        <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 text-center">
+        {/* Layout Figma 347:2015: gap-40 entre tagline/heading-group/icons.
+            Heading-group interno: gap-24 entre h1 y subheading. */}
+        <div className="mx-auto flex flex-col items-center gap-10 text-center">
           {eyebrow ? (
-            // Tipografía exacta Figma: Poppins Bold 20px, color #00ACFF (CaracolTV/Primario/Azul Claro).
-            // Fluid clamp 18→20px para preservar legibilidad en mobile.
+            // Figma: Poppins Bold 20px, uppercase, color #00ACFF.
             <p
-              className="font-poppins text-fluid-subtitle font-bold"
+              className="font-poppins text-[20px] leading-normal font-bold uppercase"
               style={{ color: "#00ACFF" }}
             >
               {eyebrow}
             </p>
           ) : null}
-          {/* Heading: dos líneas Montserrat 64px (max), línea 1 Regular + línea 2 Bold, ambas blancas.
-              Nota: twMerge colapsa `text-fluid-*` con `text-white`, así que aplicamos el color via style. */}
-          <h1
-            className="text-fluid-display font-display tracking-tight"
-            style={{ color: isDarkTone ? "#FFFFFF" : undefined }}
-          >
-            <span className="font-normal">{heading}</span>
-            {headingBold ? (
-              <>
-                <br />
-                <span className="font-bold">{headingBold}</span>
-              </>
-            ) : null}
-          </h1>
-          {subheading ? (
-            // Subheading: Montserrat Medium 32px (max), blanco.
-            <p
-              className="text-fluid-h3 font-display max-w-2xl leading-snug font-medium"
+          {/* Heading + subheading group: gap-24 entre ellos (Figma Frame 109). */}
+          <div className="flex flex-col items-center gap-6 text-center">
+            {/* Heading: Montserrat 64px line-height 72px. Línea 1 Regular + línea 2 Bold.
+                Nota: usamos style inline para color (twMerge colapsa text-* sino). */}
+            <h1
+              className="font-display text-[40px] leading-[1.125] font-normal sm:text-[48px] lg:text-[64px] lg:leading-[72px]"
               style={{ color: isDarkTone ? "#FFFFFF" : undefined }}
             >
-              {subheading}
-            </p>
-          ) : null}
+              <span>{heading}</span>
+              {headingBold ? (
+                <>
+                  <br />
+                  <span className="font-bold">{headingBold}</span>
+                </>
+              ) : null}
+            </h1>
+            {subheading ? (
+              // Subheading: Montserrat Medium 32px / line-height 32px / color rgba(207,206,204,0.81).
+              <p
+                className="font-display text-[20px] leading-[1] font-medium sm:text-[24px] lg:text-[32px]"
+                style={{ color: isDarkTone ? "rgba(207,206,204,0.81)" : undefined }}
+              >
+                {subheading}
+              </p>
+            ) : null}
+          </div>
 
           {brandIcons && brandIcons.length > 0 ? (
-            <BrandIconsRow items={brandIcons} className="mt-4" />
+            <BrandIconsRow items={brandIcons} />
           ) : null}
 
           {primaryCta?.label || secondaryCta?.label ? (

@@ -132,16 +132,22 @@ function MarqueeIcons({ items, className }: BrandIconsRowProps) {
 function BrandIconCell({ item }: { item: BrandIconItem }) {
   const meta = brandMeta(item.brand);
   const iconUrl = mediaUrl(item.icon);
+  // Figma 347:2038-2053: size 76x76, border-2 #015BC4, bg #003381, rounded-[16px].
+  // Logo brand interno fills 72x72 (76 - border 2px each side).
   return (
-    <span className="block h-14 w-14 overflow-hidden rounded-[12px]" title={meta.label}>
+    <span
+      className="relative block h-[76px] w-[76px] overflow-hidden rounded-[16px] border-2"
+      style={{ backgroundColor: "#003381", borderColor: "#015BC4" }}
+      title={meta.label}
+    >
       {iconUrl ? (
-        <span className="flex h-full w-full items-center justify-center rounded-[12px] border border-white/15 bg-white p-2">
+        <span className="flex h-full w-full items-center justify-center">
           <Image
             src={iconUrl}
             alt={meta.label}
-            width={48}
-            height={48}
-            className="h-full w-full object-contain"
+            width={72}
+            height={72}
+            className="h-[72px] w-[72px] object-cover"
           />
         </span>
       ) : (

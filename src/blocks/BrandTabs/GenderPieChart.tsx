@@ -14,19 +14,18 @@ export interface GenderPieChartProps {
 }
 
 /**
- * GenderPieChart — donut chart con animación grow-from-0.
- * Recharts anima el Pie por default desde el centro al render — ese mismo
- * efecto cubre la spec "grow from 0" cuando el componente se monta al cambiar
- * de tab (porque el padre lo re-monta vía key).
+ * GenderPieChart — pie SÓLIDO (no donut) con animación grow-from-0.
+ * Matching Figma 402:8162-8167 — labels INSIDE las slices en blanco.
  *
- * Duración 400ms ease-out.
+ * Recharts anima el Pie por default desde el centro al render. Re-monta al
+ * cambiar de tab (vía key) para re-disparar la animación.
  */
 export function GenderPieChart({
   femalePercent,
   femaleLabel = "Mujeres",
   maleLabel = "Hombres",
-  primaryColor = "#015BC4",
-  secondaryColor = "#66B3FF",
+  primaryColor = "#00ACFF",
+  secondaryColor = "#003381",
 }: GenderPieChartProps) {
   const female = Math.max(0, Math.min(100, femalePercent));
   const male = 100 - female;
@@ -36,14 +35,16 @@ export function GenderPieChart({
   ];
 
   return (
-    <div className="relative aspect-square w-full max-w-[180px]">
+    <div className="relative h-[120px] w-[120px] shrink-0">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
             dataKey="value"
-            innerRadius="42%"
-            outerRadius="90%"
+            cx="50%"
+            cy="50%"
+            innerRadius={0}
+            outerRadius="100%"
             startAngle={90}
             endAngle={-270}
             paddingAngle={0}
@@ -59,21 +60,36 @@ export function GenderPieChart({
           </Pie>
         </PieChart>
       </ResponsiveContainer>
-      {/* Etiquetas internas — colocadas con porcentaje al 75% radial */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-[11px] leading-tight font-bold text-white">
-            {female}% {femaleLabel}
-          </p>
-        </div>
+      {/* Labels INSIDE las slices — posiciones del Figma (relative al 120x120 box).
+          Mujeres (slice grande): ~centro-derecha del pie.
+          Hombres (slice pequeña): ~esquina superior izquierda. */}
+      <div
+        className="pointer-events-none absolute font-semibold text-white"
+        style={{
+          left: "58px",
+          top: "62.77px",
+          fontSize: "10px",
+          textAlign: "center",
+          lineHeight: "normal",
+          whiteSpace: "nowrap",
+        }}
+      >
+        <span className="block">{female}%</span>
+        <span className="block">{femaleLabel}</span>
       </div>
-      <div className="pointer-events-none absolute" style={{ top: "20%", right: "8%" }}>
-        <p
-          className="text-[10px] leading-tight font-bold"
-          style={{ color: secondaryColor }}
-        >
-          {male}% {maleLabel}
-        </p>
+      <div
+        className="pointer-events-none absolute font-medium text-white"
+        style={{
+          left: "8.15px",
+          top: "26.77px",
+          fontSize: "10px",
+          textAlign: "center",
+          lineHeight: "normal",
+          whiteSpace: "nowrap",
+        }}
+      >
+        <span className="block">{male}%</span>
+        <span className="block">{maleLabel}</span>
       </div>
     </div>
   );
