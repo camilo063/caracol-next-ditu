@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { RevealSection } from "@/components/animations";
 import {
   DituAdnBlock,
   DituAudienciaBlock,
@@ -29,15 +30,34 @@ export default function DituPage() {
       <SiteHeader {...dituHeaderDemo} fallbackWordmark={<DituWordmark />} />
       {/* pt-16 = h-16 del SiteHeader fixed para no quedar oculto. */}
       <main className="flex-1 pt-16">
+        {/* Hero — sin RevealSection: parallax + visible al cargar. */}
         <DituHero />
-        <DituVideoBlock />
-        <DituAudienciaBlock />
-        <DituAdnBlock />
-        <DituTipoContenidoBlock />
-        <DituCanalesBlock />
-        <DituCalendarioBlock />
-        <DituPautaBlock />
-        <DituHablamosSection />
+        {/* Spec animaciones (Camilo): fade-in slide-up 400ms en todas las
+            secciones excepto Hero. RevealSection respeta reduced-motion. */}
+        <RevealSection>
+          <DituVideoBlock />
+        </RevealSection>
+        <RevealSection>
+          <DituAudienciaBlock />
+        </RevealSection>
+        <RevealSection>
+          <DituAdnBlock />
+        </RevealSection>
+        <RevealSection>
+          <DituTipoContenidoBlock />
+        </RevealSection>
+        <RevealSection>
+          <DituCanalesBlock />
+        </RevealSection>
+        <RevealSection>
+          <DituCalendarioBlock />
+        </RevealSection>
+        <RevealSection>
+          <DituPautaBlock />
+        </RevealSection>
+        <RevealSection>
+          <DituHablamosSection />
+        </RevealSection>
       </main>
       <SiteFooter {...dituFooterDemo} fallbackWordmark={<DituWordmark />} />
       <FloatingContact {...floatingContactDemo} />

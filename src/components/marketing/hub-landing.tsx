@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Tv, Users, Zap, Clock } from "lucide-react";
 
@@ -265,17 +266,25 @@ export function CaracolNextWordmark({ className }: { className?: string }) {
   );
 }
 
-/** Wordmark Ditu inline. */
+/**
+ * Wordmark Ditu inline — SVG real del Figma 722:2582 (logo-light variant).
+ * Incluye "ditu" wordmark + byline "por Caracol" sutil debajo.
+ * Por defecto h-8 (32px en header). Adapta tamaño con className.
+ */
 export function DituWordmark({ className }: { className?: string }) {
   return (
     <span
-      className={cn(
-        "font-display text-3xl font-black tracking-tight text-white",
-        className,
-      )}
-      style={{ fontFamily: '"Montserrat", system-ui, sans-serif' }}
+      className={cn("inline-flex flex-col items-start leading-none", className)}
+      aria-label="Ditu por Caracol"
     >
-      ditu
+      <Image
+        src="/ditu/logo-ditu-wordmark.svg"
+        alt=""
+        width={66}
+        height={32}
+        priority
+        className="h-8 w-auto object-contain"
+      />
     </span>
   );
 }

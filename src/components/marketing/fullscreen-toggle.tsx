@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Minimize2 } from "lucide-react";
 
 import {
   Tooltip,
@@ -12,8 +11,7 @@ import {
 } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
-/** Icon "expand corners" — Figma 430:529. 4 flechas en esquinas hacia afuera.
- *  SVG extraído directamente del design system. */
+/** Icon "expand corners" — Figma 722:2582 (142:1460). 4 flechas en esquinas hacia afuera. */
 function ExpandCornersIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -28,6 +26,32 @@ function ExpandCornersIcon({ className }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path d="M12.5 12.5L18.5 18.5M13.5 18.5H18.5V13.5M12.5 6.5L18.5 0.5M13.5 0.5H18.5V5.5M5.5 18.5H0.5V13.5M0.5 18.5L6.5 12.5M5.5 0.5H0.5V5.5M0.5 0.5L6.5 6.5" />
+    </svg>
+  );
+}
+
+/** Icon "compress corners" — inverso del expand. 4 flechas apuntando hacia adentro. */
+function CompressCornersIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 19 19"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+      className={className}
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Bottom-right: flechas hacia adentro (h-line + v-line en esquina interior + diagonal) */}
+      <path d="M18.5 18.5L12.5 12.5M12.5 13.5V18.5M12.5 13.5H18.5" />
+      {/* Top-right */}
+      <path d="M18.5 0.5L12.5 6.5M12.5 5.5V0.5M12.5 5.5H18.5" />
+      {/* Bottom-left */}
+      <path d="M0.5 18.5L6.5 12.5M6.5 13.5V18.5M6.5 13.5H0.5" />
+      {/* Top-left */}
+      <path d="M0.5 0.5L6.5 6.5M6.5 5.5V0.5M6.5 5.5H0.5" />
     </svg>
   );
 }
@@ -97,21 +121,21 @@ export function FullscreenToggle({ className, tone = "light" }: FullscreenToggle
             <AnimatePresence mode="wait" initial={false}>
               {isFullscreen ? (
                 <motion.span
-                  key="min"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
+                  key="compress"
+                  initial={{ scale: 0.7, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.7, opacity: 0 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   className="inline-flex"
                 >
-                  <Minimize2 className="h-4 w-4" aria-hidden="true" />
+                  <CompressCornersIcon className="h-5 w-5" />
                 </motion.span>
               ) : (
                 <motion.span
-                  key="max"
-                  initial={{ rotate: 90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: -90, opacity: 0 }}
+                  key="expand"
+                  initial={{ scale: 0.7, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.7, opacity: 0 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   className="inline-flex"
                 >

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { ParallaxBackground } from "@/components/animations";
 import { cn } from "@/lib/utils";
 
 /**
@@ -86,32 +87,40 @@ export function DituHero({
       id="inicio"
       className="relative flex flex-col items-center justify-center gap-6 overflow-hidden px-6 pt-32 pb-24 text-center sm:px-12 sm:pt-40 sm:pb-28 lg:gap-6 lg:px-[120px] lg:pt-[180px] lg:pb-[120px]"
     >
-      {/* Background: imagen + gradient overlay 129deg #12082D → #3B1A93 */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <Image
-          src="/ditu/hero-bg.png"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(129.43deg, rgb(18, 8, 45) 6.03%, rgb(59, 26, 147) 97.81%)",
-            opacity: 0.92,
-          }}
-        />
-      </div>
+      {/* Background con parallax — Framer Motion, speed 0.4 (spec).
+          Mobile y reduced-motion: desactivado automáticamente. */}
+      <ParallaxBackground speed={0.4} className="pointer-events-none absolute inset-0">
+        <div aria-hidden="true" className="absolute inset-0">
+          <Image
+            src="/ditu/hero-bg.png"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "linear-gradient(129.43deg, rgb(18, 8, 45) 6.03%, rgb(59, 26, 147) 97.81%)",
+              opacity: 0.92,
+            }}
+          />
+        </div>
+      </ParallaxBackground>
 
       <div className="relative z-10 flex w-full max-w-[1200px] flex-col items-center gap-8">
         {/* Heading hero + sticker overlay */}
         <div className="relative w-full text-center">
           <h1
-            className="font-display text-[44px] leading-[1] font-bold tracking-tight text-white uppercase sm:text-[64px] md:text-[80px] lg:text-[96px]"
-            style={{ wordBreak: "break-word" }}
+            className="font-display font-bold tracking-tight text-white uppercase"
+            style={{
+              wordBreak: "break-word",
+              // Fluid: 44px (mobile) → 96px (1440+). Spec Camilo: clamp() respeta diseño.
+              fontSize: "clamp(2.75rem, 1.5rem + 5vw, 6rem)",
+              lineHeight: 1,
+            }}
           >
             {headingRest ?? headingFallback}
           </h1>
@@ -122,8 +131,13 @@ export function DituHero({
             style={{ transform: "rotate(-2.42deg)" }}
           >
             <span
-              className="font-display inline-block rounded-[8px] px-2 pt-1.5 text-[44px] leading-none font-bold uppercase sm:text-[64px] md:text-[80px] lg:text-[96px]"
-              style={{ backgroundColor: "#77EDED", color: "#12082D" }}
+              className="font-display inline-block rounded-[8px] px-2 pt-1.5 font-bold uppercase"
+              style={{
+                backgroundColor: "#77EDED",
+                color: "#12082D",
+                fontSize: "clamp(2.75rem, 1.5rem + 5vw, 6rem)",
+                lineHeight: 1,
+              }}
             >
               {stickerText}
             </span>

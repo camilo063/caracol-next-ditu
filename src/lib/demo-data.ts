@@ -1671,18 +1671,21 @@ export const caracolNextHeaderDemo = {
 
 export const dituHeaderDemo = {
   landing: "ditu" as const,
+  // Figma 722:2582 — labels exactos
   navAnchors: [
-    { label: "Canales", anchorId: "canales" },
-    { label: "Contenido", anchorId: "tipo-contenido" },
-    { label: "Momentos", anchorId: "momentos" },
-    { label: "Pauta", anchorId: "pauta" },
-    { label: "Contacto", anchorId: "contacto" },
+    { label: "Nuestro Alcance", anchorId: "cifras" },
+    { label: "ADN ditu", anchorId: "adn" },
+    { label: "Tipo de contenido", anchorId: "tipo-contenido" },
+    { label: "Nuestros canales", anchorId: "canales" },
+    { label: "Calendario", anchorId: "momentos" },
+    { label: "Formatos", anchorId: "pauta" },
   ],
+  // Figma 722:2582 — CTA redirige a Caracol Next
   ctaButton: {
     enabled: true,
-    label: "Inicio",
+    label: "Ir a Caracol Next",
     href: "/",
-    variant: "outline" as const,
+    variant: "brand-caracolnext" as const,
   },
   sticky: true,
 };
