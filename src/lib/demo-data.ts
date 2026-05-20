@@ -599,8 +599,11 @@ export const caracolNextDemoLayout: AnyBlock[] = [
     eyebrow: null,
     heading: "Calendario",
     description: "Los grandes momentos del año, una oportunidad para tu marca.",
+    // Colores Figma por categoría (Categorias/01-06):
+    // #2862FF (azul medio), #0000C4 (azul oscuro), #FFC200 (amarillo),
+    // #A139C6 (morado), #FF0013 (rojo), #05E8FD (cyan).
     events: [
-      // Fila 1
+      // Row 1
       {
         id: "e1",
         name: "Año Nuevo",
@@ -611,7 +614,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         importance: "high",
         category: "special",
-        badgeColor: "#015BC4",
+        badgeColor: "#2862FF", // Categoria-01
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },
@@ -626,7 +629,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         importance: "critical",
         category: "entertainment",
-        badgeColor: "#0D3AA0",
+        badgeColor: "#0000C4", // Categoria-02
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },
@@ -640,7 +643,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         importance: "high",
         category: "special",
-        badgeColor: "#FFC200",
+        badgeColor: "#FFC200", // Categoria-03
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },
@@ -654,11 +657,11 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         importance: "medium",
         category: "entertainment",
-        badgeColor: "#A139C6",
+        badgeColor: "#A139C6", // Categoria-04
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },
-      // Fila 2
+      // Row 2
       {
         id: "e5",
         name: "FilBo 2026",
@@ -669,7 +672,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         importance: "medium",
         category: "special",
-        badgeColor: "#FF0013",
+        badgeColor: "#FF0013", // Categoria-05
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },
@@ -683,7 +686,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         importance: "critical",
         category: "sports",
-        badgeColor: "#015BC4",
+        badgeColor: "#05E8FD", // Categoria-06
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },
@@ -697,7 +700,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         importance: "medium",
         category: "entertainment",
-        badgeColor: "#015BC4",
+        badgeColor: "#2862FF", // Categoria-01
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },
@@ -707,15 +710,15 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         dateStart: "2026-07-20",
         dateEnd: null,
         dateLabelOverride: "20-JUL",
-        description: "Conversaiones",
+        description: "Conversaciones",
         image: null,
         importance: "high",
         category: "news",
-        badgeColor: "#FFC200",
+        badgeColor: "#FFC200", // Categoria-03
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },
-      // Fila 3
+      // Row 3
       {
         id: "e9",
         name: "Black Fridays",
@@ -726,7 +729,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         importance: "high",
         category: "special",
-        badgeColor: "#015BC4",
+        badgeColor: "#2862FF", // Categoria-01
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },
@@ -740,7 +743,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         importance: "medium",
         category: "news",
-        badgeColor: "#015BC4",
+        badgeColor: "#2862FF", // Categoria-01
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },
@@ -750,11 +753,11 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         dateStart: "2026-09-19",
         dateEnd: null,
         dateLabelOverride: "SEP",
-        description: "Pico de grifting",
+        description: "Pico de gifting",
         image: null,
         importance: "medium",
         category: "entertainment",
-        badgeColor: "#015BC4",
+        badgeColor: "#0000C4", // Categoria-02
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },
@@ -768,7 +771,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         image: null,
         importance: "high",
         category: "special",
-        badgeColor: "#015BC4",
+        badgeColor: "#2862FF", // Categoria-01
         categoryLabel: "CATEGORÍA",
         cta: { label: "", href: "" },
       },

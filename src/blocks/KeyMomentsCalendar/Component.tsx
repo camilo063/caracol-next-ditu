@@ -10,31 +10,42 @@ import { cn } from "@/lib/utils";
 import type { KeyMomentsBlockProps } from "../types";
 
 /**
- * KeyMomentsCalendarBlock — "Calendario" (matching Figma adjunto).
+ * KeyMomentsCalendarBlock — implementación 1:1 del frame Figma 401:913
+ * "Calendario" del Mediakit Caracol Design System.
  *
- * Layout:
- *  - Sección con bg gradiente azul deep + rounded-3xl.
- *  - Título "Calendario" display + descripción + grid/carrusel de cards.
- *  - Mobile: carrusel horizontal scroll-snap.
- *      smallest → 1.5 cards visibles
- *      sm       → 2.5
- *      md       → 3.5
- *      lg+      → grid 4-col estático (3 filas = 12 cards máx).
+ * Specs (extraídos vía Figma MCP):
+ *  - Container: bg solid #003381 (navy), border-radius asimétrico
+ *    `rounded-bl-[180px]` (curva inferior izquierda 180px).
+ *  - Padding interno: 120px en desktop (gap-64 entre secciones).
+ *  - Heading "Calendario": Montserrat Bold 64px line-height 72px white.
+ *  - Description: Montserrat Regular 24px color rgba(207,206,204,0.81).
+ *  - Grid 4-col gap-24 con cards de 282px ancho fijo.
+ *  - Cards: glassmorphism (bg rgba(0,172,255,0.1) + backdrop-blur-10),
+ *    border #95999A, rounded-12, padding px-16 py-20, gap-18.
+ *  - Badge categoría: bg color/categoria (6 colores), text Bold 12px white uppercase.
+ *  - Card title: Montserrat Bold 24px white.
+ *  - Card desc: Montserrat Regular 16px line-height 24 color rgba(207,206,204,0.81).
+ *  - Footer CTA: bg #00ACFF (azul claro, no azul medio), 306px wide, SemiBold 18px.
  *
- * Cards:
- *  - Pill "CATEGORÍA" (color badge) + date label small caps + título + descripción.
- *  - Hover: translateY -2px + border del badgeColor @ 0.5 opacity, 200ms ease.
- *
- * CTA inferior: link directo, sin animación especial.
+ * Mobile: carrusel horizontal scroll-snap.
  */
 
-const CATEGORY_FALLBACK_COLORS: Record<string, string> = {
-  sports: "#015BC4",
-  entertainment: "#A139C6",
-  news: "#FF6F00",
-  special: "#FFC200",
-  other: "#5C6BC0",
+/** Colores de categoría según el design system Figma (Categorias/01..06). */
+const CATEGORY_COLORS: Record<string, string> = {
+  // Mapping semántico → token Figma.
+  sports: "#2862FF", // Categorias/01 azul medio
+  news: "#0000C4", // Categorias/02 azul oscuro
+  special: "#FFC200", // Categorias/03 amarillo
+  entertainment: "#A139C6", // Categorias/04 morado
+  promo: "#FF0013", // Categorias/05 rojo
+  cyan: "#05E8FD", // Categorias/06 cyan
+  other: "#2862FF",
 };
+
+const NAVY_DARK = "#003381";
+const PILL_GREY_BORDER = "#95999A";
+const TEXT_LIGHT = "rgba(207,206,204,0.81)";
+const AZUL_CLARO = "#00ACFF";
 
 type EventItem = NonNullable<KeyMomentsBlockProps["events"]>[number];
 
@@ -61,20 +72,31 @@ export function KeyMomentsCalendarComponent({
   return (
     <section id={anchorId ?? "momentos"} className="py-6 sm:py-10">
       <div
-        className="relative w-full overflow-hidden rounded-[2rem] py-14 text-white sm:rounded-[2.5rem] sm:py-20"
+        className="relative w-full overflow-hidden p-8 text-white sm:p-12 lg:p-[120px]"
         style={{
-          background: "linear-gradient(180deg, #003380 0%, #003CCA 50%, #003380 100%)",
+          backgroundColor: NAVY_DARK,
+          // Border radius asimétrico Figma: solo bottom-left con curva grande.
+          borderBottomLeftRadius: "180px",
         }}
       >
-        <Container size="xl">
-          <h2 className="font-display text-fluid-display font-black text-white">
-            {heading || "Calendario"}
-          </h2>
-          {description ? (
-            <p className="text-fluid-body mt-3 max-w-2xl text-white/80">{description}</p>
-          ) : null}
+        <Container size="xl" className="!p-0">
+          {/* Heading + descripción — gap-16 entre ellos. */}
+          <div className="flex flex-col gap-4">
+            <h2 className="font-display text-[40px] leading-[1.125] font-bold whitespace-nowrap text-white sm:text-[48px] lg:text-[64px] lg:leading-[72px]">
+              {heading || "Calendario"}
+            </h2>
+            {description ? (
+              <p
+                className="font-display text-[16px] leading-normal font-normal sm:text-[20px] lg:text-[24px]"
+                style={{ color: TEXT_LIGHT }}
+              >
+                {description}
+              </p>
+            ) : null}
+          </div>
 
-          {/* Cards container — carrusel mobile, grid lg */}
+          {/* Cards container — carrusel mobile, grid 4-col lg.
+              Spacing top: 64px en lg (matching Figma gap-64). */}
           {mode === "list" ? (
             <CalendarList events={cappedEvents} />
           ) : (
@@ -82,7 +104,7 @@ export function KeyMomentsCalendarComponent({
               className={cn(
                 "mt-10 flex [scrollbar-width:none] gap-4 overflow-x-auto pb-4 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
                 "-mx-1 snap-x snap-mandatory scroll-px-4 px-1 sm:scroll-px-6",
-                "lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:pb-0",
+                "lg:mx-0 lg:mt-16 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:pb-0",
               )}
             >
               {cappedEvents.map((e) => (
@@ -91,17 +113,23 @@ export function KeyMomentsCalendarComponent({
             </div>
           )}
 
-          {/* CTA inferior — link directo */}
-          <div className="mt-12 flex flex-col items-center gap-3 text-center sm:mt-16">
-            <p className="text-fluid-subtitle max-w-3xl font-bold">{ctaHeading}</p>
-            <p className="text-fluid-body text-white/85">{ctaDesc}</p>
+          {/* Footer CTA — gap-24 entre texto y botón (Figma 634:4283). */}
+          <div className="mt-12 flex flex-col items-center gap-6 text-center sm:mt-16 lg:mt-16">
+            <div className="flex flex-col items-center gap-1 text-center">
+              <p className="font-display text-[16px] leading-normal font-bold text-white sm:text-[20px] lg:text-[24px]">
+                {ctaHeading}
+              </p>
+              <p className="font-display text-[16px] leading-normal font-normal text-white sm:text-[20px] lg:text-[24px]">
+                {ctaDesc}
+              </p>
+            </div>
             <Link
               href={ctaHref}
               className={cn(
-                "mt-2 inline-flex items-center justify-center rounded-md px-8 py-3 text-sm font-bold text-white transition-colors",
+                "font-display inline-flex h-12 w-[306px] items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-opacity hover:opacity-90",
                 "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
               )}
-              style={{ backgroundColor: "#2862FF" }}
+              style={{ backgroundColor: AZUL_CLARO }}
             >
               {ctaLabel}
             </Link>
@@ -114,8 +142,7 @@ export function KeyMomentsCalendarComponent({
 
 function CalendarCard({ event }: { event: EventItem }) {
   const cat = event.category ?? "other";
-  const badgeColor =
-    event.badgeColor ?? CATEGORY_FALLBACK_COLORS[cat] ?? CATEGORY_FALLBACK_COLORS.other;
+  const badgeColor = event.badgeColor ?? CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.other;
   const dateLabel =
     event.dateLabelOverride ??
     formatDateRange(event.dateStart, event.dateEnd ?? undefined).toUpperCase();
@@ -130,35 +157,47 @@ function CalendarCard({ event }: { event: EventItem }) {
       }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(
-        // Mobile carrusel widths: 1.5 → 2.5 → 3.5 progresivo.
+        // Mobile carrusel widths.
         "shrink-0 snap-start",
         "w-[66%]",
         "sm:w-[40%]",
         "md:w-[28%]",
-        "lg:w-auto lg:shrink",
-        // Visual de la card.
-        "flex flex-col gap-3 rounded-2xl border-2 border-white/10 bg-[#0D3AA0] p-5",
+        "lg:w-[282px] lg:shrink",
+        // Visual de la card — glassmorphism Figma.
+        "flex flex-col gap-[18px] rounded-[12px] border px-4 py-5",
+        "backdrop-blur-[10px]",
       )}
+      style={{
+        backgroundColor: "rgba(0,172,255,0.1)",
+        borderColor: PILL_GREY_BORDER,
+      }}
     >
-      <span
-        className="inline-flex w-fit items-center rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase"
-        style={{ backgroundColor: badgeColor }}
-      >
-        {categoryLabel}
-      </span>
-      {dateLabel ? (
-        <p className="text-fluid-tag font-bold tracking-wider text-white uppercase">
-          {dateLabel}
-        </p>
-      ) : null}
-      <h3 className="font-display text-lg leading-tight font-extrabold text-white sm:text-xl">
-        {event.name}
-      </h3>
-      {event.description ? (
-        <p className="text-fluid-body-sm leading-relaxed text-white/75">
-          {event.description}
-        </p>
-      ) : null}
+      <div className="flex flex-col items-start gap-2">
+        <span
+          className="font-display inline-flex items-center justify-center rounded-[4px] px-2 py-1 text-[12px] leading-[12px] font-bold text-white uppercase"
+          style={{ backgroundColor: badgeColor }}
+        >
+          {categoryLabel}
+        </span>
+        {dateLabel ? (
+          <p className="font-display text-[14px] leading-[20px] font-semibold text-white">
+            {dateLabel}
+          </p>
+        ) : null}
+      </div>
+      <div className="flex flex-col items-start gap-2">
+        <h3 className="font-display text-[24px] leading-tight font-bold text-white">
+          {event.name}
+        </h3>
+        {event.description ? (
+          <p
+            className="font-display text-[16px] leading-[24px] font-normal"
+            style={{ color: TEXT_LIGHT }}
+          >
+            {event.description}
+          </p>
+        ) : null}
+      </div>
     </motion.article>
   );
 }
