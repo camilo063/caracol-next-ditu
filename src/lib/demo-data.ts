@@ -795,6 +795,8 @@ export const caracolNextDemoLayout: AnyBlock[] = [
     // título en la columna izquierda (matching Figma).
     heading: "",
     description: null,
+    // Textos exactos extraídos del Figma 401:3385/3699/3794.
+    // Heading soporta split "|" para 2 líneas (ej. Video|Podcast).
     categories: [
       {
         id: "bc-cat1",
@@ -802,7 +804,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         label: "Branded Content",
         heading: "Branded Content",
         description:
-          "Domina el formato con mayor retención del entorno digital. Ofrecemos dos soluciones estratégicas: el desarrollo de producciones exclusivas alineadas al ADN de tu marca, o la integración orgánica en nuestros espacios ya posicionados para aprovechar su influencia y alcance.",
+          "Elevamos tu marca a través de formatos de contenido integrados en nuestro ecosistema líder. Logramos una presencia orgánica y potente que asegura la atención de la audiencia, generando credibilidad y resultados medibles que trascienden la publicidad convencional.",
         multimedia: {
           type: "youtube",
           youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
@@ -819,7 +821,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         id: "bc-cat2",
         key: "video-podcast",
         label: "Video Podcast",
-        heading: "Video Podcast",
+        heading: "Video|Podcast",
         description:
           "Domina el formato con mayor retención del entorno digital. Ofrecemos dos soluciones estratégicas: el desarrollo de producciones exclusivas alineadas al ADN de tu marca, o la integración orgánica en nuestros espacios ya posicionados para aprovechar su influencia y alcance.",
         multimedia: {
@@ -930,7 +932,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         label: "Contenido Editorial",
         heading: "Contenido Editorial",
         description:
-          "Artículos, especiales y formatos editoriales integrados a la línea informativa de nuestros portales líderes — alcance real con autoridad de marca.",
+          "Potenciamos tu marca a través del criterio y el reconocimiento de nuestros periodistas. Ya sea mediante la creación de contenidos especializados o el cubrimiento estratégico de tus eventos, ofrecemos el respaldo informativo y la credibilidad necesarios para conectar de forma auténtica con la audiencia.",
         multimedia: {
           type: "youtube",
           youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
