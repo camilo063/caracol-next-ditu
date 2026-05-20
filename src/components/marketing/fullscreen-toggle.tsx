@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Maximize2, Minimize2 } from "lucide-react";
+import { Minimize2 } from "lucide-react";
 
 import {
   Tooltip,
@@ -11,6 +11,26 @@ import {
   TooltipTrigger,
 } from "@/components/ui";
 import { cn } from "@/lib/utils";
+
+/** Icon "expand corners" — Figma 430:529. 4 flechas en esquinas hacia afuera.
+ *  SVG extraído directamente del design system. */
+function ExpandCornersIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 19 19"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+      className={className}
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M12.5 12.5L18.5 18.5M13.5 18.5H18.5V13.5M12.5 6.5L18.5 0.5M13.5 0.5H18.5V5.5M5.5 18.5H0.5V13.5M0.5 18.5L6.5 12.5M5.5 0.5H0.5V5.5M0.5 0.5L6.5 6.5" />
+    </svg>
+  );
+}
 
 export interface FullscreenToggleProps {
   className?: string;
@@ -95,7 +115,7 @@ export function FullscreenToggle({ className, tone = "light" }: FullscreenToggle
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   className="inline-flex"
                 >
-                  <Maximize2 className="h-4 w-4" aria-hidden="true" />
+                  <ExpandCornersIcon className="h-5 w-5" />
                 </motion.span>
               )}
             </AnimatePresence>

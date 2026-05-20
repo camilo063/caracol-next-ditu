@@ -6,7 +6,6 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { CountUp } from "@/components/animations";
-import { Container } from "@/components/ui";
 import { NetworkIcon } from "@/components/marketing";
 import { brandMeta } from "@/lib/brand";
 import { formatNumber } from "@/lib/format";
@@ -52,7 +51,10 @@ export function BrandTabsBlockComponent({
   return (
     <section id={anchorId ?? "marcas"} className="py-6 sm:py-8 lg:py-10">
       <div className="bg-muted w-full overflow-hidden rounded-[2rem] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
-        <Container size="xl">
+        {/* Wrapper custom (no Container) — Figma: 1280px inner content,
+            con px-[80px] en desktop (1440 - 160 = 1280). Permite que los tabs
+            quepan exactamente en 1 línea sin scroll horizontal. */}
+        <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8 lg:px-[80px]">
           {/* Figma 400:2128: eyebrow Poppins Bold 20px #00ACFF uppercase, SIN tracking ancho. */}
           <p
             className="font-poppins text-[16px] leading-normal font-bold uppercase sm:text-[18px] lg:text-[20px]"
@@ -78,13 +80,13 @@ export function BrandTabsBlockComponent({
           ) : null}
 
           {/* Tabs pill row — Figma: 1 línea siempre (1280px wide).
-              Si no caben en el viewport, scroll horizontal (mobile). */}
+              Mobile (<lg): scroll horizontal. Desktop (lg+): visible sin scroll. */}
           <div
-            className="-mx-4 mt-8 [scrollbar-width:none] overflow-x-auto px-4 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            className="-mx-4 mt-8 [scrollbar-width:none] overflow-x-auto px-4 [-ms-overflow-style:none] lg:overflow-x-visible lg:px-0 [&::-webkit-scrollbar]:hidden"
             role="tablist"
             aria-label="Marcas del ecosistema"
           >
-            <div className="flex w-max items-center gap-2">
+            <div className="flex w-max items-center gap-2 lg:w-full lg:justify-between">
               {tabs.map((tab, i) => {
                 const meta = brandMeta(tab.brand);
                 const isActive = i === safeIndex;
@@ -138,7 +140,7 @@ export function BrandTabsBlockComponent({
               </motion.div>
             </AnimatePresence>
           </div>
-        </Container>
+        </div>
       </div>
     </section>
   );
@@ -293,13 +295,13 @@ function TabPanel({ tab }: { tab: Tab }) {
                       key={net.id ?? net.network}
                       className="flex min-w-0 items-start gap-3"
                     >
-                      {/* Figma: icons uniformes en navy #003381 (no brand color
-                          dentro de la REDES card). */}
-                      <span
-                        className="flex h-8 w-8 shrink-0 items-center justify-center"
-                        style={{ color: "#003381" }}
-                      >
-                        <NetworkIcon network={net.network} className="h-8 w-8" />
+                      {/* Figma: icons silhouettes navy (32x32, asset oficial). */}
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center">
+                        <NetworkIcon
+                          network={net.network}
+                          className="h-8 w-8"
+                          variant="navy"
+                        />
                       </span>
                       <div className="flex min-w-0 flex-col items-start justify-center whitespace-nowrap">
                         <p
