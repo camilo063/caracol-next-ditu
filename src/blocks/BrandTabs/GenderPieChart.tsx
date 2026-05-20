@@ -7,18 +7,23 @@ export interface GenderPieChartProps {
   femalePercent: number;
   femaleLabel?: string;
   maleLabel?: string;
-  /** Color para "Mujeres" (% mayor). */
+  /** Color para el SLICE MAYOR (lighter / accent). */
   primaryColor?: string;
-  /** Color para "Hombres" (% menor). */
+  /** Color para el SLICE MENOR (darker / panel bg). */
   secondaryColor?: string;
 }
 
 /**
  * GenderPieChart — pie SÓLIDO (no donut) con animación grow-from-0.
- * Matching Figma 402:8162-8167 — labels INSIDE las slices en blanco.
+ * Matching Figma 402:8162-8167.
  *
- * Recharts anima el Pie por default desde el centro al render. Re-monta al
- * cambiar de tab (vía key) para re-disparar la animación.
+ * Lógica:
+ *  - El SLICE MAYOR siempre se pinta con primaryColor (lighter/accent).
+ *  - El SLICE MENOR siempre se pinta con secondaryColor (darker/panel).
+ *  - Labels siguen el SLICE (no el género): la label del mayor va al
+ *    centro-derecha (ml-58, mt-62.77), la del menor va al top-izq (ml-8, mt-26).
+ *  - Cuando mujeres es mayoría (femalePercent ≥ 50): mujeres = larger.
+ *  - Cuando hombres es mayoría: hombres = larger.
  */
 export function GenderPieChart({
   femalePercent,
@@ -29,10 +34,24 @@ export function GenderPieChart({
 }: GenderPieChartProps) {
   const female = Math.max(0, Math.min(100, femalePercent));
   const male = 100 - female;
-  const data = [
-    { name: femaleLabel, value: female, color: primaryColor },
-    { name: maleLabel, value: male, color: secondaryColor },
-  ];
+  const isFemaleMajority = female >= male;
+
+  // Renderizamos la slice MAYOR primero (con primaryColor) y la MENOR después
+  // (con secondaryColor). El Pie de Recharts empieza en 90° y va antihorario.
+  const data = isFemaleMajority
+    ? [
+        { name: femaleLabel, value: female, color: primaryColor },
+        { name: maleLabel, value: male, color: secondaryColor },
+      ]
+    : [
+        { name: maleLabel, value: male, color: primaryColor },
+        { name: femaleLabel, value: female, color: secondaryColor },
+      ];
+
+  const largerLabel = isFemaleMajority ? femaleLabel : maleLabel;
+  const largerValue = isFemaleMajority ? female : male;
+  const smallerLabel = isFemaleMajority ? maleLabel : femaleLabel;
+  const smallerValue = isFemaleMajority ? male : female;
 
   return (
     <div className="relative h-[120px] w-[120px] shrink-0">
@@ -60,9 +79,7 @@ export function GenderPieChart({
           </Pie>
         </PieChart>
       </ResponsiveContainer>
-      {/* Labels INSIDE las slices — posiciones del Figma (relative al 120x120 box).
-          Mujeres (slice grande): ~centro-derecha del pie.
-          Hombres (slice pequeña): ~esquina superior izquierda. */}
+      {/* Larger slice label — centro-derecha del pie (Figma ml-58, mt-62.77). */}
       <div
         className="pointer-events-none absolute font-semibold text-white"
         style={{
@@ -74,9 +91,12 @@ export function GenderPieChart({
           whiteSpace: "nowrap",
         }}
       >
-        <span className="block">{female}%</span>
-        <span className="block">{femaleLabel}</span>
+        <span className="block">
+          {Number.isInteger(largerValue) ? largerValue : largerValue.toFixed(1)}%
+        </span>
+        <span className="block">{largerLabel}</span>
       </div>
+      {/* Smaller slice label — top-izquierda del pie (Figma ml-8.15, mt-26.77). */}
       <div
         className="pointer-events-none absolute font-medium text-white"
         style={{
@@ -88,8 +108,10 @@ export function GenderPieChart({
           whiteSpace: "nowrap",
         }}
       >
-        <span className="block">{male}%</span>
-        <span className="block">{maleLabel}</span>
+        <span className="block">
+          {Number.isInteger(smallerValue) ? smallerValue : smallerValue.toFixed(1)}%
+        </span>
+        <span className="block">{smallerLabel}</span>
       </div>
     </div>
   );

@@ -302,7 +302,8 @@ export const caracolNextDemoLayout: AnyBlock[] = [
           reachSuffix: null,
           highlights: [],
           genderSplit: {
-            femalePercent: 32,
+            // Figma Caracol Sports: 84% Hombres, 16% Mujeres
+            femalePercent: 16,
             femaleLabel: "Mujeres",
             maleLabel: "Hombres",
           },
@@ -363,7 +364,8 @@ export const caracolNextDemoLayout: AnyBlock[] = [
           reachSuffix: null,
           highlights: [],
           genderSplit: {
-            femalePercent: 42,
+            // Figma Blu Radio: 65% Mujeres, 25% Hombres
+            femalePercent: 65,
             femaleLabel: "Mujeres",
             maleLabel: "Hombres",
           },
@@ -429,7 +431,8 @@ export const caracolNextDemoLayout: AnyBlock[] = [
           reachSuffix: null,
           highlights: [],
           genderSplit: {
-            femalePercent: 55,
+            // Figma La Kalle: 71.4% Mujeres, 28.6% Hombres
+            femalePercent: 71,
             femaleLabel: "Mujeres",
             maleLabel: "Hombres",
           },
@@ -495,7 +498,8 @@ export const caracolNextDemoLayout: AnyBlock[] = [
           reachSuffix: null,
           highlights: [],
           genderSplit: {
-            femalePercent: 58,
+            // Figma BumBox: 77% Mujeres, 23% Hombres
+            femalePercent: 77,
             femaleLabel: "Mujeres",
             maleLabel: "Hombres",
           },
@@ -554,7 +558,8 @@ export const caracolNextDemoLayout: AnyBlock[] = [
           reachSuffix: null,
           highlights: [],
           genderSplit: {
-            femalePercent: 48,
+            // Figma Volk: 77% Mujeres, 23% Hombres
+            femalePercent: 77,
             femaleLabel: "Mujeres",
             maleLabel: "Hombres",
           },

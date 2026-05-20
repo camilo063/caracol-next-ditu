@@ -77,13 +77,14 @@ export function BrandTabsBlockComponent({
             <p className="text-muted-foreground text-fluid-body mt-2">{description}</p>
           ) : null}
 
-          {/* Tabs pill row — wrap si no caben en 1 línea, scroll horizontal en mobile. */}
+          {/* Tabs pill row — Figma: 1 línea siempre (1280px wide).
+              Si no caben en el viewport, scroll horizontal (mobile). */}
           <div
-            className="-mx-4 mt-8 [scrollbar-width:none] overflow-x-auto px-4 [-ms-overflow-style:none] sm:overflow-visible [&::-webkit-scrollbar]:hidden"
+            className="-mx-4 mt-8 [scrollbar-width:none] overflow-x-auto px-4 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
             role="tablist"
             aria-label="Marcas del ecosistema"
           >
-            <div className="flex w-max gap-2 sm:w-full sm:flex-wrap">
+            <div className="flex w-max items-center gap-2">
               {tabs.map((tab, i) => {
                 const meta = brandMeta(tab.brand);
                 const isActive = i === safeIndex;
@@ -292,9 +293,11 @@ function TabPanel({ tab }: { tab: Tab }) {
                       key={net.id ?? net.network}
                       className="flex min-w-0 items-start gap-3"
                     >
+                      {/* Figma: icons uniformes en navy #003381 (no brand color
+                          dentro de la REDES card). */}
                       <span
                         className="flex h-8 w-8 shrink-0 items-center justify-center"
-                        style={{ color: brandColor }}
+                        style={{ color: "#003381" }}
                       >
                         <NetworkIcon network={net.network} className="h-8 w-8" />
                       </span>
