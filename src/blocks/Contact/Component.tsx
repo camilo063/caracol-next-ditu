@@ -259,31 +259,45 @@ function CtaSimpleLayout({
   const ctaHref = ctaButton?.href || "#contacto";
 
   return (
-    <section id={anchorId ?? "contacto"} className="py-6 sm:py-8 lg:py-10">
-      <div className="w-full overflow-hidden rounded-[2rem] bg-[#F2F2F2] py-16 sm:rounded-[2.5rem] sm:py-20 lg:py-28">
-        <Container size="xl">
-          <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 text-center">
-            <h2 className="font-display text-fluid-display leading-[1.1] tracking-tight text-[#003380]">
-              {heading}
-              {headingEmphasis ? (
-                <>
-                  <br />
-                  <strong className="font-black">{headingEmphasis}</strong>
-                </>
-              ) : null}
-            </h2>
-            {description ? (
-              <p className="text-fluid-body max-w-2xl text-neutral-600">{description}</p>
+    <section
+      id={anchorId ?? "contacto"}
+      className="bg-background py-12 sm:py-16 lg:py-[94px]"
+    >
+      {/* Figma 634:4392: container con px-64 py-94, gap-24 entre texto y botón.
+          Sin background card — usa el bg del page. */}
+      <div className="mx-auto flex max-w-[1232px] flex-col items-center gap-6 px-4 sm:px-8 lg:gap-6 lg:px-[64px]">
+        <div className="flex w-full flex-col items-center gap-6 px-4 py-4 text-center sm:px-8 lg:px-10 lg:py-4">
+          {/* Heading: 2 líneas — Medium 64px (line 1) + Black 64px (line 2). */}
+          <h2
+            className="font-display text-center text-[32px] leading-[1.125] lg:text-[64px] lg:leading-[72px]"
+            style={{ color: "#003381" }}
+          >
+            <span className="block font-medium">{heading}</span>
+            {headingEmphasis ? (
+              <span className="block font-black">{headingEmphasis}</span>
             ) : null}
-            <Button
-              asChild
-              size="lg"
-              className="mt-4 bg-[#2862FF] text-white hover:bg-[#003CCA]"
+          </h2>
+          {/* Description: Regular 24px line-height 32 color #464553. */}
+          {description ? (
+            <p
+              className="font-display max-w-[900px] text-center text-[16px] leading-[24px] font-normal sm:text-[20px] lg:text-[24px] lg:leading-[32px]"
+              style={{ color: "#464553" }}
             >
-              <Link href={ctaHref}>{ctaLabel}</Link>
-            </Button>
-          </div>
-        </Container>
+              {description}
+            </p>
+          ) : null}
+        </div>
+        {/* CTA: bg #015BC4 306x48 SemiBold 18px white px-48 py-12. */}
+        <Link
+          href={ctaHref}
+          className={cn(
+            "font-display inline-flex h-12 w-[306px] items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-opacity hover:opacity-90",
+            "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+          )}
+          style={{ backgroundColor: "#015BC4" }}
+        >
+          {ctaLabel}
+        </Link>
       </div>
     </section>
   );

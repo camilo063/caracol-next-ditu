@@ -55,17 +55,24 @@ export function SiteFooter({
   useWave,
   tone = landing === "ditu" ? "ditu-deep" : "caracolnext-deep",
 }: SiteFooterProps) {
-  // Tone minimal — solo pill gris con copyright.
+  // Tone minimal — Figma 347:1736: pill gris claro (rgba(0,0,0,0.1)) centrado
+  // con copyright. py-40 wrapper, px-120 interno, rounded-90 p-10 pill.
   if (tone === "minimal") {
     return (
-      <footer className="bg-background pb-8 sm:pb-12">
-        <Container size="xl">
-          <div className="rounded-full bg-[#E5E5E5] px-6 py-4 text-center">
-            <p className="text-muted-foreground text-xs">
+      <footer className="bg-background flex flex-col items-center justify-center py-8 sm:py-10">
+        <div className="flex w-full max-w-[1377px] flex-col items-start overflow-hidden px-4 sm:px-8 lg:px-[120px]">
+          <div
+            className="flex w-full items-center justify-center rounded-[90px] p-[10px]"
+            style={{ backgroundColor: "rgba(0,0,0,0.1)" }}
+          >
+            <p
+              className="font-display text-[16px] leading-[24px] font-semibold whitespace-nowrap"
+              style={{ color: "#464553" }}
+            >
               {bottomLine ?? "©2026 Caracol Comercial Digital"}
             </p>
           </div>
-        </Container>
+        </div>
       </footer>
     );
   }
