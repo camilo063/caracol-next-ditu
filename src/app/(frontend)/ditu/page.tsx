@@ -1,25 +1,27 @@
 import Link from "next/link";
 
-import { RenderBlocks } from "@/blocks";
 import {
+  DituAdnBlock,
+  DituAudienciaBlock,
+  DituCalendarioBlock,
+  DituCanalesBlock,
+  DituHero,
   DituMascot,
+  DituPautaBlock,
+  DituTipoContenidoBlock,
+  DituVideoBlock,
   DituWordmark,
   FloatingContact,
   SiteFooter,
   SiteHeader,
 } from "@/components/marketing";
 import { Button, Container, Section } from "@/components/ui";
-import {
-  dituDemoLayout,
-  dituFooterDemo,
-  dituHeaderDemo,
-  floatingContactDemo,
-} from "@/lib/demo-data";
+import { dituFooterDemo, dituHeaderDemo, floatingContactDemo } from "@/lib/demo-data";
 
 /**
  * Ditu — `/ditu`.
- * Header + RenderBlocks + sección "¿Hablamos?" con mascot + Footer + FloatingContact.
- * Fase 4 reemplaza el mock por fetch a Payload.
+ * Landing 1:1 con Figma 512:2245.
+ * Custom blocks (no RenderBlocks) — el sistema Caracol Next se mantiene en `/`.
  */
 export default function DituPage() {
   return (
@@ -27,7 +29,14 @@ export default function DituPage() {
       <SiteHeader {...dituHeaderDemo} fallbackWordmark={<DituWordmark />} />
       {/* pt-16 = h-16 del SiteHeader fixed para no quedar oculto. */}
       <main className="flex-1 pt-16">
-        <RenderBlocks layout={dituDemoLayout} />
+        <DituHero />
+        <DituVideoBlock />
+        <DituAudienciaBlock />
+        <DituAdnBlock />
+        <DituTipoContenidoBlock />
+        <DituCanalesBlock />
+        <DituCalendarioBlock />
+        <DituPautaBlock />
         <DituHablamosSection />
       </main>
       <SiteFooter {...dituFooterDemo} fallbackWordmark={<DituWordmark />} />
@@ -36,6 +45,10 @@ export default function DituPage() {
   );
 }
 
+/**
+ * Hablamos closing section — Figma 541:7925.
+ * Sticker "¿HABLAMOS?" + heading "Lleva tu marca al siguiente nivel." + CTA + mascot.
+ */
 function DituHablamosSection() {
   return (
     <Section
@@ -49,18 +62,25 @@ function DituHablamosSection() {
       <Container size="xl">
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
           <div>
-            <p
-              className="text-xs font-bold tracking-[0.18em] uppercase"
-              style={{ color: "#77EDED" }}
+            <div
+              className="inline-flex items-center rounded-[8px] px-2 py-1.5"
+              style={{
+                backgroundColor: "#77EDED",
+                color: "#12082D",
+                transform: "rotate(-1.97deg)",
+              }}
             >
-              ¿Hablamos?
-            </p>
-            <h2 className="font-display mt-3 text-4xl leading-[1.05] font-bold sm:text-5xl md:text-6xl">
-              Lleva tu marca al siguiente nivel.
+              <p className="font-display text-[24px] leading-[1] font-bold whitespace-nowrap uppercase sm:text-[36px] lg:text-[48px]">
+                ¿Hablamos?
+              </p>
+            </div>
+            <h2 className="font-display mt-4 text-[36px] leading-[1.05] font-bold text-white uppercase sm:text-[56px] lg:text-[84px]">
+              Lleva tu marca
+              <br />
+              al siguiente nivel.
             </h2>
             <p className="mt-4 max-w-xl text-base text-white/85">
-              Cuéntanos tu objetivo y construimos juntos la estrategia de pauta más
-              poderosa del entretenimiento conectado.
+              Cuéntanos tus objetivos y armemos juntos la mejor estrategia.
             </p>
             <div className="mt-8">
               <Button
@@ -73,7 +93,7 @@ function DituHablamosSection() {
             </div>
           </div>
           <div className="flex justify-center lg:justify-end">
-            <DituMascot className="h-56 w-auto sm:h-64 md:h-72" />
+            <DituMascot className="h-56 w-auto sm:h-64 md:h-72 lg:h-80" />
           </div>
         </div>
       </Container>
