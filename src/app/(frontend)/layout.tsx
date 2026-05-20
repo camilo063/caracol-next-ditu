@@ -65,7 +65,13 @@ export default function FrontendLayout({
       lang="es-CO"
       className={`${montserrat.variable} ${poppins.variable} ${splineSans.variable} ${dituDisplay.variable} h-full antialiased`}
     >
-      <body className="bg-background text-foreground flex min-h-full flex-col font-sans">
+      {/* suppressHydrationWarning: extensiones de navegador (Grammarly, etc.)
+          inyectan atributos como `data-new-gr-c-s-check-loaded` en <body>
+          antes de la hydration de React, causando mismatch warnings. */}
+      <body
+        className="bg-background text-foreground flex min-h-full flex-col font-sans"
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>
