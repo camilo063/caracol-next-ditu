@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Tv, Users, Zap, Clock } from "lucide-react";
 
@@ -267,24 +266,57 @@ export function CaracolNextWordmark({ className }: { className?: string }) {
 }
 
 /**
- * Wordmark Ditu inline — SVG real del Figma 722:2582 (logo-light variant).
- * Incluye "ditu" wordmark + byline "por Caracol" sutil debajo.
- * Por defecto h-8 (32px en header). Adapta tamaño con className.
+ * Wordmark Ditu inline — SVG real del Figma 5:870 (logo-light variant).
+ * Composite: "ditu" wordmark (top) + "por Caracol" byline (bottom).
+ *
+ * Proporciones exactas del Figma (parent 180x87):
+ *  - Wordmark: top 0.63%, left 0.54%, right 1.25%, bottom 28.34%
+ *  - Byline: top 80.55%, left 34.46%, right 0.54%, bottom 0.62%
+ *
+ * Renderiza a 66×32 en el header (escala proporcional al 180×87 original).
  */
 export function DituWordmark({ className }: { className?: string }) {
   return (
     <span
-      className={cn("inline-flex flex-col items-start leading-none", className)}
+      className={cn("relative inline-block h-8 w-[66px] overflow-hidden", className)}
       aria-label="Ditu por Caracol"
     >
-      <Image
-        src="/ditu/logo-ditu-wordmark.svg"
-        alt=""
-        width={66}
-        height={32}
-        priority
-        className="h-8 w-auto object-contain"
-      />
+      {/* Wordmark "ditu" — top (Figma 5:868: inset[0.63% 1.25% 28.34% 0.54%]) */}
+      <span
+        className="absolute block"
+        style={{
+          top: "0.63%",
+          left: "0.54%",
+          right: "1.25%",
+          bottom: "28.34%",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/ditu/logo-ditu-wordmark.svg"
+          alt=""
+          className="block h-full w-full"
+          style={{ maxWidth: "none" }}
+        />
+      </span>
+      {/* Byline "por Caracol" — bottom-right (Figma 5:869: inset[80.55% 0.54% 0.62% 34.46%]) */}
+      <span
+        className="absolute block"
+        style={{
+          top: "80.55%",
+          left: "34.46%",
+          right: "0.54%",
+          bottom: "0.62%",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/ditu/logo-ditu-byline.svg"
+          alt=""
+          className="block h-full w-full"
+          style={{ maxWidth: "none" }}
+        />
+      </span>
     </span>
   );
 }

@@ -227,6 +227,10 @@
     --color-accent: var(--color-brand-ditu-accent);
     --color-accent-foreground: var(--color-ditu-violeta-oscuro);
     --color-ring: var(--color-brand-ditu-500);
+    /* Bg dark para que el header semitransparente
+       rgba(18,8,45,0.55) no se vea grisáceo sobre página blanca. */
+    --color-background: #12082d;
+    --color-foreground: var(--color-neutral-0);
     --font-family-sans: var(--font-spline-sans), "Spline Sans", system-ui, sans-serif;
     --font-family-display:
       var(--font-ditu-display), "Ditu Display", "Montserrat", sans-serif;
