@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, ChevronRight, Play } from "lucide-react";
+import { ChevronRight, Play } from "lucide-react";
 
 import { Container, Section } from "@/components/ui";
 import { brandMeta } from "@/lib/brand";
@@ -22,12 +22,26 @@ const CATEGORY_GROUP: Record<string, "display" | "video"> = {
 
 type FormatItem = NonNullable<AdFormatsBlockProps["formats"]>[number];
 
+const NAVY_DARK = "#003381";
+const TEXT_LIGHT = "rgba(207,206,204,0.81)";
+const AZUL_CLARO = "#00ACFF";
+
 /**
- * AdFormatsBlock — 4 displayModes:
- * - grid          → default Caracol Next (2-col split + checkmarks + modal).
- * - table         → tabla
- * - accordion     → acordeón
- * - vertical-tabs → lista vertical + preview (Ditu).
+ * AdFormatsBlock — implementación 1:1 del frame Figma 347:1706 "Pauta Digital".
+ *
+ * Specs (Figma MCP):
+ *  - Container: bg solid #003381 (navy), border radius asimétrico
+ *    `rounded-tr-[180px]` (curva superior derecha 180px).
+ *  - Padding p-[120px] en desktop.
+ *  - Heading "Pauta Digital": Montserrat Bold 64px line-height 72 white.
+ *  - Description: Regular 24px color rgba(207,206,204,0.81).
+ *  - 2 columnas (Display | Video & Audio), centered en 760px:
+ *    - Column header: Montserrat Medium 32px white tracking -1px + divider.
+ *    - Cards: bg rgba(255,255,255,0.02), border rgba(207,206,204,0.81),
+ *      rounded-8, min-h-68, gap-16 items-center.
+ *      Left icon (check), middle text SemiBold 16px white, right chevron.
+ *  - Footer: texto Bold 24px + Regular 24px white centered, CTA bg #00ACFF
+ *    306px wide SemiBold 18px white.
  */
 export function AdFormatsBlockComponent(props: AdFormatsBlockProps) {
   const mode = props.displayMode ?? "grid";
@@ -37,16 +51,8 @@ export function AdFormatsBlockComponent(props: AdFormatsBlockProps) {
   return <AdFormatsDefault {...props} />;
 }
 
-/* =============================================================================
-   DEFAULT — "Pauta Digital" (Caracol Next)
-   Layout: rounded section azul deep, 2-col (Display | Video & Audio).
-   Cada item es un pill outline con checkmark + chevron, hover Framer Motion
-   200ms, click → FormatModal.
-   ============================================================================= */
-
 function AdFormatsDefault({
   anchorId,
-  eyebrow,
   heading,
   description,
   formats,
@@ -75,28 +81,30 @@ function AdFormatsDefault({
     <>
       <section id={anchorId ?? "pauta"} className="py-6 sm:py-10">
         <div
-          className="relative w-full overflow-hidden rounded-[2rem] py-14 text-white sm:rounded-[2.5rem] sm:py-20"
+          className="relative w-full overflow-hidden p-8 text-white sm:p-12 lg:p-[120px]"
           style={{
-            background: "linear-gradient(180deg, #003380 0%, #003CCA 50%, #003380 100%)",
+            backgroundColor: NAVY_DARK,
+            borderTopRightRadius: "180px",
           }}
         >
-          <Container size="xl">
-            {eyebrow ? (
-              <p className="text-fluid-tag font-bold tracking-[0.18em] text-white/80 uppercase">
-                {eyebrow}
-              </p>
-            ) : null}
-            <h2 className="font-display text-fluid-display mt-2 font-black text-white">
-              {heading || "Pauta Digital"}
-            </h2>
-            {description ? (
-              <p className="text-fluid-body mt-3 max-w-2xl text-white/80">
-                {description}
-              </p>
-            ) : null}
+          <div className="mx-auto flex max-w-[1200px] flex-col gap-12 lg:gap-16">
+            {/* Heading + description */}
+            <div className="flex flex-col gap-4">
+              <h2 className="font-display text-[40px] leading-[1.125] font-bold whitespace-nowrap text-white sm:text-[48px] lg:text-[64px] lg:leading-[72px]">
+                {heading || "Pauta Digital"}
+              </h2>
+              {description ? (
+                <p
+                  className="font-display text-[16px] leading-normal font-normal sm:text-[20px] lg:text-[24px]"
+                  style={{ color: TEXT_LIGHT }}
+                >
+                  {description}
+                </p>
+              ) : null}
+            </div>
 
-            {/* 2-col grid — mobile (<md) stacks vertical */}
-            <div className="mx-auto mt-12 grid max-w-3xl gap-8 md:grid-cols-2 md:gap-10">
+            {/* 2-col layout: Display | Video & Audio, 343px each, gap 37 */}
+            <div className="mx-auto flex w-full flex-col items-start gap-8 sm:flex-row sm:justify-center sm:gap-[37px]">
               <FormatColumn
                 title="Display"
                 items={displayFormats}
@@ -109,26 +117,31 @@ function AdFormatsDefault({
               />
             </div>
 
-            {/* CTA inferior */}
-            <div className="mt-12 flex flex-col items-center gap-3 text-center">
-              <p className="text-fluid-subtitle max-w-3xl font-bold">{ctaHeading}</p>
-              <p className="text-fluid-body text-white/85">{ctaDesc}</p>
+            {/* Footer: texto + CTA centered */}
+            <div className="flex flex-col items-center gap-6 text-center">
+              <div className="flex flex-col items-center gap-1 text-center">
+                <p className="font-display text-[16px] leading-normal font-bold text-white sm:text-[20px] lg:text-[24px]">
+                  {ctaHeading}
+                </p>
+                <p className="font-display text-[16px] leading-normal font-normal text-white sm:text-[20px] lg:text-[24px]">
+                  {ctaDesc}
+                </p>
+              </div>
               <Link
                 href={ctaHref}
                 className={cn(
-                  "mt-2 inline-flex items-center justify-center rounded-md px-8 py-3 text-sm font-bold text-white transition-colors",
+                  "font-display inline-flex h-12 w-[306px] items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-opacity hover:opacity-90",
                   "focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:outline-none",
                 )}
-                style={{ backgroundColor: "#2862FF" }}
+                style={{ backgroundColor: AZUL_CLARO }}
               >
                 {ctaLabel}
               </Link>
             </div>
-          </Container>
+          </div>
         </div>
       </section>
 
-      {/* Modal global del bloque */}
       <FormatModal
         open={selectedFormat !== null}
         format={selectedFormat}
@@ -149,11 +162,16 @@ function FormatColumn({
 }) {
   if (items.length === 0) return null;
   return (
-    <div>
-      <h3 className="font-display border-b border-white/30 pb-2 text-2xl font-bold text-white">
+    <div className="flex w-full max-w-[343px] flex-col gap-4">
+      <p className="font-display text-[28px] leading-normal font-medium tracking-[-1px] whitespace-nowrap text-white sm:text-[32px]">
         {title}
-      </h3>
-      <ul className="mt-5 space-y-3">
+      </p>
+      <div
+        className="h-px w-full"
+        style={{ backgroundColor: TEXT_LIGHT }}
+        aria-hidden="true"
+      />
+      <ul className="flex flex-col gap-4">
         {items.map((f) => (
           <li key={f.id ?? f.name}>
             <FormatPill format={f} onSelect={onSelect} />
@@ -161,6 +179,28 @@ function FormatColumn({
         ))}
       </ul>
     </div>
+  );
+}
+
+/** Icon checkmark inside circle — Figma "Combined shape 16072". */
+function CheckCircleIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="10" cy="10" r="10" fill="#00ACFF" />
+      <path
+        d="M6 10.5L8.5 13L14 7.5"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
@@ -179,25 +219,19 @@ function FormatPill({
       whileHover={{ backgroundColor: "rgba(255,255,255,0.08)" }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(
-        "flex w-full items-center gap-3 rounded-lg border border-white/30 bg-white/[0.02] px-4 py-3 text-left",
-        "focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#003380] focus-visible:outline-none",
+        "flex min-h-[68px] w-full items-center gap-4 rounded-[8px] border px-4 py-2 text-left",
+        "focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#003381] focus-visible:outline-none",
       )}
+      style={{
+        backgroundColor: "rgba(255,255,255,0.02)",
+        borderColor: TEXT_LIGHT,
+      }}
     >
-      {/* Checkmark circle azul */}
-      <span
-        aria-hidden="true"
-        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
-        style={{ backgroundColor: "#2862FF" }}
-      >
-        <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
+      <CheckCircleIcon className="h-5 w-5 shrink-0" />
+      <span className="font-display flex-1 text-[16px] leading-[26px] font-semibold text-white">
+        {format.name}
       </span>
-      <span className="flex-1 text-sm font-semibold text-white">{format.name}</span>
-      <span
-        aria-hidden="true"
-        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/40 text-white"
-      >
-        <ChevronRight className="h-3.5 w-3.5" />
-      </span>
+      <ChevronRight className="h-6 w-6 shrink-0 text-white" />
     </motion.button>
   );
 }

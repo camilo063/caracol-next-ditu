@@ -6,7 +6,6 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 
-import { Button } from "@/components/ui";
 import { mediaAlt, mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import type { AdFormatsBlockProps } from "../types";
@@ -20,32 +19,36 @@ export interface FormatModalProps {
   onClose: () => void;
 }
 
+const NAVY_DARK = "#003381";
+const AZUL_MEDIO = "#015BC4";
+const AZUL_CLARO = "#00ACFF";
+const GRIS_MEDIO = "#95999A";
+
 /**
- * FormatModal — modal de detalle de formato.
+ * FormatModal — implementación 1:1 del Figma 521:7072 (3 variantes).
  *
- * Desktop:
- *  - max-width 840px, centered, max-height 80vh, scroll vertical interno.
- *  - Layout 2-col: imagen/mockup izquierda + descripción derecha.
- *  - Tabs hijos debajo. CTA "Contáctanos" fijo al fondo.
+ * Specs:
+ *  - Container: bg white, rounded-8, w-840 px-48 py-64, gap-24, items-end.
+ *  - Title: Montserrat Bold 40px tracking -1px color #003381 (full-width).
+ *  - Content row (gap-16, items-center):
+ *    - Left (flex-1): aspect 657/370, border #95999A rounded-8.
+ *    - Right (305px): description Regular 14px color #121212.
+ *  - Optional child tabs row (flex-wrap gap-16):
+ *    - Active: bg #015BC4 + Bold 12px white.
+ *    - Outline: border #015BC4 + #015BC4 text Bold 12px.
+ *    - Padding px-16 py-4 (Small size).
+ *  - CTA "Contáctanos": bg #00ACFF Bold 12px white px-16 py-4.
+ *  - Close button: absolute top-8 right-8 size-48.
  *
- * Mobile:
- *  - Fullscreen.
- *  - Vertical: imagen arriba, descripción abajo.
- *  - Tabs hijos con scroll horizontal.
- *  - CTA fijo abajo.
- *
- * Animación: fade + scale 0.96→1, 300ms easeOut (apertura) / easeIn (cierre).
- * ESC + click overlay cierran.
+ * Mobile: fullscreen con safe area.
  */
 export function FormatModal({ open, format, onClose }: FormatModalProps) {
   const [activeTab, setActiveTab] = React.useState(0);
 
-  // Reset tab cuando se abre el modal.
   React.useEffect(() => {
     if (open) setActiveTab(0);
   }, [open, format?.id]);
 
-  // ESC + scroll lock.
   React.useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
@@ -91,7 +94,7 @@ export function FormatModal({ open, format, onClose }: FormatModalProps) {
             aria-hidden="true"
           />
 
-          {/* Modal */}
+          {/* Modal — Figma 840×auto, items-end, gap-24, px-48 py-64 */}
           <motion.div
             key="modal"
             role="dialog"
@@ -103,39 +106,45 @@ export function FormatModal({ open, format, onClose }: FormatModalProps) {
             transition={{ duration: 0.3, ease: "easeOut" }}
             className={cn(
               // Mobile: fullscreen.
-              "fixed inset-0 z-[110] flex flex-col bg-white",
-              // Desktop (md+): centered card 840×80vh.
-              "md:inset-auto md:top-1/2 md:left-1/2 md:h-[80vh] md:w-[min(840px,92vw)]",
-              "md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:shadow-2xl",
-              "overflow-hidden",
+              "fixed inset-0 z-[110] flex flex-col overflow-y-auto bg-white p-6",
+              // Desktop (md+): centered card 840px wide, max-height with internal scroll.
+              "md:inset-auto md:top-1/2 md:left-1/2 md:max-h-[90vh] md:w-[min(840px,92vw)]",
+              "md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[8px] md:px-[48px] md:py-[64px]",
+              "md:items-end md:gap-[24px]",
             )}
+            style={{ display: "flex", flexDirection: "column" }}
           >
-            {/* Header con close */}
-            <header className="relative flex shrink-0 items-start justify-between gap-4 px-6 pt-6 pb-2 md:px-8 md:pt-8">
-              <h2
-                id="ad-format-modal-title"
-                className="font-display text-fluid-h2 pr-12 font-black text-[#003380]"
-              >
-                {title}
-              </h2>
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Cerrar modal"
-                className={cn(
-                  "absolute top-5 right-5 inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#003380]/30 text-[#003380]",
-                  "transition-colors hover:bg-[#003380]/5 focus-visible:ring-2 focus-visible:ring-[#003380] focus-visible:ring-offset-2 focus-visible:outline-none",
-                )}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </header>
+            {/* Close button — absolute top-right 48x48 */}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Cerrar modal"
+              className={cn(
+                "absolute top-2 right-2 inline-flex h-12 w-12 items-center justify-center rounded-full text-[#003381]",
+                "transition-colors hover:bg-[#003381]/5 focus-visible:ring-2 focus-visible:ring-[#003381] focus-visible:ring-offset-2 focus-visible:outline-none",
+              )}
+              style={{ color: NAVY_DARK }}
+            >
+              <X className="h-6 w-6" strokeWidth={2.5} />
+            </button>
 
-            {/* Body scroll area */}
-            <div className="flex-1 overflow-y-auto px-6 pb-4 md:px-8">
-              <div className="grid gap-6 md:grid-cols-2 md:gap-8">
-                {/* Imagen / mockup */}
-                <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-[#003380]/15 bg-neutral-100">
+            {/* Title — Bold 40px tracking -1px #003381 */}
+            <h2
+              id="ad-format-modal-title"
+              className="font-display w-full pr-12 text-[28px] leading-tight font-bold sm:text-[32px] md:pr-0 lg:text-[40px]"
+              style={{ color: NAVY_DARK, letterSpacing: "-1px" }}
+            >
+              {title}
+            </h2>
+
+            {/* Content row (gap-16, items-center): image + description */}
+            <div className="flex w-full flex-col items-center gap-4 md:flex-row md:items-center">
+              {/* Image — flex-1, aspect 657/370, border #95999A rounded-8 */}
+              <div className="w-full flex-1">
+                <div
+                  className="relative aspect-[657/370] w-full overflow-hidden rounded-[8px]"
+                  style={{ border: `1px solid ${GRIS_MEDIO}` }}
+                >
                   {imageUrl ? (
                     <Image
                       src={imageUrl}
@@ -145,68 +154,95 @@ export function FormatModal({ open, format, onClose }: FormatModalProps) {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0D3AA0] via-[#003CCA] to-[#003380]">
-                      <span className="text-sm font-bold text-white opacity-80">
+                    <div
+                      className="absolute inset-0 flex items-center justify-center"
+                      style={{ backgroundColor: "#F3F4F6" }}
+                    >
+                      <span
+                        className="text-sm font-bold opacity-50"
+                        style={{ color: NAVY_DARK }}
+                      >
                         {title}
                       </span>
                     </div>
                   )}
                 </div>
-
-                {/* Descripción */}
-                <div>
-                  {description ? (
-                    <p className="text-fluid-body leading-relaxed whitespace-pre-line text-neutral-700">
-                      {description}
-                    </p>
-                  ) : (
-                    <p className="text-fluid-body text-neutral-500">
-                      Detalles del formato disponibles próximamente.
-                    </p>
-                  )}
-                </div>
               </div>
 
-              {/* Child tabs */}
-              {hasTabs ? (
-                <div
-                  className={cn(
-                    "mt-6 flex gap-2",
-                    "[scrollbar-width:none] overflow-x-auto pb-2 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
-                    "md:flex-wrap md:overflow-visible md:pb-0",
-                  )}
-                >
-                  {childTabs.map((tab, i) => {
-                    const isActive = i === activeTab;
-                    return (
-                      <button
-                        key={tab.id ?? tab.label ?? i}
-                        type="button"
-                        onClick={() => setActiveTab(i)}
-                        className={cn(
-                          "shrink-0 rounded-md border px-4 py-2 text-xs font-bold whitespace-nowrap transition-colors",
-                          "focus-visible:ring-2 focus-visible:ring-[#003380] focus-visible:ring-offset-2 focus-visible:outline-none",
-                          isActive
-                            ? "border-[#003380] bg-[#003380] text-white"
-                            : "border-[#003380]/40 bg-white text-[#003380] hover:bg-[#003380]/5",
-                        )}
-                      >
-                        {tab.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : null}
+              {/* Description — Regular 14px #121212, 305px wide */}
+              <div className="flex w-full flex-col items-start justify-center md:w-[305px]">
+                {description ? (
+                  <p
+                    className="font-display text-[14px] leading-normal font-normal whitespace-pre-line"
+                    style={{ color: "#121212" }}
+                  >
+                    {description}
+                  </p>
+                ) : (
+                  <p
+                    className="font-display text-[14px] leading-normal font-normal"
+                    style={{ color: "#95999A" }}
+                  >
+                    Detalles del formato disponibles próximamente.
+                  </p>
+                )}
+              </div>
             </div>
 
-            {/* CTA footer fijo al fondo */}
-            <footer className="shrink-0 border-t border-neutral-200 bg-white px-6 py-4 md:px-8">
-              <div className="flex justify-end">
-                <Button asChild className="bg-[#2862FF] text-white hover:bg-[#003CCA]">
-                  <Link href={ctaHref}>{ctaLabel}</Link>
-                </Button>
+            {/* Child tabs row — solo si tiene tabs (flex-wrap gap-16 items-start) */}
+            {hasTabs ? (
+              <div
+                className={cn(
+                  "flex w-full flex-wrap items-start gap-4",
+                  "[scrollbar-width:none] overflow-x-auto pb-2 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
+                  "md:overflow-visible md:pb-0",
+                )}
+              >
+                {childTabs.map((tab, i) => {
+                  const isActive = i === activeTab;
+                  return (
+                    <button
+                      key={tab.id ?? tab.label ?? i}
+                      type="button"
+                      onClick={() => setActiveTab(i)}
+                      className={cn(
+                        "font-display inline-flex min-h-[32px] shrink-0 items-center justify-center rounded-[4px] px-4 py-1 text-[12px] leading-[16px] font-bold whitespace-nowrap transition-colors",
+                        "focus-visible:ring-2 focus-visible:ring-[#003381] focus-visible:ring-offset-2 focus-visible:outline-none",
+                      )}
+                      style={
+                        isActive
+                          ? {
+                              backgroundColor: AZUL_MEDIO,
+                              border: `1px solid ${AZUL_MEDIO}`,
+                              color: "white",
+                            }
+                          : {
+                              backgroundColor: "transparent",
+                              border: `1px solid ${AZUL_MEDIO}`,
+                              color: AZUL_MEDIO,
+                            }
+                      }
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
               </div>
-            </footer>
+            ) : null}
+
+            {/* CTA "Contáctanos" — bg #00ACFF Small Bold 12px white px-16 py-4 */}
+            <div className="flex w-full justify-end">
+              <Link
+                href={ctaHref}
+                className="font-display inline-flex min-h-[32px] items-center justify-center rounded-[4px] px-4 py-1 text-[12px] leading-[16px] font-bold whitespace-nowrap text-white transition-opacity hover:opacity-90"
+                style={{
+                  backgroundColor: AZUL_CLARO,
+                  border: `1px solid ${AZUL_CLARO}`,
+                }}
+              >
+                {ctaLabel}
+              </Link>
+            </div>
           </motion.div>
         </>
       ) : null}
