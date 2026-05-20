@@ -93,6 +93,9 @@ export function SiteHeader({
   }, [navAnchors]);
 
   const isDitu = landing === "ditu";
+  // Figma 430:519: Caracol Next header inicia con bg navy #003381 + texto blanco.
+  // Al scroll se vuelve blanco con texto dark (transición suave).
+  const isCaracolNextNavy = !isDitu && !scrolled;
 
   return (
     <motion.header
@@ -104,14 +107,16 @@ export function SiteHeader({
         // sin sufrir el bug de `position: sticky` cuando coexiste con `transform`.
         // El offset (h-16) se compensa con `pt-16` en el contenido.
         sticky ? "fixed top-0 right-0 left-0 z-40" : "relative w-full",
-        isDitu ? "text-white" : "text-foreground",
+        // Color de texto: blanco en Ditu (siempre) o Caracol Next sin scroll;
+        // foreground (dark) cuando Caracol Next está scrolled.
+        isDitu || isCaracolNextNavy ? "text-white" : "text-foreground",
         scrolled
           ? isDitu
             ? "border-b border-white/10 bg-[#1F1647]/95 backdrop-blur"
             : "bg-background/95 border-border border-b shadow-sm backdrop-blur"
           : isDitu
             ? "bg-[#1F1647]"
-            : "bg-background",
+            : "bg-[#003381]", // Caracol Next inicial = navy (Figma 430:519)
         "transition-colors duration-300 ease-in-out",
       )}
     >

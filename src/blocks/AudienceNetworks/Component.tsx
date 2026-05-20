@@ -162,11 +162,13 @@ export function AudienceNetworksBlockComponent({
                   className="flex flex-col items-center gap-2"
                 >
                   <div className="flex items-start justify-center gap-3">
+                    {/* Figma 364:2698: círculo bg #015BC4 (azul medio) con
+                        icono brand-specific blanco. Size 48x48. */}
                     <div
-                      className="flex h-12 w-12 shrink-0 items-center justify-center text-white"
-                      style={{ color: NAVY_DARK }}
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-white"
+                      style={{ backgroundColor: "#015BC4" }}
                     >
-                      <NetworkIcon network={net.network} className="h-12 w-12" />
+                      <NetworkIcon network={net.network} className="h-6 w-6" />
                     </div>
                     <p
                       className="font-display font-semibold whitespace-nowrap"

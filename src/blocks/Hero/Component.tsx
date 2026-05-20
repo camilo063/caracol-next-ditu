@@ -35,11 +35,13 @@ export function HeroBlockComponent({
   const hasBackground = Boolean(bgImageUrl || bgVideoUrl);
   const isDarkTone = hasBackground || sectionTone !== "default";
 
-  // Background Figma 347:2015: solid navy #003381 con halo radial central azul claro.
-  // Replica el radial gradient SVG del Figma (centro ~50% 50%, glow → fade a navy).
+  // Background Figma 347:2015: solid navy #003381 con halo radial.
+  // El gradient SVG del Figma tiene su centro en (50%, ~107%) — justo debajo
+  // del bottom del hero — con elipse rx≈83% ry≈107%. El glow brillante visible
+  // está concentrado en la parte inferior-central del hero, fade hacia el top.
   const heroBg =
     tone === "caracolnext-deep"
-      ? "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,172,255,0.55) 0%, rgba(0,112,192,0.3) 45%, rgba(0,51,129,0) 100%), #003381"
+      ? "radial-gradient(ellipse 83% 107% at 50% 107%, rgba(0,172,255,1) 0%, rgba(0,112,192,0.5) 50%, rgba(0,51,129,0) 100%), #003381"
       : tone === "ditu-deep"
         ? "linear-gradient(180deg, #1F1647 0%, #2A1F5E 60%, #1F1647 100%)"
         : undefined;
