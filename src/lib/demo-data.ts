@@ -60,7 +60,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
         },
         {
           id: "b3",
-          label: "TIEMPO | Minutos consumidos",
+          label: "TIEMPO | Minutos",
           value: 248_000_000,
           suffix: "",
         },
@@ -110,7 +110,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
       },
       {
         id: "n6",
-        network: "threads",
+        network: "whatsapp",
         handle: "@caracolnext",
         followers: 11_100_000,
         growth: 0,
