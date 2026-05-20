@@ -225,10 +225,12 @@ function CaracolMediosLogo({ className }: { className?: string }) {
   );
 }
 
-/** Wordmark Caracol Next inline (para usar dentro de la card). */
+/** Wordmark Caracol Next inline. Sin color por defecto — hereda del padre via
+ *  `text-current` (CSS color inheritance). Esto permite que el SiteHeader controle
+ *  el color según su estado (navy = blanco, scrolled = dark). */
 export function CaracolNextWordmark({ className }: { className?: string }) {
   return (
-    <div className={cn("flex items-center gap-2 text-white", className)}>
+    <div className={cn("flex items-center gap-2", className)}>
       <svg viewBox="0 0 32 32" className="h-6 w-6" fill="none">
         <ellipse
           cx="16"

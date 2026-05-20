@@ -20,10 +20,7 @@ import {
 export default function CaracolNextPage() {
   return (
     <div className="theme-caracol-next bg-background flex min-h-screen flex-col">
-      <SiteHeader
-        {...caracolNextHeaderDemo}
-        fallbackWordmark={<CaracolNextWordmark className="text-[#003380]" />}
-      />
+      <SiteHeader {...caracolNextHeaderDemo} fallbackWordmark={<CaracolNextWordmark />} />
       {/* pt-16 = h-16 del SiteHeader fixed para no quedar oculto. */}
       <main className="flex-1 pt-16">
         <RenderBlocks layout={caracolNextDemoLayout} />

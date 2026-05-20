@@ -53,22 +53,24 @@ export function BrandTabsBlockComponent({
     <section id={anchorId ?? "marcas"} className="py-6 sm:py-8 lg:py-10">
       <div className="bg-muted w-full overflow-hidden rounded-[2rem] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
         <Container size="xl">
+          {/* Figma 400:2128: eyebrow Poppins Bold 20px #00ACFF uppercase, SIN tracking ancho. */}
           <p
-            className="font-poppins text-[16px] leading-normal font-bold tracking-[0.18em] uppercase sm:text-[18px] lg:text-[20px]"
+            className="font-poppins text-[16px] leading-normal font-bold uppercase sm:text-[18px] lg:text-[20px]"
             style={{ color: "#00ACFF" }}
           >
             {eyebrow ?? "El ecosistema Caracol"}
           </p>
-          <h2
-            className="font-display mt-3 text-[40px] leading-[1.05] sm:text-[48px] lg:text-[60px]"
-            style={{ color: "#003381" }}
-          >
-            <span className="font-normal">{headingRegular}</span>
+          {/* Figma 400:2148/2149: heading 2 líneas, 64px line-height 60 tracking -1px.
+              Línea 1 (Una marca para): Medium 500 color #464553 (gris).
+              Línea 2 (cada audiencia): ExtraBold 800 color #003381 (navy). */}
+          <h2 className="font-display mt-3 text-[40px] leading-[1] tracking-[-1px] sm:text-[48px] lg:text-[64px] lg:leading-[60px]">
+            <span className="block font-medium" style={{ color: "#464553" }}>
+              {headingRegular}
+            </span>
             {headingBoldPart ? (
-              <>
-                <br />
-                <span className="font-bold">{headingBoldPart}</span>
-              </>
+              <span className="block font-extrabold" style={{ color: "#003381" }}>
+                {headingBoldPart}
+              </span>
             ) : null}
           </h2>
           {description ? (
@@ -96,8 +98,8 @@ export function BrandTabsBlockComponent({
                     aria-selected={isActive}
                     onClick={() => setActive(i)}
                     className={cn(
-                      // Padding reducido en lg para que 7 tabs entren cómodamente en 1200px.
-                      "font-display rounded-[4px] border px-[20px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-colors sm:px-[28px] lg:px-[32px]",
+                      // Figma 402:5002: Large size px-48 py-12 todos los tabs.
+                      "font-display rounded-[4px] border px-[20px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-colors sm:px-[36px] lg:px-[48px]",
                       "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
                     )}
                     style={
@@ -436,12 +438,20 @@ function TabPanel({ tab }: { tab: Tab }) {
             {displayName.toUpperCase()}
           </span>
         )}
-        {/* Small brand icon top-right (Figma: 76x76 bordered) */}
+        {/* Small brand icon top-right (Figma: 76x76 con border #015BC4 default).
+            Excepciones: La Kalle border #FEFF00 (yellow), BumBox/Volk border white. */}
         <div
           className="absolute top-[30px] right-[30px] flex h-[76px] w-[76px] items-center justify-center overflow-hidden rounded-[16px] border-2"
           style={{
             backgroundColor: brandPanelBg,
-            borderColor: brandAccent ?? "#FFFFFF",
+            // Para LaKalle usa accent yellow. Para BumBox/Volk usa white.
+            // Para los demás usa azul medio #015BC4 (matching Caracol TV variant).
+            borderColor:
+              meta.label === "La Kalle"
+                ? brandAccent
+                : meta.label === "BumBox" || meta.label === "Volk"
+                  ? "#FFFFFF"
+                  : "#015BC4",
           }}
         >
           {logoUrl ? (

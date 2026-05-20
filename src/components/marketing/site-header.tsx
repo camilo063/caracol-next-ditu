@@ -143,11 +143,15 @@ export function SiteHeader({
         <nav
           className={cn(
             "hidden items-center gap-6 md:flex",
-            isDitu ? "text-white/85" : "text-foreground/75",
+            // Figma 430:519: nav text blanco cuando bg navy (Ditu o Caracol Next inicial).
+            // text-foreground/75 cuando Caracol Next scrolled (bg blanco).
+            isDitu || isCaracolNextNavy ? "text-white/90" : "text-foreground/75",
           )}
         >
           {navAnchors.map((a) => {
             const isActive = activeId === a.anchorId;
+            // Figma: active link Caracol Next = #00ACFF (azul claro), Ditu = #77EDED.
+            const activeColor = isDitu ? "#77EDED" : "#00ACFF";
             return (
               <Link
                 key={a.anchorId}
@@ -155,20 +159,17 @@ export function SiteHeader({
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
                   "relative text-sm font-semibold tracking-wide uppercase transition-colors",
-                  isActive
-                    ? isDitu
-                      ? "text-white"
-                      : "text-primary"
-                    : "hover:opacity-80",
+                  !isActive && "hover:opacity-80",
                 )}
+                style={isActive ? { color: activeColor } : undefined}
               >
                 {a.label}
                 <span
                   className={cn(
                     "pointer-events-none absolute right-0 -bottom-1 left-0 mx-auto h-0.5 origin-center rounded-full transition-transform duration-300",
                     isActive ? "scale-x-100" : "scale-x-0",
-                    isDitu ? "bg-[#77EDED]" : "bg-primary",
                   )}
+                  style={{ backgroundColor: activeColor }}
                   aria-hidden="true"
                 />
               </Link>
