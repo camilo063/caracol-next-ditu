@@ -85,7 +85,7 @@ export function DituHero({
   return (
     <section
       id="inicio"
-      className="relative flex flex-col items-center justify-center gap-6 overflow-hidden px-6 pt-32 pb-24 text-center sm:px-12 sm:pt-40 sm:pb-28 lg:gap-6 lg:px-[120px] lg:pt-[180px] lg:pb-[120px]"
+      className="relative flex flex-col items-center justify-center gap-6 overflow-hidden px-6 pt-32 pb-24 text-center sm:px-12 sm:pt-40 sm:pb-28 lg:gap-[24px] lg:px-[120px] lg:pt-[180px] lg:pb-[120px]"
     >
       {/* Background con parallax — Framer Motion, speed 0.4 (spec).
           Mobile y reduced-motion: desactivado automáticamente. */}
@@ -110,28 +110,31 @@ export function DituHero({
         </div>
       </ParallaxBackground>
 
-      <div className="relative z-10 flex w-full max-w-[1200px] flex-col items-center gap-8">
-        {/* Heading hero + sticker overlay */}
-        <div className="relative w-full text-center">
+      {/* Content wrapper — Figma 512:3281: flex-col gap-[32px] items-center w-full.
+          No max-w: el padding-x del section (px-120 en lg) ya limita a 1200px. */}
+      <div className="relative z-10 flex w-full flex-col items-center gap-6 sm:gap-7 lg:gap-[32px]">
+        {/* Heading hero + sticker overlay — Figma 649:4298 */}
+        <div className="relative w-full">
           <h1
-            className="font-display font-bold tracking-tight text-white uppercase"
+            className="font-display text-center font-bold tracking-tight text-white uppercase"
             style={{
               wordBreak: "break-word",
-              // Fluid: 44px (mobile) → 96px (1440+). Spec Camilo: clamp() respeta diseño.
+              // Fluid: 44px (mobile) → 96px (1440+). lineHeight 1 = font-size (Figma usa 96/96).
               fontSize: "clamp(2.75rem, 1.5rem + 5vw, 6rem)",
               lineHeight: 1,
             }}
           >
             {headingRest ?? headingFallback}
           </h1>
-          {/* Sticker "TU MARCA" — absolute, rotado -2.42deg, posicionado sobre
-              el "Tu marca " transparente de la línea 1. */}
+          {/* Sticker "TU MARCA" — Figma 725:2507:
+              absolute left-[140px] top-[-25px] w-[384.962px] h-[117.973px], rotated -2.42deg.
+              Inner: bg #77EDED, rounded-8, pt-6 px-8 (Figma: pt-[6px] px-[8px]). */}
           <div
             className="pointer-events-none absolute top-[-4%] left-[10%] sm:top-[-7%] sm:left-[12%] lg:top-[-25px] lg:left-[140px]"
             style={{ transform: "rotate(-2.42deg)" }}
           >
             <span
-              className="font-display inline-block rounded-[8px] px-2 pt-1.5 font-bold uppercase"
+              className="font-display inline-block rounded-[8px] px-[8px] pt-[6px] font-bold uppercase"
               style={{
                 backgroundColor: "#77EDED",
                 color: "#12082D",
@@ -144,23 +147,30 @@ export function DituHero({
           </div>
         </div>
 
-        {/* Description con accent cyan */}
-        <p
-          className={cn(
-            "max-w-[960px] text-center text-[15px] leading-relaxed text-white sm:text-[18px] lg:px-[120px] lg:text-[20px]",
-          )}
-          style={{ fontFamily: "var(--font-spline-sans), system-ui, sans-serif" }}
-        >
-          {description ?? descriptionFallback}
-        </p>
+        {/* Description wrapper — Figma 797:3403: w-full px-[120px] flex items-center.
+            El <p> hereda 20px Spline Sans Regular center white. */}
+        <div className="flex w-full flex-col items-center justify-center lg:px-[120px]">
+          <p
+            className={cn(
+              "w-full text-center text-[15px] text-white sm:text-[18px] lg:text-[20px]",
+            )}
+            style={{
+              fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+              lineHeight: "normal",
+            }}
+          >
+            {description ?? descriptionFallback}
+          </p>
+        </div>
 
-        {/* 3 botones outline cyan */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-6 lg:gap-6 lg:pt-8">
+        {/* Buttons wrapper — Figma 722:2615: gap-[24px] items-center pt-[32px] overflow-clip.
+            (Spacing total con el padre gap-32 + pt-32 = 64px desde descripción.) */}
+        <div className="flex flex-wrap items-center justify-center gap-3 overflow-clip pt-4 sm:gap-6 lg:gap-[24px] lg:pt-[32px]">
           {finalButtons.map((btn) => (
             <Link
               key={btn.icon}
               href={btn.href}
-              className="font-display inline-flex items-center justify-center gap-[10px] rounded-[8px] border-[#77EDED] p-4 text-[14px] leading-[20px] font-bold whitespace-nowrap uppercase transition-opacity hover:opacity-80 sm:text-[16px] lg:text-[20px]"
+              className="font-display inline-flex items-center justify-center gap-[10px] rounded-[8px] p-[16px] text-[14px] leading-[20px] font-bold whitespace-nowrap uppercase transition-opacity hover:opacity-80 sm:text-[16px] lg:text-[20px]"
               style={{
                 borderWidth: "1px",
                 borderStyle: "solid",
