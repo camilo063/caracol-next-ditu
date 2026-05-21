@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils";
 import type { AIRecommendationBlockProps } from "../types";
 import { recommend, type Recommendation } from "./actions";
 
+/** Item de la lista `examples` derivado del tipo generado por Payload. */
+type AIExample = NonNullable<AIRecommendationBlockProps["examples"]>[number];
+
 export function AIRecommendationBlockComponent({
   anchorId,
   eyebrow,
@@ -104,7 +107,7 @@ export function AIRecommendationBlockComponent({
                 Ejemplos rápidos
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
-                {examples.map((ex, i) => (
+                {examples.map((ex: AIExample, i: number) => (
                   <button
                     key={ex.id ?? i}
                     type="button"
