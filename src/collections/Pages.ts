@@ -9,9 +9,11 @@ import { allBlocks } from "@/blocks";
  * El layout se compone con `layout: blocks[]` — un array de Payload Blocks.
  *
  * Slug routing:
- * - landing="caracol-next" + slug="home" → renderiza en `/`
- * - landing="ditu" + slug="home"          → renderiza en `/ditu`
- * - cualquier otra page se renderiza como `/[slug]` o `/ditu/[slug]` según landing.
+ * - landing="caracol-next" + slug="home" → renderiza en `/caracol-next`
+ * - landing="ditu"        + slug="home"  → renderiza en `/ditu`
+ * - sub-pages: `/caracol-next/[slug]` o `/ditu/[slug]` según landing.
+ *
+ * Nota: la URL raíz `/` NO es una Page — vive en el global `hub-page`.
  *
  * Fase 4 implementará el resolver dinámico que consume estas reglas.
  */
@@ -21,16 +23,14 @@ export const Pages: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "landing", "slug", "_status", "updatedAt"],
+    group: "Contenido",
     livePreview: {
       url: ({ data }) => {
         const landing = (data?.landing as string) ?? "caracol-next";
-        const slug = (data?.slug as string) ?? "";
+        const slug = (data?.slug as string) ?? "home";
         const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-        const path =
-          landing === "ditu"
-            ? `/ditu${slug === "home" ? "" : `/${slug}`}`
-            : `/${slug === "home" ? "" : slug}`;
-        return `${base}${path}`;
+        const segment = slug === "home" ? "" : `/${slug}`;
+        return `${base}/${landing}${segment}`;
       },
     },
   },
@@ -55,7 +55,7 @@ export const Pages: CollectionConfig = {
               required: true,
               defaultValue: "caracol-next",
               options: [
-                { label: "Caracol Next (/)", value: "caracol-next" },
+                { label: "Caracol Next (/caracol-next)", value: "caracol-next" },
                 { label: "Ditu (/ditu)", value: "ditu" },
               ],
             },
@@ -95,6 +95,17 @@ export const Pages: CollectionConfig = {
           ],
         },
       ],
+    },
+    {
+      name: "revalidate",
+      type: "number",
+      defaultValue: 3600,
+      min: 0,
+      admin: {
+        position: "sidebar",
+        description:
+          "Segundos de ISR (default 3600 = 1h). Cambios manuales disparan revalidate inmediato vía afterChange hook (Fase 5).",
+      },
     },
   ],
 };

@@ -6,6 +6,7 @@ import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { formBuilderPlugin } from "@payloadcms/plugin-form-builder";
 import { seoPlugin } from "@payloadcms/plugin-seo";
 import { nestedDocsPlugin } from "@payloadcms/plugin-nested-docs";
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
@@ -18,6 +19,7 @@ import { FooterCaracolNext } from "./globals/FooterCaracolNext";
 import { FooterDitu } from "./globals/FooterDitu";
 import { HeaderCaracolNext } from "./globals/HeaderCaracolNext";
 import { HeaderDitu } from "./globals/HeaderDitu";
+import { HubPage } from "./globals/HubPage";
 import { SiteSettings } from "./globals/SiteSettings";
 
 const filename = fileURLToPath(import.meta.url);
@@ -40,6 +42,7 @@ export default buildConfig({
   },
   collections: [Pages, Media, Categories, Users],
   globals: [
+    HubPage,
     HeaderCaracolNext,
     HeaderDitu,
     FooterCaracolNext,
@@ -62,6 +65,18 @@ export default buildConfig({
     ? [process.env.PAYLOAD_PUBLIC_SERVER_URL]
     : "*",
   plugins: [
+    /**
+     * Vercel Blob storage para uploads en producción.
+     * En local (sin BLOB_READ_WRITE_TOKEN) Payload usa filesystem en public/media.
+     * Si el proyecto migra a AWS, este plugin se reemplaza por @payloadcms/storage-s3
+     * con la misma API.
+     */
+    vercelBlobStorage({
+      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      collections: { media: true },
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    }),
+
     /**
      * Form Builder — formularios editables desde admin.
      * Usado por `ContactBlock` para el form de contacto.
@@ -100,6 +115,18 @@ export default buildConfig({
         typeof doc?.title === "string"
           ? `${doc.title} — Mediakit oficial Caracol Next + Ditu.`
           : "Mediakit oficial Caracol Next + Ditu.",
+      fields: ({ defaultFields }) => [
+        ...defaultFields,
+        {
+          name: "noIndex",
+          type: "checkbox",
+          defaultValue: false,
+          admin: {
+            description:
+              "Marca como 'noindex,nofollow' para evitar indexación en buscadores.",
+          },
+        },
+      ],
     }),
 
     /**

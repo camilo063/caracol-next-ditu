@@ -85,6 +85,46 @@ export const SiteSettings: GlobalConfig = {
                   "Marca primaria del sitio. Usada como fallback cuando un layout no especifica theme.",
               },
             },
+            {
+              name: "copyright",
+              type: "text",
+              defaultValue: "©2026 Caracol Comercial Digital",
+              admin: {
+                description:
+                  "Copyright que aparece en el footer del Hub y en otros layouts.",
+              },
+            },
+          ],
+        },
+        {
+          label: "Mantenimiento",
+          description:
+            "Kill-switch para emergencias. Si está activo, todas las rutas públicas redirigen a la página de mantenimiento.",
+          fields: [
+            {
+              name: "maintenanceMode",
+              type: "group",
+              label: false,
+              fields: [
+                {
+                  name: "enabled",
+                  type: "checkbox",
+                  defaultValue: false,
+                  admin: {
+                    description: "Activar para sacar el sitio público de servicio.",
+                  },
+                },
+                {
+                  name: "message",
+                  type: "textarea",
+                  defaultValue: "Estamos trabajando en mejoras. Vuelve pronto.",
+                  admin: {
+                    description:
+                      "Mensaje visible mientras el sitio está en mantenimiento.",
+                  },
+                },
+              ],
+            },
           ],
         },
       ],
