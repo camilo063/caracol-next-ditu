@@ -35,8 +35,6 @@ export default function HomePage() {
           title: <CaracolNextWordmark className="h-[32px] w-[205px]" />,
           description: [
             "Conecta tu marca con el respaldo de nuestros portales líderes a través de contenidos que generan impacto real.",
-            "Audiencia masiva y comprometida en noticias, deportes, entretenimiento y estilo de vida.",
-            "Formatos pensados para integrar tu marca de manera natural a la narrativa editorial.",
           ],
           ctaLabel: "Conoce Caracol Next",
           href: "/caracol-next",
