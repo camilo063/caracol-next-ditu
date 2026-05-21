@@ -155,44 +155,14 @@ export function AudienceNetworksBlockComponent({
               seguidores
             </p>
 
-            {/* Network row — 6 networks distribuidos justify-between (Figma) */}
-            <div className="mt-10 flex w-full flex-wrap items-start justify-between gap-y-10 sm:gap-y-12">
-              {networks.slice(0, 6).map((net) => (
-                <div
-                  key={net.id ?? net.network}
-                  className="flex flex-col items-center gap-2"
-                >
-                  <div className="flex items-start justify-center gap-3">
-                    {/* Figma 364:2698: el SVG es self-contained — incluye el
-                        círculo azul + letra blanca (cut-out). Sin wrapper extra. */}
-                    <NetworkIcon network={net.network} className="h-12 w-12 shrink-0" />
-                    <p
-                      className="font-display font-semibold whitespace-nowrap"
-                      style={{
-                        color: "#2D2D2D",
-                        fontSize: "20px",
-                        lineHeight: "28px",
-                      }}
-                    >
-                      <CountUp
-                        value={net.followers}
-                        format={(v) => formatNumber(Math.round(v))}
-                      />
-                    </p>
-                  </div>
-                  <p
-                    className="font-display font-normal"
-                    style={{
-                      color: NEUTRO_NEGRO,
-                      fontSize: "16px",
-                      lineHeight: "20px",
-                    }}
-                  >
-                    Seguidores
-                  </p>
-                </div>
-              ))}
-            </div>
+            {/* Network row — Figma 347:1636 "Logo Bar":
+                · Layout: justify-between, gap-y-68 (rows si wrap)
+                · Cada card w-134, flex-col gap-12 items-center
+                · Icon 48x47, número SemiBold 20/lh-28 #2D2D2D
+                · Progress bar w-134 h-12, fondo translucent, fill cyan
+                  rgba(0,172,255,0.8) proporcional al máximo
+                · El cyan se encoge para números grandes (shrink-fit) */}
+            <NetworksLogoBar networks={networks.slice(0, 6)} />
           </div>
         ) : null}
 
@@ -280,6 +250,77 @@ function StatCard({ item }: { item: BreakdownItem }) {
           {subLabel}
         </p>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * NetworksLogoBar — Figma 347:1636 "Logo Bar".
+ *
+ * Layout: flex flex-wrap justify-between, py-42 px-68, gap-y-68 entre rows.
+ * Cada card: w-134 flex-col gap-12 items-center.
+ *  - Icon 48×47 (NetworkIcon SVG self-contained)
+ *  - Número Montserrat SemiBold 20/lh-28 #2D2D2D centered
+ *  - Progress bar w-134 h-12 con fill cyan rgba(0,172,255,0.8) proporcional
+ *    al máximo seguidores
+ *
+ * Si los números son grandes el formato (formatNumber) los formatea con
+ * separador de miles. Si exceden el width de 134px, el progress bar mantiene
+ * w-134 (texto se desborda visualmente arriba — pero al usar leading-28
+ * sobre w-134 suele estar OK).
+ */
+function NetworksLogoBar({
+  networks,
+}: {
+  networks: Array<{ id?: string | null; network: string; followers: number }>;
+}) {
+  // Máximo para calcular % proporcional del progress bar.
+  const maxFollowers = Math.max(...networks.map((n) => n.followers ?? 0));
+
+  return (
+    <div className="mt-10 flex w-full flex-wrap items-start justify-between gap-y-10 sm:gap-y-12 lg:gap-y-[68px]">
+      {networks.map((net) => {
+        const ratio = maxFollowers > 0 ? (net.followers ?? 0) / maxFollowers : 0;
+        return (
+          <div
+            key={net.id ?? net.network}
+            className="flex w-full max-w-[134px] flex-col items-center gap-2 lg:gap-[12px]"
+          >
+            {/* Icon — Figma 347:1638;208:4718: w-48 h-47 SVG self-contained */}
+            <div className="flex h-[47px] w-[48px] items-start overflow-clip">
+              <NetworkIcon network={net.network} className="h-full w-full shrink-0" />
+            </div>
+            {/* Número — Montserrat SemiBold 20/lh-28 #2D2D2D center */}
+            <p
+              className="font-display w-full text-center font-semibold"
+              style={{
+                color: "#2D2D2D",
+                fontSize: "20px",
+                lineHeight: "28px",
+              }}
+            >
+              <CountUp
+                value={net.followers}
+                format={(v) => formatNumber(Math.round(v))}
+              />
+            </p>
+            {/* Progress bar — w-134 h-12, fondo gris claro, fill cyan
+                rgba(0,172,255,0.8) proporcional al max */}
+            <div
+              className="relative h-[12px] w-full max-w-[134px] overflow-hidden"
+              style={{ backgroundColor: "rgba(0, 51, 129, 0.1)" }}
+            >
+              <div
+                className="absolute top-0 left-0 h-full transition-[width] duration-1000 ease-out"
+                style={{
+                  width: `${ratio * 100}%`,
+                  backgroundColor: "rgba(0, 172, 255, 0.8)",
+                }}
+              />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
