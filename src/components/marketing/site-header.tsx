@@ -283,7 +283,9 @@ export function SiteHeader({
             ) : null}
             {showFullscreenToggle ? (
               <span className="hidden md:inline-flex">
-                <FullscreenToggle tone="light" />
+                {/* Figma 430:529: icono blanco. Caracol Next inicia con bg navy
+                    (icono blanco) y al scroll cambia a bg white (icono dark). */}
+                <FullscreenToggle tone={isCaracolNextNavy ? "dark" : "light"} />
               </span>
             ) : null}
             <button

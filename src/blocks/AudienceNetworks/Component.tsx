@@ -137,18 +137,27 @@ export function AudienceNetworksBlockComponent({
           ) : null}
         </div>
 
-        {/* MIDDLE: Líderes en redes + total */}
+        {/* MIDDLE: Líderes en redes + total — Figma 347:1630
+            Heading + subheading ambos 40/normal tracking -1, weights diferentes */}
         {networks && networks.length > 0 ? (
           <div className="mx-auto mt-12 max-w-[1200px] px-4 sm:px-6 lg:mt-16">
             <h3
-              className="font-display text-[28px] leading-[1.1] font-bold tracking-[-1px] sm:text-[32px] lg:text-[40px]"
-              style={{ color: NEUTRO_NEGRO }}
+              className="text-[28px] font-bold tracking-[-1px] sm:text-[32px] lg:text-[40px]"
+              style={{
+                color: NEUTRO_NEGRO,
+                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                lineHeight: "normal",
+              }}
             >
               Líderes en redes
             </h3>
             <p
-              className="font-display mt-2 text-[24px] leading-[1.1] font-semibold tracking-[-1px] sm:text-[32px] lg:text-[40px]"
-              style={{ color: NEUTRO_GRIS_OSCURO }}
+              className="mt-1 text-[24px] font-semibold tracking-[-1px] sm:text-[32px] lg:text-[40px]"
+              style={{
+                color: NEUTRO_GRIS_OSCURO,
+                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                lineHeight: "normal",
+              }}
             >
               +
               <CountUp value={totalFollowers} format={(v) => formatMillionsLong(v)} /> de
@@ -255,46 +264,42 @@ function StatCard({ item }: { item: BreakdownItem }) {
 }
 
 /**
- * NetworksLogoBar — Figma 347:1636 "Logo Bar".
+ * NetworksLogoBar — Figma 347:1630 "Scrolling Counter Animation".
  *
- * Layout: flex flex-wrap justify-between, py-42 px-68, gap-y-68 entre rows.
- * Cada card: w-134 flex-col gap-12 items-center.
- *  - Icon 48×47 (NetworkIcon SVG self-contained)
- *  - Número Montserrat SemiBold 20/lh-28 #2D2D2D centered
- *  - Progress bar w-134 h-12 con fill cyan rgba(0,172,255,0.8) proporcional
- *    al máximo seguidores
+ * Layout: flex flex-wrap justify-between, py-42 px-120, gap-y-68 entre rows.
+ * Cada card: flex flex-row gap-12 items-start (NO column).
+ *  - Icon socialmedia w-48 h-47
+ *  - Counter overflow-clip h-28 w-110 con número animado Montserrat
+ *    SemiBold 20/lh-28 #2D2D2D center
+ *  - Label "Seguidores" absolute bottom-20 left-115.5 translate-y-full
+ *    Montserrat Regular 16/lh-20 #121212 center
  *
- * Si los números son grandes el formato (formatNumber) los formatea con
- * separador de miles. Si exceden el width de 134px, el progress bar mantiene
- * w-134 (texto se desborda visualmente arriba — pero al usar leading-28
- * sobre w-134 suele estar OK).
+ * Figma NO usa progress bars — el counter scrolling es la única animación.
  */
 function NetworksLogoBar({
   networks,
 }: {
   networks: Array<{ id?: string | null; network: string; followers: number }>;
 }) {
-  // Máximo para calcular % proporcional del progress bar.
-  const maxFollowers = Math.max(...networks.map((n) => n.followers ?? 0));
-
   return (
-    <div className="mt-10 flex w-full flex-wrap items-start justify-between gap-y-10 sm:gap-y-12 lg:gap-y-[68px]">
-      {networks.map((net) => {
-        const ratio = maxFollowers > 0 ? (net.followers ?? 0) / maxFollowers : 0;
-        return (
-          <div
-            key={net.id ?? net.network}
-            className="flex w-full max-w-[134px] flex-col items-center gap-2 lg:gap-[12px]"
-          >
-            {/* Icon — Figma 347:1638;208:4718: w-48 h-47 SVG self-contained */}
-            <div className="flex h-[47px] w-[48px] items-start overflow-clip">
-              <NetworkIcon network={net.network} className="h-full w-full shrink-0" />
-            </div>
-            {/* Número — Montserrat SemiBold 20/lh-28 #2D2D2D center */}
+    <div className="mt-10 flex w-full flex-wrap items-center justify-between gap-y-10 sm:gap-y-12 lg:gap-y-[68px] lg:px-[120px] lg:py-[42px]">
+      {networks.map((net) => (
+        <div
+          key={net.id ?? net.network}
+          className="relative flex shrink-0 items-start justify-center gap-[12px] pb-7"
+        >
+          {/* Icon socialmedia — Figma w-48 h-47 SVG */}
+          <div className="flex h-[47px] w-[48px] shrink-0 items-start overflow-clip">
+            <NetworkIcon network={net.network} className="h-full w-full" />
+          </div>
+          {/* Counter — Figma h-28 w-110, overflow-clip (animación scroll
+              vertical). Mi implementación usa CountUp numérico 0→final. */}
+          <div className="flex h-[28px] w-[110px] items-start overflow-clip">
             <p
-              className="font-display w-full text-center font-semibold"
+              className="w-full text-center font-semibold whitespace-nowrap"
               style={{
                 color: "#2D2D2D",
+                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
                 fontSize: "20px",
                 lineHeight: "28px",
               }}
@@ -304,23 +309,22 @@ function NetworksLogoBar({
                 format={(v) => formatNumber(Math.round(v))}
               />
             </p>
-            {/* Progress bar — w-134 h-12, fondo gris claro, fill cyan
-                rgba(0,172,255,0.8) proporcional al max */}
-            <div
-              className="relative h-[12px] w-full max-w-[134px] overflow-hidden"
-              style={{ backgroundColor: "rgba(0, 51, 129, 0.1)" }}
-            >
-              <div
-                className="absolute top-0 left-0 h-full transition-[width] duration-1000 ease-out"
-                style={{
-                  width: `${ratio * 100}%`,
-                  backgroundColor: "rgba(0, 172, 255, 0.8)",
-                }}
-              />
-            </div>
           </div>
-        );
-      })}
+          {/* "Seguidores" label — absolute bottom, centered under counter */}
+          <p
+            className="absolute bottom-0 left-[60px] -translate-x-1/2 translate-y-full text-center whitespace-nowrap"
+            style={{
+              color: "#121212",
+              fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+              fontSize: "16px",
+              fontWeight: 400,
+              lineHeight: "20px",
+            }}
+          >
+            Seguidores
+          </p>
+        </div>
+      ))}
     </div>
   );
 }

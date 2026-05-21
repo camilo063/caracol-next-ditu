@@ -59,15 +59,17 @@ export function FloatingContact({
 
   return (
     <>
-      {/* Botón flotante fixed — estilo Figma AudienceNetworks Contáctanos */}
+      {/* Botón flotante fixed — Figma 484:2246 (btn_contancto).
+          Color CaracolTV/Digital/Azul Claro #2862FF (no #00ACFF) */}
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label={buttonLabel}
         aria-expanded={open}
-        className={`fixed z-40 inline-flex h-12 w-[188px] items-center justify-center rounded text-white shadow-md transition-opacity hover:opacity-90 ${positionClasses}`}
+        className={`fixed z-40 inline-flex items-center justify-center overflow-clip rounded-[4px] border border-solid text-white shadow-md transition-opacity hover:opacity-90 ${positionClasses}`}
         style={{
-          backgroundColor: "#00ACFF",
+          backgroundColor: "#2862FF",
+          borderColor: "#2862FF",
           padding: "12px 48px",
           fontSize: "16px",
           fontWeight: 600,
