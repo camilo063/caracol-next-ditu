@@ -21,15 +21,75 @@ export const caracolNextDemoLayout: AnyBlock[] = [
     headingBold: "servicio de tu marca.",
     subheading: "Vamos más allá de la pauta tradicional.",
     keyStats: [],
+    // brandIcons del Hero — Figma 347:2037: 8 marcas con logos reales.
+    // Cada `icon` es shape { url, alt } que mediaUrl extrae a la URL.
     brandIcons: [
-      { brand: "caracoltv", icon: undefined as never, id: "bi-1" },
-      { brand: "golcaracol", icon: undefined as never, id: "bi-2" },
-      { brand: "caracolsports", icon: undefined as never, id: "bi-3" },
-      { brand: "ditu", icon: undefined as never, id: "bi-4" },
-      { brand: "bluradio", icon: undefined as never, id: "bi-5" },
-      { brand: "lakalle", icon: undefined as never, id: "bi-6" },
-      { brand: "volk", icon: undefined as never, id: "bi-7" },
-      { brand: "bumbox", icon: undefined as never, id: "bi-8" },
+      {
+        brand: "caracoltv",
+        icon: {
+          url: "/caracol-next/brands/caracoltv.png",
+          alt: "Caracol Te Ve",
+        } as unknown as never,
+        id: "bi-1",
+      },
+      {
+        // Noticias Caracol comparte la brandKey "caracoltv" (no existe key
+        // dedicado en BRAND_META).
+        brand: "caracoltv",
+        icon: {
+          url: "/caracol-next/brands/noticias-caracol.png",
+          alt: "Noticias Caracol",
+        } as unknown as never,
+        id: "bi-2",
+      },
+      {
+        brand: "caracolsports",
+        icon: {
+          url: "/caracol-next/brands/caracol-sports.png",
+          alt: "Caracol Sports",
+        } as unknown as never,
+        id: "bi-3",
+      },
+      {
+        brand: "bluradio",
+        icon: {
+          url: "/caracol-next/brands/blu-radio.png",
+          alt: "Blu Radio",
+        } as unknown as never,
+        id: "bi-4",
+      },
+      {
+        brand: "golcaracol",
+        icon: {
+          url: "/caracol-next/brands/gol-caracol.png",
+          alt: "Gol Caracol",
+        } as unknown as never,
+        id: "bi-5",
+      },
+      {
+        brand: "volk",
+        icon: {
+          url: "/caracol-next/brands/volk.png",
+          alt: "Volk",
+        } as unknown as never,
+        id: "bi-6",
+      },
+      {
+        brand: "bumbox",
+        icon: {
+          url: "/caracol-next/brands/bumbox.png",
+          alt: "BumBox",
+        } as unknown as never,
+        id: "bi-7",
+      },
+      {
+        brand: "lakalle",
+        icon: {
+          url: "/caracol-next/brands/la-kalle.png",
+          alt: "La Kalle",
+        } as unknown as never,
+        id: "bi-8",
+      },
     ],
     backgroundImage: null,
     backgroundVideo: null,
