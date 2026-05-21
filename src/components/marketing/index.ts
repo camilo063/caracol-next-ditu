@@ -5,6 +5,8 @@ export { DituAdnBlock, type DituAdnProps } from "./ditu-adn";
 export { DituAudienciaBlock, type DituAudienciaProps } from "./ditu-audiencia";
 export { DituCalendarioBlock, type DituCalendarioProps } from "./ditu-calendario";
 export { DituCanalesBlock, type DituCanalesProps } from "./ditu-canales";
+export { DituFooter, type DituFooterProps } from "./ditu-footer";
+export { DituHablamosBlock, type DituHablamosProps } from "./ditu-hablamos";
 export { DituHero, type DituHeroProps } from "./ditu-hero";
 export { DituMascot } from "./ditu-mascot";
 export { DituPautaBlock, type DituPautaProps } from "./ditu-pauta";
