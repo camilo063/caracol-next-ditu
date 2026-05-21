@@ -27,6 +27,19 @@ const VIOLET = "#8232F0";
 const VIOLET_MED = "#561BDB";
 const NAVY_DARK = "#12082D";
 
+/**
+ * AGE_BARS — alturas visibles del Rectangle 46 en Figma 747:2627.
+ *
+ * Estructura Figma: container `h-[77/99/114/77/N/93px] flex-col gap-2 justify-end`,
+ * con bar `flex-1` (no-peak) o `h-[148px] shrink-0` (peak).
+ * Visible bar height = container - label(17) - gap(2):
+ *  - 18-24: 77 - 19 = 58
+ *  - 25-34: 99 - 19 = 80
+ *  - 35-44: 114 - 19 = 95
+ *  - 45-54: 77 - 19 = 58
+ *  - 55-64 PEAK: 148 (bg #8232F0, fijo)
+ *  - +65: 93 - 19 = 74
+ */
 const AGE_BARS = [
   { label: "18-24", height: 58, peak: false },
   { label: "25-34", height: 80, peak: false },
@@ -184,30 +197,45 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
               Pico: 55-64 años
             </p>
 
-            {/* Bar chart */}
-            <div className="mt-4 flex w-full items-end gap-2 sm:gap-3">
-              {AGE_BARS.map((bar) => (
-                <div
-                  key={bar.label}
-                  className="flex w-full flex-1 flex-col items-stretch gap-1"
-                >
+            {/* Bar chart — Figma 747:2627: items-end gap-[12px] h-[201px].
+                Cada bar wrapper h-[Xpx] flex-col gap-[2px] justify-end, bar flex-1
+                (peak: bar h-[148px] shrink-0 sin h del wrapper). */}
+            <div className="mt-4 flex w-full items-end gap-3 lg:gap-[12px]">
+              {AGE_BARS.map((bar) => {
+                // Container heights del Figma: 77/99/114/77/(auto peak)/93.
+                const containerH = bar.peak ? undefined : bar.height + 19; // bar + label + gap
+                return (
                   <div
-                    className="w-full rounded-t-[4px]"
-                    style={{
-                      height: `${bar.height}px`,
-                      backgroundColor: bar.peak ? VIOLET : "#D9D9D9",
-                    }}
-                  />
-                  <p
-                    className="text-center text-[12px] text-white sm:text-[14px]"
-                    style={{
-                      fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
-                    }}
+                    key={bar.label}
+                    className="flex flex-1 flex-col items-start justify-end gap-[2px]"
+                    style={containerH ? { height: `${containerH}px` } : undefined}
                   >
-                    {bar.label}
-                  </p>
-                </div>
-              ))}
+                    {bar.peak ? (
+                      <div
+                        className="w-full shrink-0 rounded-tl-[4px] rounded-tr-[4px]"
+                        style={{
+                          height: `${bar.height}px`,
+                          backgroundColor: VIOLET,
+                        }}
+                      />
+                    ) : (
+                      <div
+                        className="min-h-px w-full flex-1 rounded-tl-[4px] rounded-tr-[4px]"
+                        style={{ backgroundColor: "#D9D9D9" }}
+                      />
+                    )}
+                    <p
+                      className="w-full text-center text-[14px] text-white"
+                      style={{
+                        fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+                        lineHeight: "normal",
+                      }}
+                    >
+                      {bar.label}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </article>
         </div>

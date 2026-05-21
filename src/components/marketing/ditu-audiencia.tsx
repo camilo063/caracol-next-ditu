@@ -166,7 +166,7 @@ export function DituAudienciaBlock({
                 </span>
               </div>
               <p
-                className={`font-display font-bold whitespace-nowrap text-white ${stat.large ? "text-[44px] sm:text-[64px] lg:text-[80px]" : "text-[36px] sm:text-[48px] lg:text-[64px]"}`}
+                className={`font-display font-bold whitespace-nowrap text-white ${stat.large ? "text-[48px] sm:text-[72px] lg:text-[96px]" : "text-[36px] sm:text-[48px] lg:text-[64px]"}`}
                 style={{ lineHeight: 1 }}
               >
                 <CountUp value={stat.value} format={stat.format} />
@@ -220,20 +220,34 @@ export function DituAudienciaBlock({
             </p>
           </div>
 
-          {/* Vertical divider on lg */}
+          {/* Vertical divider — Figma 738:2713: línea dashed cyan w-[16px] h-[197px].
+              Recreado con CSS background dashed (sin requerir asset extra). */}
           <div
-            className="hidden h-[197px] w-px self-center lg:block"
-            style={{ backgroundColor: "rgba(119,237,237,0.4)" }}
-          />
+            aria-hidden="true"
+            className="hidden h-[197px] w-[16px] self-center lg:flex lg:justify-center"
+          >
+            <div
+              className="h-full w-px"
+              style={{
+                backgroundImage: `repeating-linear-gradient(180deg, ${CYAN} 0 8px, transparent 8px 14px)`,
+              }}
+            />
+          </div>
 
-          {/* 4 device cards */}
-          <div className="grid flex-1 grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+          {/* 4 device cards — Figma 738:2631/2707/2695/2677.
+              gap-[18px] interno, p-[20px], border-white, backdrop-blur-[7px]. */}
+          <div className="grid flex-1 grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-[24px]">
             {DEFAULT_DEVICES.map((dev) => (
               <div
                 key={dev.label}
-                className="flex flex-col items-center gap-4 rounded-[16px] border border-white/70 p-4 backdrop-blur-sm lg:p-5"
-                style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+                className="flex flex-col items-center gap-[18px] rounded-[16px] border border-white p-4 lg:p-[20px]"
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.02)",
+                  backdropFilter: "blur(7px)",
+                }}
               >
+                {/* Icono — Figma usa composite 80×80 (círculo + icon). Replico con
+                    círculo cyan + icono centrado para matchear el visual. */}
                 <div
                   className="flex h-[64px] w-[64px] items-center justify-center rounded-full lg:h-[80px] lg:w-[80px]"
                   style={{ border: `2px solid ${CYAN}` }}
@@ -247,7 +261,10 @@ export function DituAudienciaBlock({
                   />
                 </div>
                 <div className="text-center">
-                  <p className="font-display text-[26px] leading-[1.1] font-bold text-white lg:text-[32px]">
+                  <p
+                    className="font-display text-[26px] font-bold text-white lg:text-[32px]"
+                    style={{ lineHeight: "40px" }}
+                  >
                     {dev.minutes} min
                   </p>
                   <p
@@ -255,6 +272,7 @@ export function DituAudienciaBlock({
                     style={{
                       color: GREY_LIGHT,
                       fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+                      lineHeight: "normal",
                     }}
                   >
                     {dev.label}
@@ -299,7 +317,7 @@ export function DituAudienciaBlock({
             </p>
           </div>
           {/* Mascot hand decorativo */}
-          <div className="absolute -top-4 right-4 hidden h-[80px] w-[80px] lg:-top-2 lg:right-[20%] lg:block lg:h-[107px] lg:w-[107px]">
+          <div className="absolute -top-4 right-4 hidden h-[90px] w-[80px] lg:-top-[11px] lg:right-[20%] lg:block lg:h-[121px] lg:w-[107px]">
             <Image
               src="/ditu/mascot-hand.svg"
               alt=""
