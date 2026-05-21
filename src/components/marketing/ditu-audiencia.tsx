@@ -159,8 +159,8 @@ export function DituAudienciaBlock({
                   className="h-[24px] w-[24px] lg:h-[30px] lg:w-[30px]"
                 />
                 <span
-                  className="font-display inline-flex items-center rounded-[4px] px-3 py-1 text-[14px] leading-[1] font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[18px]"
-                  style={{ backgroundColor: CYAN, color: NAVY_DARK }}
+                  className="font-display inline-flex items-center rounded-[4px] px-[12px] py-[4px] text-[14px] font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[20px]"
+                  style={{ backgroundColor: CYAN, color: NAVY_DARK, lineHeight: "14px" }}
                 >
                   {stat.label}
                 </span>
@@ -206,7 +206,11 @@ export function DituAudienciaBlock({
                 Watch time promedio
               </span>
             </div>
-            <p className="font-display text-[44px] leading-[1] font-bold whitespace-nowrap text-white sm:text-[56px] lg:text-[64px]">
+            {/* "60 MIN" — Figma 892:6260 / 656:4869: 64/lh-80 Ditu Display Bold */}
+            <p
+              className="font-display text-[44px] font-bold whitespace-nowrap text-white sm:text-[56px] lg:text-[64px]"
+              style={{ lineHeight: "80px" }}
+            >
               60 MIN
             </p>
             <p
@@ -328,8 +332,9 @@ export function DituAudienciaBlock({
           </div>
         </div>
 
-        {/* Networks row */}
-        <div className="flex flex-wrap items-center justify-between gap-6 sm:gap-8 lg:gap-y-[68px]">
+        {/* Networks row — mobile: grid 3x2 (spec Camilo).
+            Desktop: flex justify-between con todas las 6 networks en una fila. */}
+        <div className="grid grid-cols-3 place-items-center gap-x-4 gap-y-8 sm:gap-x-6 lg:flex lg:flex-wrap lg:items-center lg:justify-between lg:gap-6 lg:gap-y-[68px]">
           {DEFAULT_NETWORKS.map((net) => (
             <div key={net.network} className="flex items-start gap-3">
               <Image

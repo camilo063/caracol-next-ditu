@@ -41,12 +41,22 @@
       #003380 100%
     );
 
-    /* ===== Ditu — Primario + Complementario ===== */
+    /* ===== Ditu — Tokens oficiales del Design System (Figma 26:38) =====
+       Primario + Complementario + Degradados.
+       Audit Figma DS (mayo 2026): los tokens formales son #1F1647 (violeta
+       oscuro), #8232F0 (violeta), #561BDB (violeta medio), #77EDED (cyan),
+       #FFFFFF (blanco). Los page-frames del Figma (Hero, Pauta, Footer, etc.)
+       usan adicionalmente #12082D como fondo más oscuro — incluido abajo
+       como variant "page-deep" para fidelidad con los frames implementados. */
     --color-ditu-violeta: #8232f0;
-    --color-ditu-violeta-oscuro: #1f1647;
+    --color-ditu-violeta-oscuro: #1f1647; /* DS token oficial */
     --color-ditu-violeta-medio: #561bdb; /* complementario */
     --color-ditu-azul-claro: #77eded; /* complementario (cyan accent) */
     --color-ditu-blanco: #ffffff;
+    /* Variant "page-deep" — usado en los page-frames del Figma como bg más
+       oscuro que #1F1647. No es token DS formal pero está implementado en
+       Hero, Pauta, Audiencia, Canales, Footer y .theme-ditu background. */
+    --color-ditu-page-deep: #12082d;
 
     --color-brand-ditu-50: #f3eafe;
     --color-brand-ditu-100: #e3d2fd;
@@ -59,7 +69,16 @@
     --color-brand-ditu-800: #3a138c;
     --color-brand-ditu-900: var(--color-ditu-violeta-oscuro);
     --color-brand-ditu-accent: var(--color-ditu-azul-claro);
+    /* Gradiente Principal (DS Ditu/Degradado/Principal): #8232F0 → #561BDB */
     --color-brand-ditu-gradient: linear-gradient(135deg, #8232f0 0%, #561bdb 100%);
+    /* Gradiente Secundario (DS Ditu/Degradado/Secundario):
+       3 stops, fade hacia transparente al final (15% max). */
+    --color-brand-ditu-gradient-secundario: linear-gradient(
+      180deg,
+      #8232f0 0%,
+      #561bdb 50%,
+      rgba(31, 22, 71, 0.15) 100%
+    );
     --color-brand-ditu-gradient-deep: linear-gradient(
       180deg,
       #1f1647 0%,
