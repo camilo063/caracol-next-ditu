@@ -63,10 +63,10 @@ function AdFormatsDefault({
   if (!formats || formats.length === 0) return null;
 
   const displayFormats = formats.filter(
-    (f) => CATEGORY_GROUP[f.category ?? "display"] === "display",
+    (f: FormatItem) => CATEGORY_GROUP[f.category ?? "display"] === "display",
   );
   const videoAudioFormats = formats.filter(
-    (f) => CATEGORY_GROUP[f.category ?? "display"] === "video",
+    (f: FormatItem) => CATEGORY_GROUP[f.category ?? "display"] === "video",
   );
 
   const ctaHeading =
