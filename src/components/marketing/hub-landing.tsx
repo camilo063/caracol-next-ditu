@@ -1,17 +1,33 @@
-import Link from "next/link";
-import { ArrowRight, Tv, Users, Zap, Clock } from "lucide-react";
+"use client";
 
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+
+import { CountUp } from "@/components/animations";
 import { cn } from "@/lib/utils";
 
 /**
- * HubLanding — la landing principal en `/`.
- * Diseño tomado del Figma "Caracol Next.png":
- * - Header simple "CARACOLMEDIOS | DIGITAL"
- * - Split en pantalla completa: heading + CTA a la izquierda · 2 cards de marca a la derecha
- * - 4 stat boxes en la parte inferior derecha
- * - 2 botones CTA "Conoce X →"
- * - Footer copyright
- * - Background: gradiente azul oscuro (Caracol Digital deep)
+ * HubLanding — landing principal en `/` (Home Caracol Medios).
+ *
+ * Specs Figma 892:5740 — Home Caracol Medios:
+ *  - Bg: solid #003381 con 2 radial gradients decorativos (rojos blueish glow)
+ *  - Header: "Logo Caracol MEDIOS" + divider line + "DIGITAL" (top-40 left-40)
+ *  - Left side (hero):
+ *    · Eyebrow Poppins Bold 20 uppercase color #00ACFF
+ *    · Heading Montserrat 74/lh-80 tracking -2.96px, mix Extra/Semi-Bold
+ *    · CTA "Contáctenos" bg #00ACFF Montserrat SemiBold 18 white w-306
+ *  - Right side: 2 product cards (Caracol Next 328 + Ditu 284) + 4 metric
+ *    cards + 2 "Conoce" CTAs
+ *  - Metric cards: bg #f1f1f1 border (#003381 ó #561BDB), 60/lh-48 ExtraBold,
+ *    label 20/lh-24 SemiBold #464553, icon 40px abs top-left
+ *  - 2 "Conoce" CTAs: outline white (Caracol Next) + gradient violet (Ditu)
+ *  - Footer copyright: pill bg-black/25 rounded-90 p-10 Montserrat SemiBold 16
+ *
+ * Spec usuario (Camilo):
+ *  - Mobile: todo apilado verticalmente, metrics OCULTOS, cards una debajo
+ *    de la otra
+ *  - Números animan 0 → final al entrar viewport (CountUp, Framer Motion)
  */
 export interface HubLandingProps {
   eyebrow: string;
@@ -34,18 +50,27 @@ export interface HubLandingProps {
   };
   stats: Array<{
     icon: "users" | "tv" | "zap" | "clock";
+    /** Valor numérico para CountUp. */
+    numericValue?: number;
+    /** Sufijo después del número animado (e.g. "M", "K", "Min"). */
+    suffix?: string;
+    /** Prefijo opcional (e.g. "+"). */
+    prefix?: string;
+    /** Fallback como string si no se quiere CountUp. */
     value: string;
     label: string;
+    /** "caracolnext" → border #003381, number #003381. "ditu" → border
+        #561BDB, number #12082D. */
     accent?: "caracolnext" | "ditu";
   }>;
   copyright: string;
 }
 
-const ICONS = {
-  users: Users,
-  tv: Tv,
-  zap: Zap,
-  clock: Clock,
+const ICON_PATHS = {
+  users: "/home/icon-users.png",
+  tv: "/home/icon-screens.png",
+  zap: "/home/icon-followers.png",
+  clock: "/home/icon-watch.png",
 } as const;
 
 export function HubLanding({
@@ -59,168 +84,360 @@ export function HubLanding({
 }: HubLandingProps) {
   return (
     <div
-      className="relative flex min-h-screen flex-col text-white"
-      style={{
-        background: "linear-gradient(135deg, #0D3AA0 0%, #003CCA 40%, #003380 100%)",
-      }}
+      className="relative flex min-h-screen flex-col overflow-hidden text-white"
+      style={{ backgroundColor: "#003381" }}
     >
-      {/* Header */}
-      <header className="px-6 pt-8 sm:px-10 lg:px-16">
-        <div className="flex items-center gap-3">
-          <CaracolMediosLogo className="h-7 w-auto" />
-        </div>
+      {/* Radial gradient decorativos — Figma 892:5741 + 892:5742 */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute hidden lg:block"
+        style={{
+          left: "calc(50% - 12px)",
+          top: "-354px",
+          width: "1210px",
+          height: "1210px",
+          background:
+            "radial-gradient(circle at center, rgba(1,91,196,1) 0%, rgba(0,51,129,0) 100%)",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute hidden lg:block"
+        style={{
+          left: "-565px",
+          top: "0",
+          width: "1210px",
+          height: "1210px",
+          background:
+            "radial-gradient(circle at center, rgba(1,91,196,1) 0%, rgba(0,51,129,0) 100%)",
+        }}
+      />
+
+      {/* Header — Figma 892:6210 */}
+      <header className="relative z-10 px-6 pt-8 sm:px-10 lg:px-[40px] lg:pt-[40px]">
+        <CaracolMediosLogo />
       </header>
 
-      {/* Body */}
-      <main className="flex flex-1 items-center px-6 py-12 sm:px-10 lg:px-16">
-        <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* Left — texto + CTA */}
-          <div className="flex flex-col justify-center">
-            <p
-              className="text-xs font-bold tracking-[0.18em] uppercase"
-              style={{ color: "#2862FF" }}
-            >
-              {eyebrow}
-            </p>
-            <h1 className="font-display mt-6 text-5xl leading-[1.05] font-black tracking-tight sm:text-6xl xl:text-7xl">
-              {heading}
-            </h1>
-            <div className="mt-10">
-              <Link
-                href={contactHref}
-                className="inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-bold text-white shadow-lg transition-transform hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:outline-none"
-                style={{ backgroundColor: "#015BC4" }}
-              >
-                {contactLabel}
-              </Link>
-            </div>
+      {/* Body — desktop 2-col, mobile stacked */}
+      <main className="relative z-10 flex flex-1 flex-col gap-12 px-6 py-12 sm:px-10 lg:flex-row lg:items-start lg:gap-[64px] lg:px-[84px] lg:pt-[150px] lg:pb-[80px]">
+        {/* Left — hero content */}
+        <div className="flex flex-col items-start lg:max-w-[611px] lg:pt-[68px]">
+          <p
+            className="text-[14px] font-bold uppercase sm:text-[18px] lg:text-[20px]"
+            style={{
+              color: "#00ACFF",
+              fontFamily: "var(--font-poppins), system-ui, sans-serif",
+              lineHeight: "normal",
+            }}
+          >
+            {eyebrow}
+          </p>
+          {/* Heading 74/lh-80 Montserrat tracking-[-2.96px] mixed weights */}
+          <h1
+            className="mt-[24px] text-[44px] font-bold sm:text-[56px] lg:text-[74px]"
+            style={{
+              fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+              color: "#FFFFFF",
+              lineHeight: "80px",
+              letterSpacing: "-2.96px",
+            }}
+          >
+            {heading}
+          </h1>
+          {/* CTA Contáctenos — bg #00ACFF, Montserrat SemiBold 18, w-306 */}
+          <Link
+            href={contactHref}
+            className="mt-[40px] inline-flex w-full max-w-[306px] items-center justify-center rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 sm:text-[18px]"
+            style={{
+              backgroundColor: "#00ACFF",
+              borderColor: "#00ACFF",
+              fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+              lineHeight: "24px",
+              minHeight: "32px",
+            }}
+          >
+            {contactLabel}
+          </Link>
+        </div>
+
+        {/* Right — product cards + metrics + bottom CTAs */}
+        <div className="flex flex-1 flex-col gap-6 lg:max-w-[636px]">
+          {/* Product cards — Caracol Next (w-328) + Ditu (w-284). Mobile stacked. */}
+          <div className="flex flex-col gap-4 sm:flex-row lg:gap-[24px]">
+            {/* Caracol Next card */}
+            <ProductCard
+              variant="caracolnext"
+              title={brands.caracolNext.title}
+              description={brands.caracolNext.description}
+            />
+            {/* Ditu card */}
+            <ProductCard
+              variant="ditu"
+              title={brands.ditu.title}
+              description={brands.ditu.description}
+            />
           </div>
 
-          {/* Right — brand cards + stats */}
-          <div className="flex flex-col gap-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <BrandCard
-                title={brands.caracolNext.title}
-                description={brands.caracolNext.description}
-                background="linear-gradient(160deg, #0D3AA0 0%, #003380 100%)"
-                border="rgba(40, 98, 255, 0.4)"
+          {/* Metric cards — Spec usuario: en MOBILE se ocultan. Desktop: grid 2×2 */}
+          <div className="hidden grid-cols-2 gap-x-[20px] gap-y-[24px] sm:grid">
+            {stats.map((s, i) => (
+              <MetricCard
+                key={i}
+                icon={ICON_PATHS[s.icon]}
+                numericValue={s.numericValue}
+                prefix={s.prefix}
+                suffix={s.suffix}
+                fallbackValue={s.value}
+                label={s.label}
+                accent={s.accent ?? "caracolnext"}
               />
-              <BrandCard
-                title={brands.ditu.title}
-                description={brands.ditu.description}
-                background="linear-gradient(160deg, #8232F0 0%, #561BDB 100%)"
-                border="rgba(130, 50, 240, 0.5)"
-              />
-            </div>
+            ))}
+          </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map((s, i) => {
-                const Icon = ICONS[s.icon];
-                const dotColor = s.accent === "ditu" ? "#8232F0" : "#015BC4";
-                return (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 rounded-2xl bg-white p-4 text-neutral-900 shadow-md sm:p-5"
-                  >
-                    <span
-                      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-                      style={{ backgroundColor: dotColor, color: "white" }}
-                    >
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="font-display text-xl leading-tight font-extrabold sm:text-2xl">
-                        {s.value}
-                      </p>
-                      <p className="text-muted-foreground text-xs font-semibold">
-                        {s.label}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Link
-                href={brands.caracolNext.href}
-                className="inline-flex items-center justify-between rounded-full px-5 py-3 text-sm font-bold text-white shadow-lg transition-transform hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:outline-none"
-                style={{
-                  background: "linear-gradient(135deg, #0D3AA0 0%, #003380 100%)",
-                }}
-              >
-                <span>{brands.caracolNext.ctaLabel}</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href={brands.ditu.href}
-                className="inline-flex items-center justify-between rounded-full px-5 py-3 text-sm font-bold text-white shadow-lg transition-transform hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:outline-none"
-                style={{
-                  background: "linear-gradient(135deg, #8232F0 0%, #561BDB 100%)",
-                }}
-              >
-                <span>{brands.ditu.ctaLabel}</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+          {/* Bottom CTAs — Conoce Caracol Next + Conoce ditu. Mobile stacked. */}
+          <div className="flex flex-col gap-4 sm:flex-row lg:gap-[24px]">
+            <Link
+              href={brands.caracolNext.href}
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90"
+              style={{
+                borderColor: "#FFFFFF",
+                backgroundColor: "transparent",
+                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                lineHeight: "24px",
+                minHeight: "32px",
+              }}
+            >
+              {brands.caracolNext.ctaLabel}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href={brands.ditu.href}
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] px-[48px] py-[12px] text-[16px] font-semibold text-[#FDFDFD] transition-opacity hover:opacity-90"
+              style={{
+                background:
+                  "linear-gradient(115.47deg, #8232F0 14.111%, #561BDB 81.738%)",
+                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                lineHeight: 1.5,
+              }}
+            >
+              {brands.ditu.ctaLabel}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="px-6 pb-8 sm:px-10 lg:px-16">
-        <div className="rounded-full bg-black/30 px-6 py-4 text-center text-xs text-white/80">
-          {copyright}
+      {/* Footer copyright pill — Figma 892:6164 */}
+      <footer className="relative z-10 px-6 pb-8 sm:px-10 lg:px-[120px] lg:pb-[40px]">
+        <div
+          className="flex items-start justify-center overflow-clip rounded-[90px] p-[10px]"
+          style={{ backgroundColor: "rgba(0,0,0,0.25)" }}
+        >
+          <p
+            className="text-[14px] font-semibold whitespace-nowrap text-white sm:text-[16px]"
+            style={{
+              fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+              lineHeight: "24px",
+            }}
+          >
+            {copyright}
+          </p>
         </div>
       </footer>
     </div>
   );
 }
 
-function BrandCard({
+/**
+ * ProductCard — tarjetas de producto (Caracol Next / Ditu).
+ *  - Caracol Next: bg #003381 border #00ACFF w-328
+ *  - Ditu: bg gradient #8232F0 → #561BDB border #8232F0 w-284
+ *  - Logo h-32 + descripción 14/lh-20 Medium center
+ *  - pt-40 pb-30 px-20 gap-24
+ */
+function ProductCard({
+  variant,
   title,
   description,
-  background,
-  border,
 }: {
+  variant: "caracolnext" | "ditu";
   title: React.ReactNode;
   description: string;
-  background: string;
-  border: string;
 }) {
+  const isDitu = variant === "ditu";
   return (
     <div
-      className="flex flex-col gap-4 rounded-2xl border p-6"
-      style={{ background, borderColor: border }}
+      className={cn(
+        "flex flex-1 flex-col items-center justify-center gap-[24px] rounded-[8px] border px-[20px] pt-[40px] pb-[30px]",
+        isDitu ? "lg:max-w-[284px]" : "lg:max-w-[328px] lg:flex-[1.15]",
+      )}
+      style={
+        isDitu
+          ? {
+              background: "linear-gradient(180deg, #8232F0 0%, #561BDB 100%)",
+              borderColor: "#8232F0",
+            }
+          : {
+              backgroundColor: "#003381",
+              borderColor: "#00ACFF",
+            }
+      }
     >
-      <div className="flex h-14 items-center text-white">{title}</div>
-      <p className="text-sm leading-relaxed text-white/90">{description}</p>
+      <div className="flex h-[32px] items-center justify-center text-white">{title}</div>
+      <p
+        className="w-full text-center text-[14px] font-medium text-white"
+        style={{
+          fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+          lineHeight: "20px",
+        }}
+      >
+        {description}
+      </p>
     </div>
   );
 }
 
-/** Logo CARACOLMEDIOS | DIGITAL inline (vectorial). */
+/**
+ * MetricCard — tarjeta métrica con CountUp animation.
+ *  - bg #f1f1f1, border #003381 ó #561BDB, rounded-8 p-20 h-149
+ *  - Icon 40px absolute top-left
+ *  - Number 60/lh-48 ExtraBold text-right (color por accent)
+ *  - Label 20/lh-24 SemiBold #464553 text-right
+ */
+function MetricCard({
+  icon,
+  numericValue,
+  prefix,
+  suffix,
+  fallbackValue,
+  label,
+  accent,
+}: {
+  icon: string;
+  numericValue?: number;
+  prefix?: string;
+  suffix?: string;
+  fallbackValue: string;
+  label: string;
+  accent: "caracolnext" | "ditu";
+}) {
+  const borderColor = accent === "ditu" ? "#561BDB" : "#003381";
+  const numberColor = accent === "ditu" ? "#12082D" : "#003381";
+
+  return (
+    <div
+      className="relative h-[149px] rounded-[8px] border p-[20px]"
+      style={{
+        backgroundColor: "#F1F1F1",
+        borderColor,
+      }}
+    >
+      {/* Icon top-left 40px */}
+      <div className="absolute top-[20px] left-[20px] h-[40px] w-[40px]">
+        <Image
+          src={icon}
+          alt=""
+          width={40}
+          height={40}
+          className="h-full w-full object-contain"
+        />
+      </div>
+
+      {/* Content right-aligned justified end */}
+      <div className="flex h-full flex-col items-end justify-end gap-[4px]">
+        <p
+          className="text-right text-[40px] font-extrabold whitespace-nowrap sm:text-[48px] lg:text-[60px]"
+          style={{
+            color: numberColor,
+            fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+            lineHeight: "48px",
+          }}
+        >
+          {numericValue != null ? (
+            <>
+              {prefix ?? ""}
+              <CountUp
+                value={numericValue}
+                format={(v) => {
+                  // Format helper para mostrar números como +16M, +127M, etc.
+                  if (suffix === "M") return Math.round(v).toString();
+                  if (suffix === "Min") return Math.round(v).toString();
+                  return Math.round(v).toLocaleString("es-CO");
+                }}
+              />
+              {suffix ?? ""}
+            </>
+          ) : (
+            fallbackValue
+          )}
+        </p>
+        <p
+          className="text-right text-[16px] font-semibold sm:text-[18px] lg:text-[20px]"
+          style={{
+            color: "#464553",
+            fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+            lineHeight: "24px",
+          }}
+        >
+          {label}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Logo CARACOLMEDIOS | DIGITAL — Figma 892:6210.
+ * Layout: logo w-241 h-32 + divider line flex-1 + "DIGITAL" 25/lh-25 SemiBold
+ */
 function CaracolMediosLogo({ className }: { className?: string }) {
   return (
-    <div className={cn("flex items-center gap-3 text-white", className)}>
-      {/* Símbolo planeta */}
-      <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
-        <ellipse
-          cx="16"
-          cy="16"
-          rx="14"
-          ry="6"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          transform="rotate(-20 16 16)"
-        />
-        <circle cx="16" cy="16" r="3.5" fill="currentColor" />
-      </svg>
-      <span className="font-display text-base font-extrabold tracking-wide">
-        CARACOL<span className="font-light">MEDIOS</span>
-      </span>
-      <span className="text-white/30">|</span>
-      <span className="text-base font-semibold tracking-wide text-white/90">DIGITAL</span>
+    <div
+      className={cn(
+        "flex w-full items-center gap-3 sm:w-[395px] lg:gap-[24px]",
+        className,
+      )}
+    >
+      {/* Logo Caracol MEDIOS — Figma 892:6211: w-241 h-32 */}
+      <div className="flex h-[32px] flex-shrink-0 items-center text-white">
+        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
+          <ellipse
+            cx="16"
+            cy="16"
+            rx="14"
+            ry="6"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            transform="rotate(-20 16 16)"
+          />
+          <circle cx="16" cy="16" r="3.5" fill="currentColor" />
+        </svg>
+        <span
+          className="ml-2 text-[14px] font-extrabold sm:text-[18px]"
+          style={{
+            fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+            letterSpacing: "0.04em",
+          }}
+        >
+          CARACOL<span className="font-light">MEDIOS</span>
+        </span>
+      </div>
+      {/* Divider line — Figma 892:6212: bg #D9D9D9 flex-1 h-full 1px */}
+      <div
+        className="hidden h-[1px] flex-1 self-center sm:block"
+        style={{ backgroundColor: "#D9D9D9" }}
+        aria-hidden="true"
+      />
+      {/* "DIGITAL" — Figma 892:6213: Montserrat SemiBold 25/lh-25 */}
+      <p
+        className="text-[18px] font-semibold whitespace-nowrap text-white sm:text-[22px] lg:text-[25px]"
+        style={{
+          fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+          lineHeight: "25px",
+        }}
+      >
+        DIGITAL
+      </p>
     </div>
   );
 }
