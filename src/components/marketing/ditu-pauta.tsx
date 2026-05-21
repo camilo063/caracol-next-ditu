@@ -2,68 +2,175 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 
 /**
- * DituPautaBlock — Figma 760:9793.
+ * DituPautaBlock — Figma 892:6463.
  *
- * Estructura:
- *  - Sticker "IMPULSA TU MARCA" + heading "CON FORMATOS DE ALTO IMPACTO."
- *  - Sidebar de formatos (tabs): Pre-roll, Mid-roll, OAS, etc.
- *  - Card grande del formato activo (preview + descripción)
- *  - CTA final "Contáctanos"
+ * Specs Figma:
+ *  - Container: gradient 204.26deg #12082D 37.947% → #3B1A93 106.75%,
+ *    p-[120px], flex-col gap-[48px], items-start
+ *  - Header: sticker "Impulsa tu marca" 48/lh-48 + heading
+ *    "con formatos / de alto impacto." 84/lh-84 white + subtitle 22px
+ *  - Content layout (gap-[48px] items-start py-[48px] w-1154):
+ *    · Sidebar sticky top-0 w-[282.39px]:
+ *      - bg-rgba(255,255,255,0.1) backdrop-blur-[12.5px] rounded-[16px] p-[20px]
+ *      - Sticker "Formatos de pauta" 24/lh-32
+ *      - Tab activa: bg #12082d p-16 rounded-8, dot cyan size-6 + Spline Sans
+ *        SemiBold 16 white + arrow right size-24
+ *      - Tab inactiva: transparent p-16 h-51 rounded-8, Spline Sans SemiBold
+ *        16 white
+ *    · Content flex-1 gap-[64px] items-center:
+ *      - 3 format cards: border-b rgba(255,255,255,0.4) pb-40 justify-between
+ *        ◦ Image left: w-[176px] h-[320px] rounded-[20px], cropped
+ *        ◦ Right w-[565px] gap-16:
+ *          + Mini sticker w-[49.933px] h-[29.666px], font 16/lh-16
+ *          + Title Ditu Display Bold 40/lh-40 uppercase white
+ *          + Description Spline Sans Regular 18px white
+ *  - CTA: w-1200 gap-24 items-center, text Spline Sans 24, button white
+ *    text #561BDB Bold 16 "Descargar Especificaciones"
+ *
+ * Spec usuario (Camilo):
+ *  - Desktop: sidebar sticky a la izquierda. Click categoría cambia contenido
+ *    derecha (sin modal, sin scroll)
+ *  - Mobile: sidebar → tabs horizontales con scroll
+ *  - Transición fade-in suave 300ms ease (Framer Motion AnimatePresence)
+ *  - Categoría activa con indicador visual destacado
  */
 
 const CYAN = "#77EDED";
 const NAVY_DARK = "#12082D";
+const VIOLET_MED = "#561BDB";
+
+type CategoryKey = "ads" | "patrocinio" | "branded" | "eventos";
 
 interface AdFormat {
+  /** ID único para key. */
   id: string;
-  label: string;
+  /** Tag pequeño arriba (e.g. "Ad-s", "Patrocinio"). */
+  tag: string;
+  /** Título del formato (e.g. "pre-roll", "MID-ROLL"). */
   title: string;
+  /** Descripción larga. */
   description: string;
-  duration: string;
+  /** Imagen preview (placeholder por ahora). */
+  image?: string;
 }
 
-const FORMATS: AdFormat[] = [
+interface Category {
+  key: CategoryKey;
+  label: string;
+  formats: AdFormat[];
+}
+
+const CATEGORIES: Category[] = [
   {
-    id: "pre-roll",
-    label: "Pre-roll",
-    title: "Pre-roll",
-    description:
-      "Anuncio de alto impacto antes del contenido. Captura la atención del usuario en el momento más alto: justo cuando va a empezar a ver lo que ama.",
-    duration: "15-30s",
+    key: "ads",
+    label: "Ad's",
+    formats: [
+      {
+        id: "pre-roll",
+        tag: "Ad-s",
+        title: "pre-roll",
+        description:
+          "El pre-roll es un anuncio de video que se reproduce antes de que inicie el contenido principal que el usuario ha seleccionado.",
+      },
+      {
+        id: "mid-roll",
+        tag: "Ad-s",
+        title: "MID-ROLL",
+        description:
+          "Mid-roll es un anuncio que aparece en una pausa o corte programado durante la reproducción de un contenido.",
+      },
+      {
+        id: "dai",
+        tag: "Ad-s",
+        title: "DAI",
+        description:
+          "La pauta DAI se refiere a la inserción de anuncios en los cortes comerciales de canales que transmiten en simultáneo (simulcast) la señal de televisión lineal.",
+      },
+    ],
   },
   {
-    id: "mid-roll",
-    label: "Mid-roll",
-    title: "Mid-roll",
-    description:
-      "Inserción publicitaria durante el contenido. Genera recordación porque interrumpe la experiencia con un mensaje relevante y memorable.",
-    duration: "15-30s",
+    key: "patrocinio",
+    label: "Patrocinio",
+    formats: [
+      {
+        id: "patrocinio-canal",
+        tag: "Patrocinio",
+        title: "patrocinio de canal",
+        description:
+          "Vincula tu marca a un canal FAST completo con presencia constante en bumpers, billboards y placement editorial.",
+      },
+      {
+        id: "patrocinio-programa",
+        tag: "Patrocinio",
+        title: "PATROCINIO DE PROGRAMA",
+        description:
+          "Asocia tu marca con un programa específico de Caracol Televisión vía bumper de entrada, salida y menciones del presentador.",
+      },
+      {
+        id: "patrocinio-evento",
+        tag: "Patrocinio",
+        title: "PATROCINIO DE EVENTO",
+        description:
+          "Tu marca presente en los eventos en vivo más importantes — Mundial, Eurocopa, Festival de Cine, conciertos y más.",
+      },
+    ],
   },
   {
-    id: "oas",
-    label: "OAS",
-    title: "Overlay / OAS",
-    description:
-      "Overlay no intrusivo sobre el reproductor. Visibilidad permanente sin interrumpir el contenido — ideal para awareness y branding sostenido.",
-    duration: "Persistente",
+    key: "branded",
+    label: "Branded",
+    formats: [
+      {
+        id: "branded-content",
+        tag: "Branded",
+        title: "branded content",
+        description:
+          "Contenido original creado en alianza con tu marca — narrativas integradas a la línea editorial de ditu y Caracol Next.",
+      },
+      {
+        id: "branded-series",
+        tag: "Branded",
+        title: "SERIES PROPIAS",
+        description:
+          "Co-producimos series y miniseries con tu marca como eje narrativo, distribuidas en ditu y redes sociales.",
+      },
+      {
+        id: "branded-podcast",
+        tag: "Branded",
+        title: "PODCASTS",
+        description:
+          "Branded podcasts conducidos por talento Caracol con tu marca presente desde guion hasta distribución.",
+      },
+    ],
   },
   {
-    id: "skin",
-    label: "Skin",
-    title: "Skin / Custom UI",
-    description:
-      "Personalización visual del player y/o secciones específicas con la identidad de tu marca. Ownership total del espacio.",
-    duration: "Campaña completa",
-  },
-  {
-    id: "branded",
-    label: "Branded content",
-    title: "Branded content",
-    description:
-      "Contenido original co-creado entre Ditu y tu marca. Integración nativa al ecosistema editorial de Caracol con narrativas a tu medida.",
-    duration: "Variable",
+    key: "eventos",
+    label: "Eventos especiales",
+    formats: [
+      {
+        id: "eventos-mundial",
+        tag: "Eventos",
+        title: "MUNDIAL / EUROCOPA",
+        description:
+          "Activaciones publicitarias premium durante coberturas deportivas masivas — pre/mid-rolls + branding integrado.",
+      },
+      {
+        id: "eventos-festivales",
+        tag: "Eventos",
+        title: "FESTIVALES",
+        description:
+          "Patrocinio integral de festivales de música, cine y cultura con cobertura en vivo en Caracol Next.",
+      },
+      {
+        id: "eventos-fechas",
+        tag: "Eventos",
+        title: "FECHAS ESPECIALES",
+        description:
+          "20 de Julio, Día del Padre, Día de la Madre — fechas de alto consumo con paquetes publicitarios curados.",
+      },
+    ],
   },
 ];
 
@@ -72,128 +179,326 @@ export interface DituPautaProps {
 }
 
 export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
-  const [activeId, setActiveId] = useState(FORMATS[0]!.id);
-  const active = FORMATS.find((f) => f.id === activeId) ?? FORMATS[0]!;
+  const [activeKey, setActiveKey] = useState<CategoryKey>("ads");
+  const active = CATEGORIES.find((c) => c.key === activeKey) ?? CATEGORIES[0]!;
 
   return (
     <section
       id={anchorId}
       className="relative w-full overflow-hidden"
       style={{
-        background: "linear-gradient(180deg, #1E1446 0%, #12082D 50%, #1E1446 100%)",
+        // Figma 892:6463: gradient 204.26deg
+        background: "linear-gradient(204.26deg, #12082D 37.947%, #3B1A93 106.75%)",
       }}
     >
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-12 px-6 py-24 sm:px-12 sm:py-32 lg:gap-[64px] lg:px-[120px] lg:py-[180px]">
-        {/* Header */}
-        <div className="flex flex-col gap-3">
+      <div className="mx-auto flex max-w-[1440px] flex-col items-start gap-12 px-6 py-24 sm:px-12 sm:py-32 lg:gap-[48px] lg:p-[120px]">
+        {/* Header — Figma 760:9671 */}
+        <div className="flex flex-col items-start gap-[16px]">
+          {/* Sticker "Impulsa tu marca" */}
           <div
-            className="inline-flex w-fit items-center rounded-[8px] px-2 py-1.5"
+            className="inline-flex items-center rounded-[8px] px-[8px] py-[6px]"
             style={{
               backgroundColor: CYAN,
               color: NAVY_DARK,
               transform: "rotate(-1.97deg)",
             }}
           >
-            <p className="font-display text-[24px] leading-[1] font-bold whitespace-nowrap uppercase sm:text-[36px] lg:text-[48px]">
-              IMPULSA TU MARCA
+            <p
+              className="font-display text-[24px] font-bold whitespace-nowrap uppercase sm:text-[36px] lg:text-[48px]"
+              style={{ lineHeight: 1 }}
+            >
+              Impulsa tu marca
             </p>
           </div>
-          <h2 className="font-display text-[36px] leading-[1] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
-            CON FORMATOS
-            <br />
-            DE ALTO IMPACTO.
+
+          {/* Heading 84/lh-84 — 2 lines */}
+          <h2
+            className="font-display text-[36px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
+            style={{ lineHeight: 1 }}
+          >
+            <span className="block">con formatos</span>
+            <span className="block">de alto impacto.</span>
           </h2>
+
+          {/* Subtitle */}
           <p
-            className="max-w-[640px] text-[16px] leading-snug text-white sm:text-[18px] lg:text-[22px]"
+            className="max-w-[1200px] text-[16px] text-white sm:text-[20px] lg:text-[22px]"
             style={{
               fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+              lineHeight: "normal",
             }}
           >
-            Diseñados para ajustarse al ADN de nuestra audiencia digital — de display a
+            Diseñados para capturar atención en nuestro ecosistema digital — de display a
             video, audio y patrocinios.
           </p>
         </div>
 
-        {/* Format selector + active card */}
-        <div className="grid gap-6 lg:grid-cols-[280px_1fr] lg:gap-10">
-          {/* Sidebar tabs */}
-          <aside className="flex flex-row flex-wrap gap-2 lg:flex-col lg:gap-3">
-            {FORMATS.map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => setActiveId(f.id)}
-                className="font-display flex-1 rounded-[8px] px-4 py-3 text-left text-[14px] leading-[1] font-bold uppercase transition-colors sm:text-[16px] lg:flex-none lg:text-[18px]"
-                style={{
-                  backgroundColor: activeId === f.id ? CYAN : "rgba(255,255,255,0.04)",
-                  color: activeId === f.id ? NAVY_DARK : "#FFFFFF",
-                  border: `1.5px solid ${activeId === f.id ? CYAN : "rgba(119,237,237,0.3)"}`,
-                }}
-              >
-                {f.label}
-              </button>
-            ))}
-          </aside>
+        {/* Content layout: sidebar + content area */}
+        <div className="flex w-full flex-col items-start gap-8 py-6 lg:flex-row lg:gap-[48px] lg:py-[48px]">
+          {/* Sidebar — desktop sticky / mobile horizontal scroll */}
+          <PautaSidebar
+            categories={CATEGORIES}
+            activeKey={activeKey}
+            onSelect={setActiveKey}
+          />
 
-          {/* Active card */}
-          <article
-            className="flex flex-col gap-5 rounded-[16px] border p-6 lg:gap-8 lg:p-10"
-            style={{
-              borderColor: CYAN,
-              backgroundColor: "rgba(255,255,255,0.04)",
-              backdropFilter: "blur(8px)",
-            }}
-          >
-            <div
-              className="aspect-[16/9] w-full rounded-[12px]"
-              style={{
-                background:
-                  "linear-gradient(135deg, #561BDB 0%, #8232F0 50%, #3B1A93 100%)",
-              }}
-            />
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between gap-3">
-                <h3 className="font-display text-[24px] leading-[1.1] font-bold text-white uppercase sm:text-[28px] lg:text-[32px]">
-                  {active.title}
-                </h3>
-                <span
-                  className="font-display inline-flex items-center rounded-[4px] px-3 py-1 text-[12px] leading-[1] font-bold whitespace-nowrap uppercase sm:text-[14px]"
-                  style={{ backgroundColor: CYAN, color: NAVY_DARK }}
-                >
-                  {active.duration}
-                </span>
-              </div>
-              <p
-                className="text-[15px] leading-relaxed text-white/85 sm:text-[16px] lg:text-[18px]"
-                style={{
-                  fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
-                }}
+          {/* Content — formats list with fade-in transition between categories */}
+          <div className="flex flex-1 flex-col items-center gap-12 lg:gap-[64px]">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={active.key}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="flex w-full flex-col gap-12 lg:gap-[64px]"
               >
-                {active.description}
-              </p>
-            </div>
-          </article>
+                {active.formats.map((format, idx) => (
+                  <FormatRow
+                    key={format.id}
+                    format={format}
+                    isLast={idx === active.formats.length - 1}
+                  />
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
         {/* CTA bottom */}
-        <div className="flex flex-col items-center gap-4 text-center">
+        <div className="flex w-full flex-col items-center gap-[24px]">
           <p
-            className="max-w-[640px] text-[16px] leading-snug text-white sm:text-[18px]"
+            className="max-w-[1200px] text-center text-[18px] text-white sm:text-[20px] lg:text-[24px]"
             style={{
               fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+              lineHeight: "normal",
             }}
           >
-            Diseñemos juntos la estrategia publicitaria que tu marca necesita.
+            <span className="font-bold">
+              ¡Asegura la presencia de tu marca en los eventos más importantes del país!
+            </span>{" "}
+            Contáctanos ahora y diseñemos juntos tu participación.
           </p>
           <Link
             href="#contacto"
-            className="font-display inline-flex items-center justify-center rounded-[8px] px-8 py-3 text-[14px] leading-[1] font-bold uppercase transition-opacity hover:opacity-90 sm:text-[16px]"
-            style={{ backgroundColor: CYAN, color: NAVY_DARK }}
+            className="inline-flex items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold whitespace-nowrap transition-opacity hover:opacity-90"
+            style={{
+              borderColor: "#FFFFFF",
+              color: VIOLET_MED,
+              fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+              lineHeight: 1.5,
+            }}
           >
-            Contáctanos
+            Descargar Especificaciones
           </Link>
         </div>
       </div>
     </section>
   );
 }
+
+/* ============================================================================
+ * PautaSidebar
+ *
+ * Desktop: sticky top-0, bg-white/10 backdrop-blur, rounded-16, vertical tabs.
+ *   Tab activa = bg-navy + dot cyan + arrow right.
+ * Mobile: scroll horizontal con tabs como pills.
+ * ============================================================================ */
+
+function PautaSidebar({
+  categories,
+  activeKey,
+  onSelect,
+}: {
+  categories: Category[];
+  activeKey: CategoryKey;
+  onSelect: (k: CategoryKey) => void;
+}) {
+  return (
+    <>
+      {/* Desktop sidebar — sticky */}
+      <aside
+        className="hidden flex-col gap-[16px] rounded-[16px] p-[20px] lg:sticky lg:top-24 lg:flex lg:w-[282.39px] lg:shrink-0"
+        style={{
+          backgroundColor: "rgba(255,255,255,0.1)",
+          backdropFilter: "blur(12.5px)",
+        }}
+      >
+        {/* Sticker "Formatos de pauta" — variante small (Figma 760:8780) */}
+        <div
+          className="inline-flex w-fit items-center rounded-[8px] px-[8px] py-[6px]"
+          style={{
+            backgroundColor: CYAN,
+            color: NAVY_DARK,
+            transform: "rotate(-1.97deg)",
+          }}
+        >
+          <p
+            className="font-display text-[20px] font-bold whitespace-nowrap uppercase lg:text-[24px]"
+            style={{ lineHeight: "32px" }}
+          >
+            Formatos de pauta
+          </p>
+        </div>
+
+        {/* Tabs verticales */}
+        {categories.map((cat) => {
+          const isActive = activeKey === cat.key;
+          return (
+            <button
+              key={cat.key}
+              type="button"
+              onClick={() => onSelect(cat.key)}
+              className="flex items-center gap-[8px] rounded-[8px] p-[16px] text-left transition-colors"
+              style={{
+                backgroundColor: isActive ? NAVY_DARK : "transparent",
+                minHeight: "51px",
+              }}
+            >
+              {isActive ? (
+                <span
+                  className="inline-block size-[6px] shrink-0 rounded-full"
+                  style={{ backgroundColor: CYAN }}
+                  aria-hidden="true"
+                />
+              ) : null}
+              <p
+                className="flex-1 text-[16px] font-semibold text-white"
+                style={{
+                  fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+                  lineHeight: "normal",
+                }}
+              >
+                {cat.label}
+              </p>
+              {isActive ? (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="size-[24px] shrink-0 text-white"
+                  aria-hidden="true"
+                >
+                  <path d="M16.01 11H4v2h12.01v3L20 12l-3.99-4z" />
+                </svg>
+              ) : null}
+            </button>
+          );
+        })}
+      </aside>
+
+      {/* Mobile: horizontal scroll tabs */}
+      <div className="-mx-6 w-screen overflow-x-auto px-6 lg:hidden">
+        <div className="flex gap-2 pb-2">
+          {categories.map((cat) => {
+            const isActive = activeKey === cat.key;
+            return (
+              <button
+                key={cat.key}
+                type="button"
+                onClick={() => onSelect(cat.key)}
+                className="font-display inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 text-[14px] font-semibold whitespace-nowrap transition-colors"
+                style={{
+                  backgroundColor: isActive ? CYAN : "transparent",
+                  borderColor: CYAN,
+                  color: isActive ? NAVY_DARK : "#FFFFFF",
+                  fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+                }}
+              >
+                {isActive ? (
+                  <span
+                    className="inline-block size-[6px] shrink-0 rounded-full"
+                    style={{ backgroundColor: NAVY_DARK }}
+                    aria-hidden="true"
+                  />
+                ) : null}
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ============================================================================
+ * FormatRow — Figma 760:9402+ (cada card del format list)
+ *
+ * Layout: flex justify-between, border-b excepto la última.
+ *  - Image left: w-176 h-320 rounded-20 (cropped)
+ *  - Content right: w-565 gap-16
+ *    · Mini sticker tag w-50 h-30 (cyan, font 16/lh-16)
+ *    · Title 40/lh-40 uppercase white
+ *    · Description 18px Spline Sans white
+ * ============================================================================ */
+
+function FormatRow({ format, isLast }: { format: AdFormat; isLast: boolean }) {
+  return (
+    <div
+      className={`flex w-full items-start justify-between gap-6 pb-10 lg:gap-12 ${
+        isLast ? "" : "border-b"
+      }`}
+      style={isLast ? undefined : { borderColor: "rgba(255,255,255,0.4)" }}
+    >
+      {/* Image preview — w-176 h-320 rounded-20 (cropped, top-aligned) */}
+      <div className="relative h-[200px] w-[100px] shrink-0 overflow-hidden rounded-[20px] sm:h-[280px] sm:w-[140px] lg:h-[320px] lg:w-[176px]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={format.image ?? "/ditu/pauta-card.png"}
+          alt=""
+          className="absolute block"
+          style={{
+            // Figma crop exacto: h-125.96% w-106.89% top-(-4.98%) left-(-5.96%)
+            width: "106.89%",
+            height: "125.96%",
+            top: "-4.98%",
+            left: "-5.96%",
+            maxWidth: "none",
+            objectFit: "cover",
+          }}
+        />
+      </div>
+
+      {/* Content right */}
+      <div className="flex flex-1 flex-col items-start gap-[16px] lg:w-[565px]">
+        {/* Mini sticker tag */}
+        <div
+          className="inline-flex w-fit items-center rounded-[8px] px-[8px] py-[6px]"
+          style={{
+            backgroundColor: CYAN,
+            color: NAVY_DARK,
+            transform: "rotate(-1.97deg)",
+          }}
+        >
+          <p
+            className="font-display text-[14px] font-bold whitespace-nowrap uppercase lg:text-[16px]"
+            style={{ lineHeight: "16px" }}
+          >
+            {format.tag}
+          </p>
+        </div>
+
+        {/* Title 40/lh-40 */}
+        <h3
+          className="font-display text-[28px] font-bold text-white uppercase sm:text-[34px] lg:text-[40px]"
+          style={{ lineHeight: "40px" }}
+        >
+          {format.title}
+        </h3>
+
+        {/* Description */}
+        <p
+          className="w-full text-[14px] text-white sm:text-[16px] lg:text-[18px]"
+          style={{
+            fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+            lineHeight: "normal",
+          }}
+        >
+          {format.description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export type { Category, AdFormat, CategoryKey };
