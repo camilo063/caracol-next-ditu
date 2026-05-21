@@ -1,6 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import Image from "next/image";
+import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 import { CountUp } from "@/components/animations";
 
@@ -40,20 +42,38 @@ const NAVY_DARK = "#12082D";
  *  - 55-64 PEAK: 148 (bg #8232F0, fijo)
  *  - +65: 93 - 19 = 74
  */
+/**
+ * AGE_BARS — Recharts BarChart data. Cada bar tiene un valor numérico (height
+ * en Figma como proxy del porcentaje relativo) y un flag peak.
+ * Heights del Figma 747:2627 (bar visible Rectangle 46).
+ */
 const AGE_BARS = [
-  { label: "18-24", height: 58, peak: false },
-  { label: "25-34", height: 80, peak: false },
-  { label: "35-44", height: 95, peak: false },
-  { label: "45-54", height: 58, peak: false },
-  { label: "55-64", height: 148, peak: true },
-  { label: "+65", height: 74, peak: false },
+  { label: "18-24", value: 58, peak: false },
+  { label: "25-34", value: 80, peak: false },
+  { label: "35-44", value: 95, peak: false },
+  { label: "45-54", value: 58, peak: false },
+  { label: "55-64", value: 148, peak: true },
+  { label: "+65", value: 74, peak: false },
 ];
 
+/**
+ * GENDER_DATA — Recharts PieChart (donut) data.
+ * 52% hombres + 48% mujeres (Figma 747:2597).
+ */
+const GENDER_DATA = [
+  { name: "Hombres", value: 52, color: "#77EDED" },
+  { name: "Mujeres", value: 48, color: "#561BDB" },
+];
+
+/**
+ * NSE_CARDS — Estratos socioeconómicos. La tarjeta con mayor % es destacada
+ * automáticamente (spec Camilo: calculado dinámicamente, no hardcoded).
+ */
 const NSE_CARDS = [
-  { label: "ESTRATO 1 o 2", value: 22.7, big: false },
-  { label: "ESTRATO 3", value: 37.8, big: true },
-  { label: "ESTRATO 4", value: 28.9, big: false },
-  { label: "ESTRATO 5 o 6", value: 10.6, big: false },
+  { label: "ESTRATO 1 o 2", value: 22.7 },
+  { label: "ESTRATO 3", value: 37.8 },
+  { label: "ESTRATO 4", value: 28.9 },
+  { label: "ESTRATO 5 o 6", value: 10.6 },
 ];
 
 export interface DituAdnProps {
@@ -61,6 +81,10 @@ export interface DituAdnProps {
 }
 
 export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
+  // NSE auto-highlight (spec Camilo): el estrato con mayor % es destacado.
+  // Calculado dinámicamente, no hardcoded.
+  const maxNseValue = useMemo(() => Math.max(...NSE_CARDS.map((c) => c.value)), []);
+
   return (
     <section
       id={anchorId}
@@ -133,27 +157,33 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                 </span>
               </div>
 
-              {/* Donut SVG */}
+              {/* Donut Recharts — Figma 747:2682: size-186 con animación de
+                  entrada nativa (isAnimationActive). Spec Camilo: 1-1.5s suave. */}
               <div className="relative h-[140px] w-[140px] shrink-0 sm:h-[186px] sm:w-[186px]">
-                <svg viewBox="0 0 200 200" className="h-full w-full -rotate-90">
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke={VIOLET_MED}
-                    strokeWidth="40"
-                  />
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke={CYAN}
-                    strokeWidth="40"
-                    strokeDasharray={`${0.52 * 2 * Math.PI * 80} ${2 * Math.PI * 80}`}
-                  />
-                </svg>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={GENDER_DATA}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius="60%"
+                      outerRadius="100%"
+                      startAngle={90}
+                      endAngle={-270}
+                      isAnimationActive
+                      animationBegin={0}
+                      animationDuration={1200}
+                      animationEasing="ease-out"
+                      stroke="none"
+                    >
+                      {GENDER_DATA.map((entry) => (
+                        <Cell key={entry.name} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
 
               {/* 48% Mujeres */}
@@ -197,45 +227,46 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
               Pico: 55-64 años
             </p>
 
-            {/* Bar chart — Figma 747:2627: items-end gap-[12px] h-[201px].
-                Cada bar wrapper h-[Xpx] flex-col gap-[2px] justify-end, bar flex-1
-                (peak: bar h-[148px] shrink-0 sin h del wrapper). */}
-            <div className="mt-4 flex w-full items-end gap-3 lg:gap-[12px]">
-              {AGE_BARS.map((bar) => {
-                // Container heights del Figma: 77/99/114/77/(auto peak)/93.
-                const containerH = bar.peak ? undefined : bar.height + 19; // bar + label + gap
-                return (
-                  <div
-                    key={bar.label}
-                    className="flex flex-1 flex-col items-start justify-end gap-[2px]"
-                    style={containerH ? { height: `${containerH}px` } : undefined}
+            {/* Bar chart Recharts — Figma 747:2627 + spec Camilo: barras crecen
+                desde 0 hasta valor final al entrar viewport (isAnimationActive),
+                duración ~1.2s. La barra peak (55-64) destacada en violet. */}
+            <div className="mt-4 w-full">
+              <div className="h-[180px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={AGE_BARS}
+                    margin={{ top: 4, right: 0, left: 0, bottom: 0 }}
                   >
-                    {bar.peak ? (
-                      <div
-                        className="w-full shrink-0 rounded-tl-[4px] rounded-tr-[4px]"
-                        style={{
-                          height: `${bar.height}px`,
-                          backgroundColor: VIOLET,
-                        }}
-                      />
-                    ) : (
-                      <div
-                        className="min-h-px w-full flex-1 rounded-tl-[4px] rounded-tr-[4px]"
-                        style={{ backgroundColor: "#D9D9D9" }}
-                      />
-                    )}
-                    <p
-                      className="w-full text-center text-[14px] text-white"
-                      style={{
-                        fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
-                        lineHeight: "normal",
-                      }}
+                    <Bar
+                      dataKey="value"
+                      radius={[4, 4, 0, 0]}
+                      isAnimationActive
+                      animationBegin={0}
+                      animationDuration={1200}
+                      animationEasing="ease-out"
                     >
-                      {bar.label}
-                    </p>
-                  </div>
-                );
-              })}
+                      {AGE_BARS.map((bar) => (
+                        <Cell key={bar.label} fill={bar.peak ? VIOLET : "#D9D9D9"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              {/* Labels debajo de cada bar — Figma 747:2630+: Spline Sans 14px white center */}
+              <div className="flex w-full items-start gap-3 lg:gap-[12px]">
+                {AGE_BARS.map((bar) => (
+                  <p
+                    key={bar.label}
+                    className="flex-1 text-center text-[14px] text-white"
+                    style={{
+                      fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+                      lineHeight: "normal",
+                    }}
+                  >
+                    {bar.label}
+                  </p>
+                ))}
+              </div>
             </div>
           </article>
         </div>
@@ -256,36 +287,41 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
           </p>
         </div>
 
-        {/* NSE cards */}
+        {/* NSE cards — Figma 748:2609. Spec Camilo: estrato con % MAYOR se
+            destaca automáticamente (no hardcoded). En esta data Estrato 3
+            (37.8%) es el highlight, pero si cambia el dataset, se recalcula. */}
         <div className="flex w-full flex-wrap items-end justify-between gap-4 sm:gap-6">
-          {NSE_CARDS.map((card) => (
-            <div
-              key={card.label}
-              className="flex w-full max-w-[272px] flex-col items-start gap-2 rounded-[16px] border p-5"
-              style={
-                card.big
-                  ? {
-                      background: "linear-gradient(180deg, #8232F0 0%, #561BDB 100%)",
-                      borderColor: "#FFFFFF",
-                      borderWidth: "2px",
-                    }
-                  : {
-                      borderColor: "#FFFFFF",
-                      backgroundColor: "rgba(255,255,255,0.02)",
-                      backdropFilter: "blur(10px)",
-                    }
-              }
-            >
-              <p className="font-display text-[24px] leading-[1] font-bold whitespace-nowrap text-white sm:text-[28px] lg:text-[32px]">
-                {card.label}
-              </p>
-              <p
-                className={`font-display leading-[1] font-medium whitespace-nowrap text-white uppercase ${card.big ? "text-[64px] sm:text-[80px] lg:text-[96px]" : "text-[44px] sm:text-[56px] lg:text-[64px]"}`}
+          {NSE_CARDS.map((card) => {
+            const isMax = card.value === maxNseValue;
+            return (
+              <div
+                key={card.label}
+                className="flex w-full max-w-[272px] flex-col items-start gap-2 rounded-[16px] border p-5"
+                style={
+                  isMax
+                    ? {
+                        background: "linear-gradient(180deg, #8232F0 0%, #561BDB 100%)",
+                        borderColor: "#FFFFFF",
+                        borderWidth: "2px",
+                      }
+                    : {
+                        borderColor: "#FFFFFF",
+                        backgroundColor: "rgba(255,255,255,0.02)",
+                        backdropFilter: "blur(10px)",
+                      }
+                }
               >
-                <CountUp value={card.value} format={(v) => `${v.toFixed(1)}%`} />
-              </p>
-            </div>
-          ))}
+                <p className="font-display text-[24px] leading-[1] font-bold whitespace-nowrap text-white sm:text-[28px] lg:text-[32px]">
+                  {card.label}
+                </p>
+                <p
+                  className={`font-display leading-[1] font-medium whitespace-nowrap text-white uppercase ${isMax ? "text-[64px] sm:text-[80px] lg:text-[96px]" : "text-[44px] sm:text-[56px] lg:text-[64px]"}`}
+                >
+                  <CountUp value={card.value} format={(v) => `${v.toFixed(1)}%`} />
+                </p>
+              </div>
+            );
+          })}
         </div>
 
         {/* Source */}

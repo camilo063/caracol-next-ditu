@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 /**
  * DituTipoContenidoBlock — Figma 750:3361.
@@ -50,14 +51,41 @@ export interface DituTipoContenidoProps {
 
 export function DituTipoContenidoBlock({
   anchorId = "tipo-contenido",
-}: DituTipoContenidoProps) {
+  /** Intervalo de autoplay en ms. Default 5000 (5s). */
+  autoplayInterval = 5000,
+}: DituTipoContenidoProps & { autoplayInterval?: number }) {
   const [activeTab, setActiveTab] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const tab = TABS[activeTab]!;
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // --- Autoplay (spec Camilo): avanza automáticamente entre los 3 tabs.
+  //     Pausa al hover en desktop (vía isPaused state, set por onMouseEnter/Leave). ---
+  useEffect(() => {
+    if (isPaused) return;
+    intervalRef.current = setInterval(() => {
+      setActiveTab((prev) => (prev + 1) % TABS.length);
+    }, autoplayInterval);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isPaused, autoplayInterval]);
+
+  // Manual click reinicia el ciclo de autoplay para evitar saltos confusos.
+  const handleTabClick = (idx: number) => {
+    setActiveTab(idx);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      // El useEffect re-arma el interval en el siguiente render.
+    }
+  };
 
   return (
     <section
       id={anchorId}
       className="relative w-full overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
       style={{
         // Figma: stops 11.561% / 63.291% / 101.84%
         background:
@@ -108,7 +136,7 @@ export function DituTipoContenidoBlock({
               ) : null}
               <button
                 type="button"
-                onClick={() => setActiveTab(idx)}
+                onClick={() => handleTabClick(idx)}
                 className="font-display text-[24px] font-bold whitespace-nowrap uppercase transition-colors sm:text-[36px] lg:text-[48px]"
                 style={{
                   color: idx === activeTab ? "#FFFFFF" : CYAN,
@@ -124,16 +152,26 @@ export function DituTipoContenidoBlock({
         </div>
 
         {/* Description — Figma 750:2719: Spline Sans 22px lh normal center white,
-            max-w-[840px] (= 1440 - 2×300px). */}
-        <p
-          className="max-w-[840px] text-center text-[16px] text-white sm:text-[20px] lg:text-[22px]"
-          style={{
-            fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
-            lineHeight: "normal",
-          }}
-        >
-          {tab.description}
-        </p>
+            max-w-[840px] (= 1440 - 2×300px).
+            Wrapped en AnimatePresence para fade-in 300ms al cambiar tab. */}
+        <div className="flex min-h-[100px] w-full max-w-[840px] items-center justify-center">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.p
+              key={activeTab}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="w-full text-center text-[16px] text-white sm:text-[20px] lg:text-[22px]"
+              style={{
+                fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+                lineHeight: "normal",
+              }}
+            >
+              {tab.description}
+            </motion.p>
+          </AnimatePresence>
+        </div>
 
         {/* Pagination dots — Figma 750:2859: 3 dots size-[16px], gap-[16px].
             Activa = filled cyan, inactiva = outline cyan. */}

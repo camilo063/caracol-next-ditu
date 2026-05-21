@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { ParallaxBackground } from "@/components/animations";
 import { cn } from "@/lib/utils";
@@ -81,6 +84,27 @@ export function DituHero({
   ];
 
   const finalButtons = buttons ?? buttonsFallback;
+  const reduceMotion = useReducedMotion();
+
+  // Stagger Framer Motion (spec Camilo): cada elemento entra con delay 0.1-0.2s.
+  // En reduced-motion: render directo sin animación.
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: reduceMotion ? 0 : 0.15,
+        delayChildren: reduceMotion ? 0 : 0.1,
+      },
+    },
+  };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: reduceMotion ? 0 : 0.5, ease: "easeOut" as const },
+    },
+  };
 
   return (
     <section
@@ -110,11 +134,17 @@ export function DituHero({
         </div>
       </ParallaxBackground>
 
-      {/* Content wrapper — Figma 512:3281: flex-col gap-[32px] items-center w-full.
-          No max-w: el padding-x del section (px-120 en lg) ya limita a 1200px. */}
-      <div className="relative z-10 flex w-full flex-col items-center gap-6 sm:gap-7 lg:gap-[32px]">
+      {/* Content wrapper — Figma 512:3281 + Framer Motion stagger (spec Camilo).
+          Cada hijo entra con delay 0.15s en cascada. No max-w: padding-x del
+          section (px-120 en lg) ya limita a 1200px. */}
+      <motion.div
+        className="relative z-10 flex w-full flex-col items-center gap-6 sm:gap-7 lg:gap-[32px]"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Heading hero + sticker overlay — Figma 649:4298 */}
-        <div className="relative w-full">
+        <motion.div className="relative w-full" variants={itemVariants}>
           <h1
             className="font-display text-center font-bold tracking-tight text-white uppercase"
             style={{
@@ -145,11 +175,14 @@ export function DituHero({
               {stickerText}
             </span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Description wrapper — Figma 797:3403: w-full px-[120px] flex items-center.
             El <p> hereda 20px Spline Sans Regular center white. */}
-        <div className="flex w-full flex-col items-center justify-center lg:px-[120px]">
+        <motion.div
+          className="flex w-full flex-col items-center justify-center lg:px-[120px]"
+          variants={itemVariants}
+        >
           <p
             className={cn(
               "w-full text-center text-[15px] text-white sm:text-[18px] lg:text-[20px]",
@@ -161,11 +194,15 @@ export function DituHero({
           >
             {description ?? descriptionFallback}
           </p>
-        </div>
+        </motion.div>
 
-        {/* Buttons wrapper — Figma 722:2615: gap-[24px] items-center pt-[32px] overflow-clip.
-            (Spacing total con el padre gap-32 + pt-32 = 64px desde descripción.) */}
-        <div className="flex flex-wrap items-center justify-center gap-3 overflow-clip pt-4 sm:gap-6 lg:gap-[24px] lg:pt-[32px]">
+        {/* Buttons wrapper — Figma 722:2615: gap-[24px] items-center pt-[32px].
+            Mobile (spec Camilo): botones apilados verticalmente flex-col.
+            Desktop: flex-row con gap-24. */}
+        <motion.div
+          className="flex flex-col items-stretch gap-3 pt-4 sm:flex-row sm:items-center sm:justify-center sm:gap-6 lg:gap-[24px] lg:pt-[32px]"
+          variants={itemVariants}
+        >
           {finalButtons.map((btn) => (
             <Link
               key={btn.icon}
@@ -188,8 +225,8 @@ export function DituHero({
               {btn.label}
             </Link>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
