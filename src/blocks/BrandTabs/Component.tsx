@@ -172,10 +172,38 @@ const NEUTRO_NEGRO = "#121212";
 const NEUTRO_GRIS_OSCURO = "#464553";
 const AZUL_MEDIO = "#015BC4";
 
+/**
+ * Mappings de assets por brand — Figma 402:5117-5195.
+ * Side panel: wordmark logo SVG centrado + avatar PNG 76×76 top-right.
+ * La Kalle: no tiene SVG export del logo wordmark, usa el avatar como fallback.
+ */
+const BRAND_LOGO_PATHS: Record<string, string> = {
+  caracoltv: "/caracol-next/brand-tabs/caracoltv-logo.svg",
+  golcaracol: "/caracol-next/brand-tabs/golcaracol-logo.svg",
+  caracolsports: "/caracol-next/brand-tabs/caracolsports-logo.svg",
+  bluradio: "/caracol-next/brand-tabs/bluradio-logo.svg",
+  bumbox: "/caracol-next/brand-tabs/bumbox-logo.svg",
+  volk: "/caracol-next/brand-tabs/volk-logo.svg",
+};
+const BRAND_AVATAR_PATHS: Record<string, string> = {
+  caracoltv: "/caracol-next/brand-tabs/caracoltv-avatar.png",
+  golcaracol: "/caracol-next/brand-tabs/golcaracol-avatar.png",
+  caracolsports: "/caracol-next/brand-tabs/caracolsports-avatar.png",
+  bluradio: "/caracol-next/brand-tabs/bluradio-avatar.png",
+  lakalle: "/caracol-next/brand-tabs/lakalle-avatar.png",
+  bumbox: "/caracol-next/brand-tabs/bumbox-avatar.png",
+  volk: "/caracol-next/brand-tabs/volk-avatar.png",
+};
+
 function TabPanel({ tab }: { tab: Tab }) {
   const meta = brandMeta(tab.brand);
   const displayName = tab.displayName ?? meta.label;
-  const logoUrl = mediaUrl(tab.brandLogo);
+  // Logo wordmark del Figma (centrado en side panel) + avatar (top-right 76×76)
+  const wordmarkLogoUrl = BRAND_LOGO_PATHS[tab.brand];
+  const avatarUrl = BRAND_AVATAR_PATHS[tab.brand];
+  // Fallback al brandLogo del CMS si no hay wordmark hardcoded
+  const cmsLogoUrl = mediaUrl(tab.brandLogo);
+  const logoUrl = wordmarkLogoUrl ?? cmsLogoUrl;
   // Colores por brand (Figma): heading usa brand.color, panel usa brand.colorDark,
   // chart peak usa brand.chartPeak. Cada brand tiene su propia paleta.
   const brandColor = meta.color;
@@ -425,11 +453,14 @@ function TabPanel({ tab }: { tab: Tab }) {
         ) : null}
       </div>
 
-      {/* Columna derecha — brand panel. Oculta en mobile. */}
+      {/* Columna derecha — brand panel. Figma 402:5117-5195.
+          Background sólido brandPanelBg + wordmark logo centrado + avatar
+          76×76 absolute top-right. Oculta en mobile. */}
       <div
         className="relative hidden items-center justify-center md:flex"
         style={{ backgroundColor: brandPanelBg }}
       >
+        {/* Wordmark logo centrado — Figma export per brand */}
         {logoUrl ? (
           <Image
             src={logoUrl}
@@ -443,14 +474,14 @@ function TabPanel({ tab }: { tab: Tab }) {
             {displayName.toUpperCase()}
           </span>
         )}
-        {/* Small brand icon top-right (Figma: 76x76 con border #015BC4 default).
-            Excepciones: La Kalle border #FEFF00 (yellow), BumBox/Volk border white. */}
+        {/* Avatar top-right (76×76 rounded-16 border-2) — Figma muestra una
+            imagen distinta del logo (avatar/icon del brand).
+            Excepciones de border: La Kalle yellow, BumBox/Volk white,
+            default azul medio #015BC4 (Caracol TV variant). */}
         <div
           className="absolute top-[30px] right-[30px] flex h-[76px] w-[76px] items-center justify-center overflow-hidden rounded-[16px] border-2"
           style={{
             backgroundColor: brandPanelBg,
-            // Para LaKalle usa accent yellow. Para BumBox/Volk usa white.
-            // Para los demás usa azul medio #015BC4 (matching Caracol TV variant).
             borderColor:
               meta.label === "La Kalle"
                 ? brandAccent
@@ -459,10 +490,10 @@ function TabPanel({ tab }: { tab: Tab }) {
                   : "#015BC4",
           }}
         >
-          {logoUrl ? (
+          {avatarUrl ? (
             <Image
-              src={logoUrl}
-              alt={displayName}
+              src={avatarUrl}
+              alt={`${displayName} avatar`}
               width={72}
               height={72}
               className="h-[72px] w-[72px] object-cover"
