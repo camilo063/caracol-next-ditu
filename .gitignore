@@ -37,9 +37,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Payload — types y importMap se regeneran
+# Payload — types se regeneran; importMap SÍ se commitea
+# (Vercel necesita el archivo presente al hacer `payload generate:importmap`
+# en el build — el comando lee el archivo existente para hacer diff y crashea
+# con ENOENT si no existe en clean checkout).
 src/payload-types.ts
-src/app/(payload)/admin/importMap.js
 
 # Caches locales
 .turbo
