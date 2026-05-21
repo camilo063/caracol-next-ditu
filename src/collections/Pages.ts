@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { authenticated, publishedOrAuth } from "@/access";
+import { isAdmin, isAdminOrEditor, publishedOrAuth } from "@/access";
 import { allBlocks } from "@/blocks";
 
 /**
@@ -36,10 +36,10 @@ export const Pages: CollectionConfig = {
   },
   versions: { drafts: true, maxPerDoc: 20 },
   access: {
-    create: authenticated,
+    create: isAdminOrEditor,
     read: publishedOrAuth,
-    update: authenticated,
-    delete: authenticated,
+    update: isAdminOrEditor,
+    delete: isAdmin,
   },
   fields: [
     {

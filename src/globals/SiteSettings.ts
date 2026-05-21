@@ -1,17 +1,18 @@
 import type { GlobalConfig } from "payload";
 
-import { adminsOnly, publishedOrAuth } from "@/access";
+import { anyone, isAdmin } from "@/access";
 
 /**
  * SiteSettings — configuración global de SEO, OG, contacto fallback.
- * Solo admins lo editan.
+ * Solo admins lo editan. Lectura pública (los campos son no-secretos y los
+ * layouts SSR los leen sin auth).
  */
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
   label: "Site Settings",
   access: {
-    read: publishedOrAuth,
-    update: adminsOnly,
+    read: anyone,
+    update: isAdmin,
   },
   fields: [
     {

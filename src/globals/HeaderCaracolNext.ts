@@ -1,6 +1,6 @@
 import type { GlobalConfig } from "payload";
 
-import { authenticated, publishedOrAuth } from "@/access";
+import { anyone, isAdminOrEditor } from "@/access";
 import { headerSharedFields } from "./shared-header-fields";
 
 /**
@@ -11,8 +11,8 @@ export const HeaderCaracolNext: GlobalConfig = {
   slug: "header-caracol-next",
   label: "Header — Caracol Next",
   access: {
-    read: publishedOrAuth,
-    update: authenticated,
+    read: anyone,
+    update: isAdminOrEditor,
   },
   fields: headerSharedFields,
 };

@@ -1,6 +1,6 @@
 import type { GlobalConfig } from "payload";
 
-import { authenticated, publishedOrAuth } from "@/access";
+import { anyone, isAdminOrEditor } from "@/access";
 
 /**
  * FloatingContact — implementa la NOTA TÉCNICA del Figma (node 899:4832).
@@ -15,8 +15,8 @@ export const FloatingContact: GlobalConfig = {
   slug: "floating-contact",
   label: "Botón flotante de contacto",
   access: {
-    read: publishedOrAuth,
-    update: authenticated,
+    read: anyone,
+    update: isAdminOrEditor,
   },
   fields: [
     {
