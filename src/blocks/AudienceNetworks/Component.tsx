@@ -27,7 +27,8 @@ const NEUTRO_NEGRO = "#121212"; // CaracolTV/Neutro/Negro
 const NEUTRO_GRIS_OSCURO = "#464553"; // CaracolTV/Neutro/Gris Oscuro
 const NEUTRO_GRIS_MEDIO = "#95999A"; // CaracolTV/Neutro/Gris Medio
 const AZUL_CLARO = "#00ACFF"; // CaracolTV/Primario/Azul Claro
-const DIGITAL_AZUL_CLARO = "#2862FF"; // CaracolTV/Digital/Azul Claro
+// DIGITAL_AZUL_CLARO removido — el botón Contáctanos sticky que lo usaba
+// fue migrado al FloatingContact global (spec usuario mayo 2026).
 const SCREAMIN_GREEN = "#66FF74"; // LaKalle/Secundario/Screamin Green
 
 type BreakdownItem = {
@@ -209,23 +210,10 @@ export function AudienceNetworksBlockComponent({
           </p>
         </div>
 
-        {/* Floating Contáctanos — Figma: absolute top=300 left=1212, button con sticky.
-            Solo desktop (>= lg) — en mobile el FloatingContact global cumple el rol. */}
-        <div className="pointer-events-none absolute top-[300px] right-10 bottom-0 hidden lg:block">
-          <a
-            href="#contacto"
-            className="font-display pointer-events-auto sticky top-24 inline-flex h-12 w-[188px] items-center justify-center rounded text-white shadow-md transition-opacity hover:opacity-90"
-            style={{
-              backgroundColor: DIGITAL_AZUL_CLARO,
-              padding: "12px 48px",
-              fontSize: "16px",
-              fontWeight: 600,
-              lineHeight: "24px",
-            }}
-          >
-            Contáctanos
-          </a>
-        </div>
+        {/* Spec usuario (mayo 2026): el "Contáctanos" sticky de este bloque
+            fue removido. Su estilo y comportamiento (fixed, abre panel con
+            representantes) ahora vive en el FloatingContact global, que es
+            el único botón Contáctanos de la página. */}
       </div>
     </section>
   );

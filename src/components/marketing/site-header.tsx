@@ -56,7 +56,11 @@ export function SiteHeader({
   const [open, setOpen] = React.useState(false);
   const [hidden, setHidden] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
-  const [activeId, setActiveId] = React.useState<string | null>(null);
+  // Default active = primer item del nav (spec Camilo: en Caracol Next debe
+  // ser "marcas" por defecto). Se actualiza vía IntersectionObserver al scroll.
+  const [activeId, setActiveId] = React.useState<string | null>(
+    navAnchors[0]?.anchorId ?? null,
+  );
 
   // --- Hide on scroll down, show on scroll up ---
   const { scrollY } = useScroll();
