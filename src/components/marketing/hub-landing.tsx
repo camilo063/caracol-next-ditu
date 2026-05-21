@@ -67,10 +67,10 @@ export interface HubLandingProps {
 }
 
 const ICON_PATHS = {
-  users: "/home/icon-users.png",
-  tv: "/home/icon-screens.png",
-  zap: "/home/icon-followers.png",
-  clock: "/home/icon-watch.png",
+  users: "/home/icon-users.svg",
+  tv: "/home/icon-screens.svg",
+  zap: "/home/icon-followers.svg",
+  clock: "/home/icon-watch.svg",
 } as const;
 
 export function HubLanding({
@@ -194,11 +194,13 @@ export function HubLanding({
             ))}
           </div>
 
-          {/* Bottom CTAs — Conoce Caracol Next + Conoce ditu. Mobile stacked. */}
+          {/* Bottom CTAs — Conoce Caracol Next + Conoce ditu. Mobile stacked.
+              whitespace-nowrap para evitar wrap a 2 líneas. Padding reducido
+              (px-24) en lg para que el label quepa en una línea. */}
           <div className="flex flex-col gap-4 sm:flex-row lg:gap-[24px]">
             <Link
               href={brands.caracolNext.href}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90"
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[4px] border px-6 py-[12px] text-[14px] font-semibold whitespace-nowrap text-white transition-opacity hover:opacity-90 lg:px-[24px] lg:text-[16px]"
               style={{
                 borderColor: "#FFFFFF",
                 backgroundColor: "transparent",
@@ -212,7 +214,7 @@ export function HubLanding({
             </Link>
             <Link
               href={brands.ditu.href}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] px-[48px] py-[12px] text-[16px] font-semibold text-[#FDFDFD] transition-opacity hover:opacity-90"
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] px-6 py-[12px] text-[14px] font-semibold whitespace-nowrap text-[#FDFDFD] transition-opacity hover:opacity-90 lg:px-[24px] lg:text-[16px]"
               style={{
                 background:
                   "linear-gradient(115.47deg, #8232F0 14.111%, #561BDB 81.738%)",
