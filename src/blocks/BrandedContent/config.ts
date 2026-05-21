@@ -84,6 +84,7 @@ const multimediaFields: Field[] = [
 export const BrandedContentBlock: Block = {
   slug: "branded-content",
   labels: { singular: "Branded Content", plural: "Branded Content" },
+  dbName: "branded",
   fields: [
     anchorIdField,
     ...sectionHeaderFields,
@@ -139,6 +140,7 @@ export const BrandedContentBlock: Block = {
           type: "array",
           label: "Secondary tabs (cambian solo el multimedia)",
           labels: { singular: "Sub-tab", plural: "Sub-tabs" },
+          dbName: "subtab",
           admin: {
             description:
               "Opcional. Ej. Realities / Series Web / Talk Shows / Lives / Documental.",
