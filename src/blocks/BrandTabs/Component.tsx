@@ -211,6 +211,28 @@ function TabPanel({ tab }: { tab: Tab }) {
   const brandChartPeak = meta.chartPeak ?? meta.color;
   const brandAccent = meta.colorAccent;
 
+  // Figma override: BumBox (402:8734) y Volk (402:8828) NO tienen los bloques
+  // WEB ni REDES en su diseño. Solo se renderiza AUDIENCIA + CTA.
+  const showWebAndNetworks = tab.brand !== "bumbox" && tab.brand !== "volk";
+
+  // Figma La Kalle (402:8626): pie chart con colores invertidos vs el resto.
+  // Mujeres (mayoría 71%) = NEGRO #353535, Hombres (29%) = AMARILLO #FEFF00.
+  // En el resto de brands el slice MAYOR usa brandAccent (más claro).
+  const isLaKalle = tab.brand === "lakalle";
+  const piePrimaryColor = isLaKalle
+    ? brandPanelBg // larger slice = #353535 (negro)
+    : (brandAccent ?? brandColor);
+  const pieSecondaryColor = isLaKalle
+    ? (brandAccent ?? brandColor) // smaller slice = #FEFF00 (amarillo)
+    : brandPanelBg;
+
+  // Figma Volk: logo wordmark con proporción VERTICAL (180w × 212h).
+  // Resto de brands tienen logos horizontales (~180×190). Sin la aspect-ratio
+  // explícita, Next/Image colapsa el SVG y se ve "expandido".
+  const isVolk = tab.brand === "volk";
+  const logoIntrinsicWidth = isVolk ? 180 : 320;
+  const logoIntrinsicHeight = isVolk ? 212 : 180;
+
   return (
     <div
       className="grid overflow-hidden rounded-[24px] bg-white md:grid-cols-[3fr_2fr]"
@@ -252,112 +274,119 @@ function TabPanel({ tab }: { tab: Tab }) {
           ) : null}
         </div>
 
-        {/* WEB + REDES side by side */}
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-          {/* WEB box */}
-          {tab.webMetrics &&
-          (tab.webMetrics.usersPerMonth || tab.webMetrics.viewsPerMonth) ? (
-            <div
-              className="flex flex-col items-start gap-2 rounded-[8px] bg-white p-5"
-              style={{ border: `1px solid ${CARD_BORDER}` }}
-            >
-              <Pill>WEB</Pill>
-              <div className="flex flex-col gap-4 px-5">
-                {tab.webMetrics.usersPerMonth ? (
-                  <div className="flex flex-col items-end justify-center gap-2 whitespace-nowrap">
-                    <p
-                      className="font-display text-[24px] leading-none font-bold sm:text-[28px] lg:text-[32px]"
-                      style={{ color: "#100201" }}
-                    >
-                      <CountUp
-                        value={tab.webMetrics.usersPerMonth}
-                        format={(v) => formatNumber(Math.round(v))}
-                      />
-                    </p>
-                    <p
-                      className="font-display text-right text-[16px] leading-none font-normal lg:text-[20px]"
-                      style={{ color: NEUTRO_NEGRO }}
-                    >
-                      {tab.webMetrics.usersLabel ?? "Usuarios/mes"}
-                    </p>
-                  </div>
-                ) : null}
-                {tab.webMetrics.usersPerMonth && tab.webMetrics.viewsPerMonth ? (
-                  <div className="h-px w-full" style={{ backgroundColor: CARD_BORDER }} />
-                ) : null}
-                {tab.webMetrics.viewsPerMonth ? (
-                  <div className="flex flex-col items-end justify-center gap-2 whitespace-nowrap">
-                    <p
-                      className="font-display text-[24px] leading-none font-bold sm:text-[28px] lg:text-[32px]"
-                      style={{ color: "#100201" }}
-                    >
-                      <CountUp
-                        value={tab.webMetrics.viewsPerMonth}
-                        format={(v) => formatNumber(Math.round(v))}
-                      />
-                    </p>
-                    <p
-                      className="font-display text-right text-[16px] leading-none font-normal lg:text-[20px]"
-                      style={{ color: NEUTRO_NEGRO }}
-                    >
-                      {tab.webMetrics.viewsLabel ?? "Vistas/mes"}
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          ) : null}
-
-          {/* REDES box */}
-          {tab.networks && tab.networks.length > 0 ? (
-            <div
-              className="flex flex-1 flex-col items-start gap-2 rounded-[8px] bg-white p-5"
-              style={{ border: `1px solid ${CARD_BORDER}` }}
-            >
-              <Pill>REDES</Pill>
-              <div className="flex w-full flex-col gap-4 px-5 py-2">
-                {/* 3 rows × 2 cols layout. */}
-                <ul className="grid grid-cols-1 gap-x-[18px] gap-y-4 sm:grid-cols-2">
-                  {tab.networks.slice(0, 6).map((net, i) => (
-                    <li
-                      key={net.id ?? net.network}
-                      className="flex min-w-0 items-start gap-3"
-                    >
-                      {/* Figma: icons silhouettes navy (32x32, asset oficial). */}
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center">
-                        <NetworkIcon
-                          network={net.network}
-                          className="h-8 w-8"
-                          variant="navy"
+        {/* WEB + REDES side by side — Figma override: NO renderiza para
+            BumBox (402:8734) ni Volk (402:8828) — esos tabs solo tienen
+            AUDIENCIA + CTA. */}
+        {showWebAndNetworks ? (
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+            {/* WEB box */}
+            {tab.webMetrics &&
+            (tab.webMetrics.usersPerMonth || tab.webMetrics.viewsPerMonth) ? (
+              <div
+                className="flex flex-col items-start gap-2 rounded-[8px] bg-white p-5"
+                style={{ border: `1px solid ${CARD_BORDER}` }}
+              >
+                <Pill>WEB</Pill>
+                <div className="flex flex-col gap-4 px-5">
+                  {tab.webMetrics.usersPerMonth ? (
+                    <div className="flex flex-col items-end justify-center gap-2 whitespace-nowrap">
+                      <p
+                        className="font-display text-[24px] leading-none font-bold sm:text-[28px] lg:text-[32px]"
+                        style={{ color: "#100201" }}
+                      >
+                        <CountUp
+                          value={tab.webMetrics.usersPerMonth}
+                          format={(v) => formatNumber(Math.round(v))}
                         />
-                      </span>
-                      <div className="flex min-w-0 flex-col items-start justify-center whitespace-nowrap">
-                        <p
-                          className={cn(
-                            "font-display text-[20px] leading-[28px]",
-                            i === 0 ? "font-bold" : "font-semibold",
-                          )}
-                          style={{ color: NEUTRO_NEGRO }}
-                        >
-                          <CountUp
-                            value={net.followers}
-                            format={(v) => formatNumber(Math.round(v))}
-                          />
-                        </p>
-                        <p
-                          className="font-display text-[16px] leading-[20px] font-normal"
-                          style={{ color: NEUTRO_NEGRO }}
-                        >
-                          Seguidores
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                      </p>
+                      <p
+                        className="font-display text-right text-[16px] leading-none font-normal lg:text-[20px]"
+                        style={{ color: NEUTRO_NEGRO }}
+                      >
+                        {tab.webMetrics.usersLabel ?? "Usuarios/mes"}
+                      </p>
+                    </div>
+                  ) : null}
+                  {tab.webMetrics.usersPerMonth && tab.webMetrics.viewsPerMonth ? (
+                    <div
+                      className="h-px w-full"
+                      style={{ backgroundColor: CARD_BORDER }}
+                    />
+                  ) : null}
+                  {tab.webMetrics.viewsPerMonth ? (
+                    <div className="flex flex-col items-end justify-center gap-2 whitespace-nowrap">
+                      <p
+                        className="font-display text-[24px] leading-none font-bold sm:text-[28px] lg:text-[32px]"
+                        style={{ color: "#100201" }}
+                      >
+                        <CountUp
+                          value={tab.webMetrics.viewsPerMonth}
+                          format={(v) => formatNumber(Math.round(v))}
+                        />
+                      </p>
+                      <p
+                        className="font-display text-right text-[16px] leading-none font-normal lg:text-[20px]"
+                        style={{ color: NEUTRO_NEGRO }}
+                      >
+                        {tab.webMetrics.viewsLabel ?? "Vistas/mes"}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
               </div>
-            </div>
-          ) : null}
-        </div>
+            ) : null}
+
+            {/* REDES box */}
+            {tab.networks && tab.networks.length > 0 ? (
+              <div
+                className="flex flex-1 flex-col items-start gap-2 rounded-[8px] bg-white p-5"
+                style={{ border: `1px solid ${CARD_BORDER}` }}
+              >
+                <Pill>REDES</Pill>
+                <div className="flex w-full flex-col gap-4 px-5 py-2">
+                  {/* 3 rows × 2 cols layout. */}
+                  <ul className="grid grid-cols-1 gap-x-[18px] gap-y-4 sm:grid-cols-2">
+                    {tab.networks.slice(0, 6).map((net, i) => (
+                      <li
+                        key={net.id ?? net.network}
+                        className="flex min-w-0 items-start gap-3"
+                      >
+                        {/* Figma: icons silhouettes navy (32x32, asset oficial). */}
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center">
+                          <NetworkIcon
+                            network={net.network}
+                            className="h-8 w-8"
+                            variant="navy"
+                          />
+                        </span>
+                        <div className="flex min-w-0 flex-col items-start justify-center whitespace-nowrap">
+                          <p
+                            className={cn(
+                              "font-display text-[20px] leading-[28px]",
+                              i === 0 ? "font-bold" : "font-semibold",
+                            )}
+                            style={{ color: NEUTRO_NEGRO }}
+                          >
+                            <CountUp
+                              value={net.followers}
+                              format={(v) => formatNumber(Math.round(v))}
+                            />
+                          </p>
+                          <p
+                            className="font-display text-[16px] leading-[20px] font-normal"
+                            style={{ color: NEUTRO_NEGRO }}
+                          >
+                            Seguidores
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
 
         {/* AUDIENCIA — pie + bar charts */}
         {tab.audience?.genderSplit?.femalePercent !== undefined &&
@@ -393,8 +422,8 @@ function TabPanel({ tab }: { tab: Tab }) {
                   femalePercent={tab.audience.genderSplit.femalePercent}
                   femaleLabel={tab.audience.genderSplit.femaleLabel ?? "Mujeres"}
                   maleLabel={tab.audience.genderSplit.maleLabel ?? "Hombres"}
-                  primaryColor={brandAccent ?? brandColor}
-                  secondaryColor={brandPanelBg}
+                  primaryColor={piePrimaryColor}
+                  secondaryColor={pieSecondaryColor}
                 />
               </div>
 
@@ -460,14 +489,20 @@ function TabPanel({ tab }: { tab: Tab }) {
         className="relative hidden items-center justify-center md:flex"
         style={{ backgroundColor: brandPanelBg }}
       >
-        {/* Wordmark logo centrado — Figma export per brand */}
+        {/* Wordmark logo centrado — Figma export per brand.
+            Volk usa proporción VERTICAL 180×212 (no horizontal como el resto).
+            La aspect-ratio explícita evita que Next/Image colapse el SVG. */}
         {logoUrl ? (
           <Image
             src={logoUrl}
             alt={displayName}
-            width={320}
-            height={180}
-            className="h-auto max-h-[60%] w-auto max-w-[70%] object-contain"
+            width={logoIntrinsicWidth}
+            height={logoIntrinsicHeight}
+            className={cn(
+              "h-auto w-auto object-contain",
+              isVolk ? "max-h-[70%] max-w-[45%]" : "max-h-[60%] max-w-[70%]",
+            )}
+            style={{ aspectRatio: `${logoIntrinsicWidth} / ${logoIntrinsicHeight}` }}
           />
         ) : (
           <span className="font-display text-3xl font-black text-white sm:text-4xl">

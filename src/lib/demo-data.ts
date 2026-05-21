@@ -212,13 +212,15 @@ export const caracolNextDemoLayout: AnyBlock[] = [
             femaleLabel: "Mujeres",
             maleLabel: "Hombres",
           },
+          // Figma 402:6585 — heights normalized de 11.8/19/24/11.8/40/17 px
+          // a 0-100 (multiplicar por 100/40 = 2.5).
           agePicks: [
-            { id: "a1", range: "18-24", value: 32, isPeak: false },
-            { id: "a2", range: "25-34", value: 38, isPeak: false },
-            { id: "a3", range: "35-44", value: 28, isPeak: false },
-            { id: "a4", range: "45-54", value: 35, isPeak: false },
+            { id: "a1", range: "18-24", value: 30, isPeak: false },
+            { id: "a2", range: "25-34", value: 47, isPeak: false },
+            { id: "a3", range: "35-44", value: 60, isPeak: false },
+            { id: "a4", range: "45-54", value: 30, isPeak: false },
             { id: "a5", range: "55-64", value: 100, isPeak: true },
-            { id: "a6", range: "+65", value: 34, isPeak: false },
+            { id: "a6", range: "+65", value: 43, isPeak: false },
           ],
           peakAgeRange: "Pico: 55-64 años",
         },

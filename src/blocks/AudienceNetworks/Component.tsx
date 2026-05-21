@@ -266,15 +266,29 @@ function StatCard({ item }: { item: BreakdownItem }) {
 /**
  * NetworksLogoBar — Figma 347:1630 "Scrolling Counter Animation".
  *
- * Layout: flex flex-wrap justify-between, py-42 px-120, gap-y-68 entre rows.
- * Cada card: flex flex-row gap-12 items-start (NO column).
- *  - Icon socialmedia w-48 h-47
- *  - Counter overflow-clip h-28 w-110 con número animado Montserrat
- *    SemiBold 20/lh-28 #2D2D2D center
- *  - Label "Seguidores" absolute bottom-20 left-115.5 translate-y-full
- *    Montserrat Regular 16/lh-20 #121212 center
+ * Spec Figma (panel auto-layout):
+ *  - Container: 1440 × 147, padding 120h × 42v, gap 68, justify-between.
+ *  - 6 items en UNA SOLA fila (NO wrap en desktop).
+ *  - Cada item: flex-row gap-12 items-center.
+ *    · Icon socialmedia 48×47 (círculo azul CaracolTV/Primario/Azul + logo blanco).
+ *    · Bloque derecho stacked: número arriba, "Seguidores" abajo (ambos
+ *      left-aligned bajo el número).
+ *  - Colores (Selection colors Figma):
+ *    · Número: #121212 (Negro Total) — Montserrat SemiBold 20/lh-28
+ *    · "Seguidores": #2D2D2D (gris oscuro) — Montserrat Regular 16/lh-20
  *
- * Figma NO usa progress bars — el counter scrolling es la única animación.
+ * Mobile: wrap permitido, justify-center.
+ * Desktop (lg+): flex-nowrap forzado para mantener UNA fila.
+ *
+ * IMPORTANTE: NO añadimos `lg:px-[120px]` (aunque Figma lo especifica) porque
+ * el parent ya está constrained a max-w-[1200px] (el 120px del Figma
+ * corresponde al outer wrapper de 1440px, no al inner). Aplicarlo aquí
+ * causaba overflow horizontal de los items. Tampoco `lg:py-[42px]` porque
+ * el ritmo vertical ya está dado por `mt-10` desde el heading.
+ *
+ * Gap escalado: 24px mobile → 16px lg → 0px xl. En xl, `justify-between`
+ * reparte el ancho disponible sin gap explícito (con 68px sumado al
+ * justify-between los items overflowaban en pantallas grandes ≥1280px).
  */
 function NetworksLogoBar({
   networks,
@@ -282,23 +296,23 @@ function NetworksLogoBar({
   networks: Array<{ id?: string | null; network: string; followers: number }>;
 }) {
   return (
-    <div className="mt-10 flex w-full flex-wrap items-center justify-between gap-y-10 sm:gap-y-12 lg:gap-y-[68px] lg:px-[120px] lg:py-[42px]">
+    <div className="mt-10 flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-10 sm:justify-between sm:gap-y-12 lg:flex-nowrap lg:gap-x-4 xl:gap-x-0">
       {networks.map((net) => (
         <div
           key={net.id ?? net.network}
-          className="relative flex shrink-0 items-start justify-center gap-[12px] pb-7"
+          className="flex shrink-0 items-center gap-[12px]"
         >
-          {/* Icon socialmedia — Figma w-48 h-47 SVG */}
-          <div className="flex h-[47px] w-[48px] shrink-0 items-start overflow-clip">
+          {/* Icon socialmedia — Figma w-48 h-47 SVG (círculo + logo blanco) */}
+          <div className="h-[47px] w-[48px] shrink-0">
             <NetworkIcon network={net.network} className="h-full w-full" />
           </div>
-          {/* Counter — Figma h-28 w-110, overflow-clip (animación scroll
-              vertical). Mi implementación usa CountUp numérico 0→final. */}
-          <div className="flex h-[28px] w-[110px] items-start overflow-clip">
+          {/* Bloque derecho: número + "Seguidores" stacked (col, left-aligned) */}
+          <div className="flex flex-col items-start">
+            {/* Número — Montserrat SemiBold 20/lh-28 #121212 */}
             <p
-              className="w-full text-center font-semibold whitespace-nowrap"
+              className="font-semibold whitespace-nowrap"
               style={{
-                color: "#2D2D2D",
+                color: "#121212",
                 fontFamily: "var(--font-montserrat), system-ui, sans-serif",
                 fontSize: "20px",
                 lineHeight: "28px",
@@ -309,20 +323,20 @@ function NetworksLogoBar({
                 format={(v) => formatNumber(Math.round(v))}
               />
             </p>
+            {/* Label "Seguidores" — Montserrat Regular 16/lh-20 #2D2D2D */}
+            <p
+              className="whitespace-nowrap"
+              style={{
+                color: "#2D2D2D",
+                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                fontSize: "16px",
+                fontWeight: 400,
+                lineHeight: "20px",
+              }}
+            >
+              Seguidores
+            </p>
           </div>
-          {/* "Seguidores" label — absolute bottom, centered under counter */}
-          <p
-            className="absolute bottom-0 left-[60px] -translate-x-1/2 translate-y-full text-center whitespace-nowrap"
-            style={{
-              color: "#121212",
-              fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-              fontSize: "16px",
-              fontWeight: 400,
-              lineHeight: "20px",
-            }}
-          >
-            Seguidores
-          </p>
         </div>
       ))}
     </div>
