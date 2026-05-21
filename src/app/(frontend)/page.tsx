@@ -1,31 +1,35 @@
 import { CaracolNextWordmark, DituWordmark, HubLanding } from "@/components/marketing";
-import { floatingContactDemo } from "@/lib/demo-data";
+import { getFloatingContact, getHubPage, getSiteSettings } from "@/lib/cms";
+import { cn } from "@/lib/utils";
 
 /**
  * Hub principal — `/` (Home Caracol Medios).
- * Implementación 1:1 con Figma 892:5740. Layout split:
- *  - Left: hero (eyebrow + heading + CTA Contáctenos)
- *  - Right: 2 product cards (Caracol Next + Ditu) + 4 metric cards (con
- *    CountUp animation 0→final) + 2 "Conoce X" CTAs
  *
- * Spec usuario (Camilo):
- *  - Mobile: todo apilado verticalmente, metric cards ocultas
- *  - Números animan 0 → final al entrar viewport (Framer Motion CountUp)
+ * Data 100% editable desde Payload:
+ *  - hub-page Global (eyebrow, headingSegments, contactLabel, brands, stats)
+ *  - floating-contact Global (representatives para el modal)
+ *  - site-settings Global (copyright)
+ *
+ * Los wordmarks (CaracolNextWordmark, DituWordmark) son SVGs hardcoded — son
+ * parte del frontend visual, no contenido editorial.
+ *
+ * El componente HubLanding mantiene su shape de props original — el mapeo
+ * Payload → JSX (en particular el heading con spans de distinto weight) se
+ * hace aquí en el wrapper, sin tocar el componente.
  */
-export default function HomePage() {
+export default async function HomePage() {
+  const [hub, floating, settings] = await Promise.all([
+    getHubPage(),
+    getFloatingContact(),
+    getSiteSettings(),
+  ]);
+
   return (
     <HubLanding
-      eyebrow="Unidad digital #1 en Colombia"
-      heading={
-        <>
-          <span className="font-extrabold">Conecta</span>
-          <span className="font-semibold"> tu marca con la audiencia </span>
-          <span className="font-extrabold">más relevante del país.</span>
-        </>
-      }
-      contactLabel="Contáctenos"
-      // Click en CTA → abre modal con representantes (Figma 405:4864)
-      representatives={floatingContactDemo.representatives.map((r) => ({
+      eyebrow={hub.eyebrow}
+      heading={renderHeadingSegments(hub.headingSegments)}
+      contactLabel={hub.contactLabel}
+      representatives={floating.representatives.map((r) => ({
         name: r.name,
         email: r.email,
         whatsapp: r.whatsapp,
@@ -33,65 +37,43 @@ export default function HomePage() {
       brands={{
         caracolNext: {
           title: <CaracolNextWordmark className="h-[32px] w-[205px]" />,
-          description: [
-            "Conecta tu marca con el respaldo de nuestros portales líderes a través de contenidos que generan impacto real.",
-          ],
-          ctaLabel: "Conoce Caracol Next",
-          href: "/caracol-next",
+          description: hub.brands.caracolNext.descriptionParagraphs,
+          ctaLabel: hub.brands.caracolNext.ctaLabel,
+          href: hub.brands.caracolNext.href,
         },
         ditu: {
           title: <DituWordmark className="!h-[32px] !w-[92px]" />,
-          description:
-            "Integra tu marca en el mejor contenido en vivo y On Demand en cualquier pantalla.",
-          ctaLabel: "Conoce ditu",
-          href: "/ditu",
+          description: hub.brands.ditu.descriptionParagraphs,
+          ctaLabel: hub.brands.ditu.ctaLabel,
+          href: hub.brands.ditu.href,
         },
       }}
-      stats={[
-        // Widths irregulares per Figma 334:1559:
-        // Row 1: +16M (272) + +3M (340) → total 612 + gap 24 = 636
-        // Row 2: +127M (328) + 42Min (288) → total 616 + gap 24
-        {
-          icon: "users",
-          numericValue: 16,
-          prefix: "+",
-          suffix: "M",
-          value: "+16M",
-          label: "usuarios",
-          accent: "caracolnext",
-          lgWidth: 272,
-        },
-        {
-          icon: "tv",
-          numericValue: 3,
-          prefix: "+",
-          suffix: "M",
-          value: "+3M",
-          label: "pantallas activas",
-          accent: "ditu",
-          lgWidth: 340,
-        },
-        {
-          icon: "zap",
-          numericValue: 127,
-          prefix: "+",
-          suffix: "M",
-          value: "+127M",
-          label: "seguidores",
-          accent: "caracolnext",
-          lgWidth: 328,
-        },
-        {
-          icon: "clock",
-          numericValue: 42,
-          suffix: "Min",
-          value: "42Min",
-          label: "watch time",
-          accent: "ditu",
-          lgWidth: 288,
-        },
-      ]}
-      copyright="©2026 Caracol Comercial Digital"
+      stats={hub.stats}
+      copyright={settings.copyright}
     />
+  );
+}
+
+/**
+ * Convierte `headingSegments[]` (text + weight) en una secuencia de spans
+ * con la clase Tailwind correspondiente. El componente HubLanding mantiene
+ * el patrón original de aceptar `heading: ReactNode`.
+ */
+function renderHeadingSegments(
+  segments: Array<{ text: string; weight: "semibold" | "bold" | "extrabold" }>,
+): React.ReactNode {
+  const weightClass = {
+    semibold: "font-semibold",
+    bold: "font-bold",
+    extrabold: "font-extrabold",
+  } as const;
+  return (
+    <>
+      {segments.map((seg, i) => (
+        <span key={i} className={cn(weightClass[seg.weight])}>
+          {seg.text}
+        </span>
+      ))}
+    </>
   );
 }
