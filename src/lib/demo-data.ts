@@ -284,7 +284,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
           viewsLabel: "Vistas/mes",
         },
         audience: {
-          reach: 11_500_000,
+          reach: 3_173_667,
           reachLabel: "Aficionados",
           reachSuffix: null,
           highlights: [],
@@ -357,7 +357,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
           viewsLabel: "Vistas/mes",
         },
         audience: {
-          reach: 4_500_000,
+          reach: 2_067_121,
           reachLabel: "Fans deportes",
           reachSuffix: null,
           highlights: [],
@@ -419,7 +419,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
           viewsLabel: "Vistas/mes",
         },
         audience: {
-          reach: 2_800_000,
+          reach: 6_705_515,
           reachLabel: "Oyentes",
           reachSuffix: null,
           highlights: [],
@@ -486,7 +486,7 @@ export const caracolNextDemoLayout: AnyBlock[] = [
           viewsLabel: "Vistas/mes",
         },
         audience: {
-          reach: 1_900_000,
+          reach: 2_057_540,
           reachLabel: "Oyentes urbanos",
           reachSuffix: null,
           highlights: [],
