@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { CountUp } from "@/components/animations";
 import { cn } from "@/lib/utils";
+import { HomeContactModal, type ContactRepresentative } from "./home-contact-modal";
 
 /**
  * HubLanding — landing principal en `/` (Home Caracol Medios).
@@ -33,17 +35,22 @@ export interface HubLandingProps {
   eyebrow: string;
   heading: React.ReactNode;
   contactLabel: string;
-  contactHref: string;
+  /** Si se pasa `representatives`, el CTA abre el modal de contacto.
+      Si NO, el CTA navega a `contactHref` como Link normal. */
+  contactHref?: string;
+  /** Representantes para el modal de contacto (Figma 405:4864). */
+  representatives?: ContactRepresentative[];
   brands: {
     caracolNext: {
       title: React.ReactNode;
-      description: string;
+      /** Soporta string (1 párrafo) o array (múltiples párrafos). */
+      description: string | string[];
       ctaLabel: string;
       href: string;
     };
     ditu: {
       title: React.ReactNode;
-      description: string;
+      description: string | string[];
       ctaLabel: string;
       href: string;
     };
@@ -62,6 +69,8 @@ export interface HubLandingProps {
     /** "caracolnext" → border #003381, number #003381. "ditu" → border
         #561BDB, number #12082D. */
     accent?: "caracolnext" | "ditu";
+    /** Ancho desktop específico Figma (272/340/328/288). Mobile usa 100%. */
+    lgWidth?: number;
   }>;
   copyright: string;
 }
@@ -78,10 +87,15 @@ export function HubLanding({
   heading,
   contactLabel,
   contactHref,
+  representatives,
   brands,
   stats,
   copyright,
 }: HubLandingProps) {
+  const [contactOpen, setContactOpen] = useState(false);
+  // Si hay representantes, el CTA abre el modal. Si no, navega como Link.
+  const hasModal = !!representatives && representatives.length > 0;
+
   return (
     <div
       className="relative flex min-h-screen flex-col overflow-hidden text-white"
@@ -144,54 +158,98 @@ export function HubLanding({
           >
             {heading}
           </h1>
-          {/* CTA Contáctenos — bg #00ACFF, Montserrat SemiBold 18, w-306 */}
-          <Link
-            href={contactHref}
-            className="mt-[40px] inline-flex w-full max-w-[306px] items-center justify-center rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 sm:text-[18px]"
-            style={{
-              backgroundColor: "#00ACFF",
-              borderColor: "#00ACFF",
-              fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-              lineHeight: "24px",
-              minHeight: "32px",
-            }}
-          >
-            {contactLabel}
-          </Link>
+          {/* CTA Contáctenos — bg #00ACFF, Montserrat SemiBold 18, w-306.
+              Si hay representantes → botón abre modal. Si no → link normal. */}
+          {hasModal ? (
+            <button
+              type="button"
+              onClick={() => setContactOpen(true)}
+              className="mt-[40px] inline-flex w-full max-w-[306px] items-center justify-center rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 sm:text-[18px]"
+              style={{
+                backgroundColor: "#00ACFF",
+                borderColor: "#00ACFF",
+                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                lineHeight: "24px",
+                minHeight: "32px",
+              }}
+            >
+              {contactLabel}
+            </button>
+          ) : (
+            <Link
+              href={contactHref ?? "#"}
+              className="mt-[40px] inline-flex w-full max-w-[306px] items-center justify-center rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 sm:text-[18px]"
+              style={{
+                backgroundColor: "#00ACFF",
+                borderColor: "#00ACFF",
+                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                lineHeight: "24px",
+                minHeight: "32px",
+              }}
+            >
+              {contactLabel}
+            </Link>
+          )}
         </div>
 
         {/* Right — product cards + metrics + bottom CTAs */}
         <div className="flex flex-1 flex-col gap-6 lg:max-w-[636px]">
-          {/* Product cards — Caracol Next (w-328) + Ditu (w-284). Mobile stacked. */}
-          <div className="flex flex-col gap-4 sm:flex-row lg:gap-[24px]">
-            {/* Caracol Next card */}
+          {/* Product cards — Caracol Next (w-328 más largo) + Ditu (w-284).
+              Mobile stacked. Cards completas son links (Spec usuario). */}
+          <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-start lg:gap-[24px]">
+            {/* Caracol Next card — wrapped en Link a /caracol-next */}
             <ProductCard
               variant="caracolnext"
               title={brands.caracolNext.title}
               description={brands.caracolNext.description}
+              href={brands.caracolNext.href}
             />
-            {/* Ditu card */}
+            {/* Ditu card — wrapped en Link a /ditu */}
             <ProductCard
               variant="ditu"
               title={brands.ditu.title}
               description={brands.ditu.description}
+              href={brands.ditu.href}
             />
           </div>
 
-          {/* Metric cards — Spec usuario: en MOBILE se ocultan. Desktop: grid 2×2 */}
-          <div className="hidden grid-cols-2 gap-x-[20px] gap-y-[24px] sm:grid">
-            {stats.map((s, i) => (
-              <MetricCard
-                key={i}
-                icon={ICON_PATHS[s.icon]}
-                numericValue={s.numericValue}
-                prefix={s.prefix}
-                suffix={s.suffix}
-                fallbackValue={s.value}
-                label={s.label}
-                accent={s.accent ?? "caracolnext"}
-              />
-            ))}
+          {/* Metric cards — Spec usuario: en MOBILE se ocultan. Spec Figma:
+              widths irregulares (272/340/328/288). 2 filas de 2 cards cada una.
+              Row 1: +16M (272) + +3M (340) = 612 + gap 24 = 636
+              Row 2: +127M (328) + 42Min (288) = 616 + gap 24 = 640 (alineado a la derecha) */}
+          <div className="hidden flex-col gap-[24px] sm:flex">
+            {/* Row 1 */}
+            <div className="flex items-stretch gap-[24px]">
+              {stats.slice(0, 2).map((s, i) => (
+                <MetricCard
+                  key={i}
+                  icon={ICON_PATHS[s.icon]}
+                  numericValue={s.numericValue}
+                  prefix={s.prefix}
+                  suffix={s.suffix}
+                  fallbackValue={s.value}
+                  label={s.label}
+                  accent={s.accent ?? "caracolnext"}
+                  lgWidth={s.lgWidth}
+                />
+              ))}
+            </div>
+            {/* Row 2 */}
+            <div className="flex items-stretch gap-[24px]">
+              {stats.slice(2, 4).map((s, i) => (
+                <MetricCard
+                  key={i}
+                  icon={ICON_PATHS[s.icon]}
+                  numericValue={s.numericValue}
+                  prefix={s.prefix}
+                  suffix={s.suffix}
+                  fallbackValue={s.value}
+                  label={s.label}
+                  accent={s.accent ?? "caracolnext"}
+                  lgWidth={s.lgWidth}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Bottom CTAs — Conoce Caracol Next + Conoce ditu. Mobile stacked.
@@ -246,6 +304,15 @@ export function HubLanding({
           </p>
         </div>
       </footer>
+
+      {/* Modal contacto — abre al hacer click en CTA Contáctenos */}
+      {hasModal ? (
+        <HomeContactModal
+          open={contactOpen}
+          onClose={() => setContactOpen(false)}
+          representatives={representatives}
+        />
+      ) : null}
     </div>
   );
 }
@@ -261,17 +328,24 @@ function ProductCard({
   variant,
   title,
   description,
+  href,
 }: {
   variant: "caracolnext" | "ditu";
   title: React.ReactNode;
-  description: string;
+  description: string | string[];
+  href: string;
 }) {
   const isDitu = variant === "ditu";
+  // Soporta 1 string o N párrafos.
+  const paragraphs = Array.isArray(description) ? description : [description];
+
   return (
-    <div
+    <Link
+      href={href}
       className={cn(
-        "flex flex-1 flex-col items-center justify-center gap-[24px] rounded-[8px] border px-[20px] pt-[40px] pb-[30px]",
-        isDitu ? "lg:max-w-[284px]" : "lg:max-w-[328px] lg:flex-[1.15]",
+        "group flex flex-col items-center justify-center gap-[24px] rounded-[8px] border px-[20px] pt-[40px] pb-[30px] transition-opacity hover:opacity-95",
+        // Caracol Next más ancho (328) que Ditu (284) per Figma 334:1559.
+        isDitu ? "w-full sm:w-[284px] sm:shrink-0" : "w-full sm:flex-1 lg:max-w-[328px]",
       )}
       style={
         isDitu
@@ -286,16 +360,21 @@ function ProductCard({
       }
     >
       <div className="flex h-[32px] items-center justify-center text-white">{title}</div>
-      <p
-        className="w-full text-center text-[14px] font-medium text-white"
-        style={{
-          fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-          lineHeight: "20px",
-        }}
-      >
-        {description}
-      </p>
-    </div>
+      <div className="flex w-full flex-col gap-[8px]">
+        {paragraphs.map((para, i) => (
+          <p
+            key={i}
+            className="w-full text-center text-[14px] font-medium text-white"
+            style={{
+              fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+              lineHeight: "20px",
+            }}
+          >
+            {para}
+          </p>
+        ))}
+      </div>
+    </Link>
   );
 }
 
@@ -314,6 +393,7 @@ function MetricCard({
   fallbackValue,
   label,
   accent,
+  lgWidth,
 }: {
   icon: string;
   numericValue?: number;
@@ -322,16 +402,19 @@ function MetricCard({
   fallbackValue: string;
   label: string;
   accent: "caracolnext" | "ditu";
+  lgWidth?: number;
 }) {
   const borderColor = accent === "ditu" ? "#561BDB" : "#003381";
   const numberColor = accent === "ditu" ? "#12082D" : "#003381";
 
   return (
     <div
-      className="relative h-[149px] rounded-[8px] border p-[20px]"
+      className="relative h-[149px] flex-1 rounded-[8px] border p-[20px]"
       style={{
         backgroundColor: "#F1F1F1",
         borderColor,
+        // Desktop width específico Figma (272/340/328/288). Sin lgWidth: flex-1.
+        ...(lgWidth ? { width: `${lgWidth}px`, flex: "0 0 auto" } : {}),
       }}
     >
       {/* Icon top-left 40px */}
@@ -389,48 +472,29 @@ function MetricCard({
 }
 
 /**
- * Logo CARACOLMEDIOS | DIGITAL — Figma 892:6210.
- * Layout: logo w-241 h-32 + divider line flex-1 + "DIGITAL" 25/lh-25 SemiBold
+ * Logo CARACOLMEDIOS | DIGITAL — Figma 334:1559 (397:1981).
+ * Layout: logo SVG real w-241 h-32 + divider 1px #D9D9D9 + "DIGITAL" 25/lh-25
  */
 function CaracolMediosLogo({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        "flex w-full items-center gap-3 sm:w-[395px] lg:gap-[24px]",
-        className,
-      )}
-    >
-      {/* Logo Caracol MEDIOS — Figma 892:6211: w-241 h-32 */}
-      <div className="flex h-[32px] flex-shrink-0 items-center text-white">
-        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
-          <ellipse
-            cx="16"
-            cy="16"
-            rx="14"
-            ry="6"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            transform="rotate(-20 16 16)"
-          />
-          <circle cx="16" cy="16" r="3.5" fill="currentColor" />
-        </svg>
-        <span
-          className="ml-2 text-[14px] font-extrabold sm:text-[18px]"
-          style={{
-            fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-            letterSpacing: "0.04em",
-          }}
-        >
-          CARACOL<span className="font-light">MEDIOS</span>
-        </span>
+    <div className={cn("flex w-full items-center gap-[24px] sm:w-[395px]", className)}>
+      {/* Logo Caracol MEDIOS SVG real — Figma 397:1981: w-241 h-32 */}
+      <div className="relative h-[32px] w-[180px] flex-shrink-0 overflow-hidden sm:w-[241px]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/home/logo-caracol-medios.svg"
+          alt="Caracol Medios"
+          className="block h-full w-full"
+          style={{ maxWidth: "none" }}
+        />
       </div>
-      {/* Divider line — Figma 892:6212: bg #D9D9D9 flex-1 h-full 1px */}
+      {/* Divider line — Figma 397:1984: bg #D9D9D9 flex-1 h-full 1px */}
       <div
         className="hidden h-[1px] flex-1 self-center sm:block"
         style={{ backgroundColor: "#D9D9D9" }}
         aria-hidden="true"
       />
-      {/* "DIGITAL" — Figma 892:6213: Montserrat SemiBold 25/lh-25 */}
+      {/* "DIGITAL" — Figma 397:1983: Montserrat SemiBold 25/lh-25 white */}
       <p
         className="text-[18px] font-semibold whitespace-nowrap text-white sm:text-[22px] lg:text-[25px]"
         style={{
