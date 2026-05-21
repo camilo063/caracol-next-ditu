@@ -35,6 +35,10 @@ export const Pages: CollectionConfig = {
     },
   },
   versions: { drafts: true, maxPerDoc: 20 },
+  indexes: [
+    // Una page es única por (landing, slug) — permite "home" en caracol-next y en ditu.
+    { fields: ["landing", "slug"], unique: true },
+  ],
   access: {
     create: isAdminOrEditor,
     read: publishedOrAuth,
@@ -63,10 +67,9 @@ export const Pages: CollectionConfig = {
               name: "slug",
               type: "text",
               required: true,
-              unique: true,
               admin: {
                 description:
-                  "Slug único. Usa 'home' para la página raíz de la landing. Para sub-páginas: kebab-case (ej. 'casos', 'pauta').",
+                  "Slug único dentro de su landing (compound index landing+slug). Usa 'home' para la página raíz. Sub-páginas: kebab-case (ej. 'casos', 'pauta').",
               },
             },
             {

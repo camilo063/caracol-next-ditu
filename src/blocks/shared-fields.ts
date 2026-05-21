@@ -57,9 +57,13 @@ export const ctaField = (overrides?: { name?: string; label?: string }): GroupFi
   name: overrides?.name ?? "cta",
   type: "group",
   label: overrides?.label ?? "Botón CTA",
+  admin: {
+    description:
+      "Botón CTA opcional. Dejar label y href vacíos para que el frontend lo oculte.",
+  },
   fields: [
-    { name: "label", type: "text", required: true },
-    { name: "href", type: "text", required: true },
+    { name: "label", type: "text" },
+    { name: "href", type: "text" },
     {
       name: "variant",
       type: "select",
