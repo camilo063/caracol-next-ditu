@@ -15,9 +15,49 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
+    formats: ["image/avif", "image/webp"],
+    deviceSizes: [640, 768, 1024, 1280, 1536, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 31536000, // 1 año — los assets con hash en URL son inmutables
     remotePatterns: [
-      // dominios CDN/storage se añaden aquí cuando se configure Media.
+      // Vercel Blob storage (gated por BLOB_READ_WRITE_TOKEN en prod).
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
     ],
+  },
+  experimental: {
+    // Tree-shake imports de packages grandes — Next solo bundlea lo que se
+    // usa, no el package entero. Ahorra ~50-80 kB de First Load JS.
+    optimizePackageImports: ["lucide-react", "framer-motion", "recharts"],
+  },
+  async headers() {
+    return [
+      {
+        // Assets uploadeados (Payload Media). En filesystem local + Vercel Blob,
+        // los archivos tienen hash y son inmutables.
+        source: "/media/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        // Next.js static assets — ya cacheados por Vercel pero refuerzo.
+        source: "/_next/static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        // APIs nunca cachean en CDN (Payload maneja sus propios headers).
+        source: "/api/:path*",
+        headers: [{ key: "Cache-Control", value: "no-store" }],
+      },
+    ];
   },
 };
 

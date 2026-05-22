@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 
 import { anyone, isAdminOrEditor } from "@/access";
+import { revalidateGlobal } from "@/lib/cms-revalidate";
 
 /**
  * FloatingContact — implementa la NOTA TÉCNICA del Figma (node 899:4832).
@@ -17,6 +18,13 @@ export const FloatingContact: GlobalConfig = {
   access: {
     read: anyone,
     update: isAdminOrEditor,
+  },
+  hooks: {
+    afterChange: [
+      () => {
+        revalidateGlobal("floating-contact");
+      },
+    ],
   },
   fields: [
     {

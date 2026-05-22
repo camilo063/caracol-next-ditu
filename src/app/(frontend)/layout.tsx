@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Montserrat, Poppins, Spline_Sans } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import "@/styles/globals.css";
 
@@ -73,6 +75,10 @@ export default function FrontendLayout({
         suppressHydrationWarning
       >
         {children}
+        {/* Vercel Analytics + Speed Insights — no-op fuera de Vercel (e.g. AWS).
+            Recoge Core Web Vitals + Web Analytics gratis en plan Hobby+. */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

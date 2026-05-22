@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 
 import { anyone, isAdminOrEditor } from "@/access";
+import { revalidateGlobal } from "@/lib/cms-revalidate";
 
 /**
  * DituPage — global que pobla `/ditu` (landing standalone de Ditu).
@@ -24,6 +25,13 @@ export const DituPage: GlobalConfig = {
   access: {
     read: anyone,
     update: isAdminOrEditor,
+  },
+  hooks: {
+    afterChange: [
+      () => {
+        revalidateGlobal("ditu-page");
+      },
+    ],
   },
   fields: [
     // ===================================================================

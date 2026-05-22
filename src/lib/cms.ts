@@ -2,19 +2,21 @@
  * Helpers para fetchear contenido desde Payload Local API.
  *
  * Cada función envuelve `getPayload({ config }) + findGlobal/find` y devuelve
- * un objeto YA mapeado al shape que el componente del frontend espera. Esto
- * permite que las pages de Next.js sean delgadas y los componentes sigan
- * recibiendo las mismas props sin tocar el frontend visual.
+ * un objeto YA mapeado al shape que el componente del frontend espera.
  *
- * Cache: por ahora fetch directo. Fase 5 wrappea con `unstable_cache` + tags
- * para invalidación on-demand desde afterChange hooks de Payload.
+ * Cache: las funciones se envuelven con `unstable_cache` + tags. La invalidación
+ * la dispara cada `afterChange` hook de su global/collection llamando
+ * `revalidateTag()` + `revalidatePath()`. Ver `cms-tags.ts` y los hooks en
+ * `src/collections/` y `src/globals/`.
  */
 
+import { unstable_cache } from "next/cache";
 import { getPayload } from "payload";
 import type { Payload } from "payload";
 
 import config from "@payload-config";
 
+import { cacheTags } from "./cms-tags";
 import { mediaUrl } from "./media";
 import type {
   FloatingContact as FloatingContactGlobal,
@@ -28,6 +30,9 @@ import type {
 } from "@/payload-types";
 
 type Landing = "caracol-next" | "ditu";
+
+/** Default ISR/cache window (1h). On-demand invalidation hace que sea opt-in safety net. */
+const REVALIDATE_SECONDS = 3600;
 
 async function payloadClient(): Promise<Payload> {
   return getPayload({ config });
@@ -102,11 +107,15 @@ function mapHubPage(doc: HubPage): HubPageProps {
   };
 }
 
-export async function getHubPage(): Promise<HubPageProps> {
-  const p = await payloadClient();
-  const doc = (await p.findGlobal({ slug: "hub-page" })) as HubPage;
-  return mapHubPage(doc);
-}
+export const getHubPage = unstable_cache(
+  async (): Promise<HubPageProps> => {
+    const p = await payloadClient();
+    const doc = (await p.findGlobal({ slug: "hub-page" })) as HubPage;
+    return mapHubPage(doc);
+  },
+  ["hub-page-v1"],
+  { tags: [cacheTags.global("hub-page")], revalidate: REVALIDATE_SECONDS },
+);
 
 // =====================================================================
 // Floating Contact (representatives)
@@ -151,11 +160,17 @@ function mapFloatingContact(doc: FloatingContactGlobal): FloatingContactProps {
   };
 }
 
-export async function getFloatingContact(): Promise<FloatingContactProps> {
-  const p = await payloadClient();
-  const doc = (await p.findGlobal({ slug: "floating-contact" })) as FloatingContactGlobal;
-  return mapFloatingContact(doc);
-}
+export const getFloatingContact = unstable_cache(
+  async (): Promise<FloatingContactProps> => {
+    const p = await payloadClient();
+    const doc = (await p.findGlobal({
+      slug: "floating-contact",
+    })) as FloatingContactGlobal;
+    return mapFloatingContact(doc);
+  },
+  ["floating-contact-v1"],
+  { tags: [cacheTags.global("floating-contact")], revalidate: REVALIDATE_SECONDS },
+);
 
 // =====================================================================
 // Header / Footer globals
@@ -199,10 +214,16 @@ function mapHeader(
 }
 
 export async function getHeader(landing: Landing): Promise<SiteHeaderData> {
-  const p = await payloadClient();
   const slug = landing === "ditu" ? "header-ditu" : "header-caracol-next";
-  const doc = (await p.findGlobal({ slug })) as HeaderCaracolNext | HeaderDitu;
-  return mapHeader(doc, landing);
+  return unstable_cache(
+    async () => {
+      const p = await payloadClient();
+      const doc = (await p.findGlobal({ slug })) as HeaderCaracolNext | HeaderDitu;
+      return mapHeader(doc, landing);
+    },
+    ["header", landing, "v1"],
+    { tags: [cacheTags.global(slug)], revalidate: REVALIDATE_SECONDS },
+  )();
 }
 
 export interface SiteFooterData {
@@ -250,10 +271,16 @@ function mapFooter(
 }
 
 export async function getFooter(landing: Landing): Promise<SiteFooterData> {
-  const p = await payloadClient();
   const slug = landing === "ditu" ? "footer-ditu" : "footer-caracol-next";
-  const doc = (await p.findGlobal({ slug })) as FooterCaracolNext | FooterDitu;
-  return mapFooter(doc, landing);
+  return unstable_cache(
+    async () => {
+      const p = await payloadClient();
+      const doc = (await p.findGlobal({ slug })) as FooterCaracolNext | FooterDitu;
+      return mapFooter(doc, landing);
+    },
+    ["footer", landing, "v1"],
+    { tags: [cacheTags.global(slug)], revalidate: REVALIDATE_SECONDS },
+  )();
 }
 
 // =====================================================================
@@ -271,24 +298,28 @@ export interface SiteSettingsData {
   };
 }
 
-export async function getSiteSettings(): Promise<SiteSettingsData> {
-  const p = await payloadClient();
-  const doc = (await p.findGlobal({ slug: "site-settings" })) as SiteSetting;
-  return {
-    siteName: doc.siteName ?? "Caracol Next + Ditu",
-    copyright: doc.copyright ?? "©2026 Caracol Comercial Digital",
-    maintenanceMode: {
-      enabled: doc.maintenanceMode?.enabled ?? false,
-      message:
-        doc.maintenanceMode?.message ?? "Estamos trabajando en mejoras. Vuelve pronto.",
-    },
-    defaultSeo: {
-      title: doc.defaultMetaTitle ?? "Caracol Next + Ditu — Mediakit",
-      description: doc.defaultMetaDescription ?? "",
-      twitterHandle: doc.twitterHandle ?? null,
-    },
-  };
-}
+export const getSiteSettings = unstable_cache(
+  async (): Promise<SiteSettingsData> => {
+    const p = await payloadClient();
+    const doc = (await p.findGlobal({ slug: "site-settings" })) as SiteSetting;
+    return {
+      siteName: doc.siteName ?? "Caracol Next + Ditu",
+      copyright: doc.copyright ?? "©2026 Caracol Comercial Digital",
+      maintenanceMode: {
+        enabled: doc.maintenanceMode?.enabled ?? false,
+        message:
+          doc.maintenanceMode?.message ?? "Estamos trabajando en mejoras. Vuelve pronto.",
+      },
+      defaultSeo: {
+        title: doc.defaultMetaTitle ?? "Caracol Next + Ditu — Mediakit",
+        description: doc.defaultMetaDescription ?? "",
+        twitterHandle: doc.twitterHandle ?? null,
+      },
+    };
+  },
+  ["site-settings-v1"],
+  { tags: [cacheTags.global("site-settings")], revalidate: REVALIDATE_SECONDS },
+);
 
 // =====================================================================
 // Pages (collection)
@@ -300,14 +331,20 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
  * (RenderBlocks o DituRenderBlocks) hace el mapeo a componentes.
  */
 export async function getPage(landing: Landing, slug: string): Promise<Page | null> {
-  const p = await payloadClient();
-  const result = await p.find({
-    collection: "pages",
-    where: {
-      and: [{ landing: { equals: landing } }, { slug: { equals: slug } }],
+  return unstable_cache(
+    async () => {
+      const p = await payloadClient();
+      const result = await p.find({
+        collection: "pages",
+        where: {
+          and: [{ landing: { equals: landing } }, { slug: { equals: slug } }],
+        },
+        limit: 1,
+        depth: 3, // resuelve uploads + relationships en una query
+      });
+      return (result.docs[0] as Page | undefined) ?? null;
     },
-    limit: 1,
-    depth: 3, // resuelve uploads + relationships en una query
-  });
-  return (result.docs[0] as Page | undefined) ?? null;
+    ["page", landing, slug, "v1"],
+    { tags: [cacheTags.page(landing, slug)], revalidate: REVALIDATE_SECONDS },
+  )();
 }

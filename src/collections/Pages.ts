@@ -2,6 +2,7 @@ import type { CollectionConfig } from "payload";
 
 import { isAdmin, isAdminOrEditor, publishedOrAuth } from "@/access";
 import { allBlocks } from "@/blocks";
+import { revalidatePageRecord } from "@/lib/cms-revalidate";
 
 /**
  * Pages — colección base del frontend.
@@ -44,6 +45,23 @@ export const Pages: CollectionConfig = {
     read: publishedOrAuth,
     update: isAdminOrEditor,
     delete: isAdmin,
+  },
+  hooks: {
+    afterChange: [
+      ({ doc, previousDoc }) => {
+        const landing = (doc.landing as "caracol-next" | "ditu") ?? "caracol-next";
+        const slug = (doc.slug as string) ?? "home";
+        const prevSlug = (previousDoc?.slug as string | undefined) ?? null;
+        revalidatePageRecord(landing, slug, prevSlug);
+      },
+    ],
+    afterDelete: [
+      ({ doc }) => {
+        const landing = (doc.landing as "caracol-next" | "ditu") ?? "caracol-next";
+        const slug = (doc.slug as string) ?? "home";
+        revalidatePageRecord(landing, slug);
+      },
+    ],
   },
   fields: [
     {

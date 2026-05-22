@@ -7,9 +7,12 @@
  * tocamos visual); el mapper sólo extrae lo correspondiente del Payload doc.
  */
 
+import { unstable_cache } from "next/cache";
 import { getPayload } from "payload";
 
 import config from "@payload-config";
+
+import { cacheTags } from "./cms-tags";
 import type { CalendarEvent } from "@/components/marketing/ditu-calendario";
 import type {
   CanalesTab,
@@ -58,22 +61,26 @@ export interface DituPageProps {
   hablamos: DituHablamosProps;
 }
 
-export async function getDituPage(): Promise<DituPageProps> {
-  const p = await getPayload({ config });
-  const doc = (await p.findGlobal({ slug: "ditu-page" })) as DituPage;
+export const getDituPage = unstable_cache(
+  async (): Promise<DituPageProps> => {
+    const p = await getPayload({ config });
+    const doc = (await p.findGlobal({ slug: "ditu-page" })) as DituPage;
 
-  return {
-    heroData: mapHeroData(doc.hero),
-    video: mapVideo(doc.video),
-    audiencia: mapAudiencia(doc.audiencia),
-    adn: mapAdn(doc.adn),
-    tipoContenido: mapTipoContenido(doc.tipoContenido),
-    canales: mapCanales(doc.canales),
-    calendario: mapCalendario(doc.calendario),
-    pauta: mapPauta(doc.pauta),
-    hablamos: mapHablamos(doc.hablamos),
-  };
-}
+    return {
+      heroData: mapHeroData(doc.hero),
+      video: mapVideo(doc.video),
+      audiencia: mapAudiencia(doc.audiencia),
+      adn: mapAdn(doc.adn),
+      tipoContenido: mapTipoContenido(doc.tipoContenido),
+      canales: mapCanales(doc.canales),
+      calendario: mapCalendario(doc.calendario),
+      pauta: mapPauta(doc.pauta),
+      hablamos: mapHablamos(doc.hablamos),
+    };
+  },
+  ["ditu-page-v1"],
+  { tags: [cacheTags.global("ditu-page")], revalidate: 3600 },
+);
 
 // ====================================================================
 // Hero

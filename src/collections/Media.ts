@@ -1,6 +1,7 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from "payload";
 
 import { anyone, isAdmin, isAdminOrEditor } from "@/access";
+import { revalidateAllPublic } from "@/lib/cms-revalidate";
 
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 const SVG_UNSAFE_PATTERN = /<script\b|on\w+\s*=|javascript:/i;
@@ -47,6 +48,21 @@ export const Media: CollectionConfig = {
   },
   hooks: {
     beforeChange: [validateUpload],
+    afterChange: [
+      ({ req }) => {
+        // Si el upload incluye un archivo (reemplazo de imagen), over-invalidate
+        // todas las rutas públicas. Edits-only (e.g. cambiar `alt`) no requieren
+        // invalidación amplia — Next sirve la misma URL/imagen.
+        if (req.file) {
+          revalidateAllPublic();
+        }
+      },
+    ],
+    afterDelete: [
+      () => {
+        revalidateAllPublic();
+      },
+    ],
   },
   upload: {
     staticDir: "public/media",

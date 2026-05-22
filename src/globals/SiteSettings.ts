@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 
 import { anyone, isAdmin } from "@/access";
+import { revalidateGlobal } from "@/lib/cms-revalidate";
 
 /**
  * SiteSettings — configuración global de SEO, OG, contacto fallback.
@@ -13,6 +14,13 @@ export const SiteSettings: GlobalConfig = {
   access: {
     read: anyone,
     update: isAdmin,
+  },
+  hooks: {
+    afterChange: [
+      () => {
+        revalidateGlobal("site-settings");
+      },
+    ],
   },
   fields: [
     {

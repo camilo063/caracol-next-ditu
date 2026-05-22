@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 
 import { anyone, isAdminOrEditor } from "@/access";
+import { revalidateGlobal } from "@/lib/cms-revalidate";
 
 /**
  * HubPage — global que pobla la home `/` (Hub Caracol Medios).
@@ -23,6 +24,13 @@ export const HubPage: GlobalConfig = {
   access: {
     read: anyone,
     update: isAdminOrEditor,
+  },
+  hooks: {
+    afterChange: [
+      () => {
+        revalidateGlobal("hub-page");
+      },
+    ],
   },
   fields: [
     {

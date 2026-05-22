@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 
 import { anyone, isAdminOrEditor } from "@/access";
+import { revalidateGlobal } from "@/lib/cms-revalidate";
 import { headerSharedFields } from "./shared-header-fields";
 
 /**
@@ -13,6 +14,13 @@ export const HeaderDitu: GlobalConfig = {
   access: {
     read: anyone,
     update: isAdminOrEditor,
+  },
+  hooks: {
+    afterChange: [
+      () => {
+        revalidateGlobal("header-ditu");
+      },
+    ],
   },
   fields: headerSharedFields,
 };
