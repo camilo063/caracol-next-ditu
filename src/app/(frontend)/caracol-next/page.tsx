@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { RenderBlocks } from "@/blocks";
@@ -7,7 +8,29 @@ import {
   SiteFooter,
   SiteHeader,
 } from "@/components/marketing";
-import { getFloatingContact, getFooter, getHeader, getPage } from "@/lib/cms";
+import {
+  getFloatingContact,
+  getFooter,
+  getHeader,
+  getPage,
+  getSiteSettings,
+} from "@/lib/cms";
+import { buildMetadata } from "@/lib/seo";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [settings, page] = await Promise.all([
+    getSiteSettings(),
+    getPage("caracol-next", "home"),
+  ]);
+  return buildMetadata({
+    settings,
+    pageMeta: page?.meta,
+    path: "/caracol-next",
+    fallbackTitle: "Caracol Next — Mediakit",
+    fallbackDescription:
+      "El ecosistema digital de Caracol — audiencia, formatos y momentos clave.",
+  });
+}
 
 /**
  * Caracol Next — `/caracol-next`.

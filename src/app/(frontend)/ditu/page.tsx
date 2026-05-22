@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { RevealSection } from "@/components/animations";
 import {
   DituAdnBlock,
@@ -14,8 +16,20 @@ import {
   FloatingContact,
   SiteHeader,
 } from "@/components/marketing";
-import { getFloatingContact, getFooter, getHeader } from "@/lib/cms";
+import { getFloatingContact, getFooter, getHeader, getSiteSettings } from "@/lib/cms";
 import { getDituPage } from "@/lib/cms-ditu";
+import { buildMetadata } from "@/lib/seo";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return buildMetadata({
+    settings,
+    path: "/ditu",
+    fallbackTitle: "ditu — OTT por Caracol",
+    fallbackDescription:
+      "Plataforma OTT que integra lo mejor de Caracol Televisión en todas las pantallas.",
+  });
+}
 
 const CYAN = "#77EDED";
 

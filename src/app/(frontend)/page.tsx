@@ -1,6 +1,20 @@
+import type { Metadata } from "next";
+
 import { CaracolNextWordmark, DituWordmark, HubLanding } from "@/components/marketing";
 import { getFloatingContact, getHubPage, getSiteSettings } from "@/lib/cms";
+import { buildMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return buildMetadata({
+    settings,
+    path: "/",
+    fallbackTitle: "Caracol Medios — Mediakit",
+    fallbackDescription:
+      "Unidad digital #1 en Colombia. Conecta tu marca con la audiencia más relevante del país.",
+  });
+}
 
 /**
  * Hub principal — `/` (Home Caracol Medios).
