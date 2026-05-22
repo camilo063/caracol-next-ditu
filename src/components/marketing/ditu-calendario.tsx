@@ -67,8 +67,10 @@ export interface CalendarEvent {
   badgeVariant: BadgeVariant;
 }
 
-/** Mock data — 14 eventos representativos del año 2026.
- *  TODO: cuando Payload tenga datos reales, reemplazar por fetch. */
+/** Defaults — 14 eventos representativos del año 2026.
+ *  Se usan cuando el componente se monta sin la prop `events` (testing aislado o
+ *  fallback). En `/ditu/page.tsx`, los eventos vienen del global `ditu-page`
+ *  poblado desde admin. */
 const DEMO_EVENTS: CalendarEvent[] = [
   {
     id: "filbo",
