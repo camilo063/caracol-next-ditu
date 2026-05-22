@@ -110,27 +110,32 @@ const DEFAULT_DITU_PAGE: DituPageProps = {
 
 export const getDituPage = unstable_cache(
   async (): Promise<DituPageProps> => {
-    try {
-      const p = await getPayload({ config });
-      const doc = (await p.findGlobal({ slug: "ditu-page" })) as DituPage;
+    // Doble defensa: .catch en cada async call evita que Payload tire
+    // unhandled rejections que crashean el build worker. Si algo falla,
+    // retornamos los defaults.
+    const p = await getPayload({ config }).catch((err: Error) => {
+      console.warn(`[cms] ditu-page getPayload falló: ${err.message}`);
+      return null;
+    });
+    if (!p) return DEFAULT_DITU_PAGE;
 
-      return {
-        heroData: mapHeroData(doc.hero),
-        video: mapVideo(doc.video),
-        audiencia: mapAudiencia(doc.audiencia),
-        adn: mapAdn(doc.adn),
-        tipoContenido: mapTipoContenido(doc.tipoContenido),
-        canales: mapCanales(doc.canales),
-        calendario: mapCalendario(doc.calendario),
-        pauta: mapPauta(doc.pauta),
-        hablamos: mapHablamos(doc.hablamos),
-      };
-    } catch (err) {
-      console.warn(
-        `[cms] ditu-page fetch falló, usando fallback. Causa: ${(err as Error).message}`,
-      );
-      return DEFAULT_DITU_PAGE;
-    }
+    const doc = (await p.findGlobal({ slug: "ditu-page" }).catch((err: Error) => {
+      console.warn(`[cms] ditu-page findGlobal falló: ${err.message}`);
+      return null;
+    })) as DituPage | null;
+    if (!doc) return DEFAULT_DITU_PAGE;
+
+    return {
+      heroData: mapHeroData(doc.hero),
+      video: mapVideo(doc.video),
+      audiencia: mapAudiencia(doc.audiencia),
+      adn: mapAdn(doc.adn),
+      tipoContenido: mapTipoContenido(doc.tipoContenido),
+      canales: mapCanales(doc.canales),
+      calendario: mapCalendario(doc.calendario),
+      pauta: mapPauta(doc.pauta),
+      hablamos: mapHablamos(doc.hablamos),
+    };
   },
   ["ditu-page-v1"],
   { tags: [cacheTags.global("ditu-page")], revalidate: 3600 },

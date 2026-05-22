@@ -37,14 +37,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Pages adicionales (sub-pages cuando el cliente las cree).
+  // Múltiples capas de try/catch porque Payload v3 puede loggear el error de
+  // conexión DB sin propagarlo de manera atrapable, dejando state global
+  // inválido que crashea el build worker.
   try {
-    const payload = await getPayload({ config });
-    const result = await payload.find({
-      collection: "pages",
-      where: { _status: { equals: "published" } },
-      limit: 500,
-      depth: 0,
-    });
+    const payload = await getPayload({ config }).catch(() => null);
+    if (!payload) return entries;
+    const result = await payload
+      .find({
+        collection: "pages",
+        where: { _status: { equals: "published" } },
+        limit: 500,
+        depth: 0,
+      })
+      .catch(() => null);
+    if (!result) return entries;
 
     for (const page of result.docs) {
       const slug = (page.slug as string) ?? "";
@@ -63,9 +70,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
       });
     }
-  } catch {
-    // Si Payload no responde (DB caída, build sin DATABASE_URI), devolvemos
-    // las 3 raíces. Mejor un sitemap incompleto que un sitemap roto.
+  } catch (err) {
+    console.warn(
+      "[sitemap] fetch falló, devolviendo solo raíces:",
+      (err as Error).message,
+    );
   }
 
   return entries;
