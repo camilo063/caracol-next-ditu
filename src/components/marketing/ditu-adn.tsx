@@ -42,12 +42,29 @@ const NAVY_DARK = "#12082D";
  *  - 55-64 PEAK: 148 (bg #8232F0, fijo)
  *  - +65: 93 - 19 = 74
  */
+export interface AgeBar {
+  label: string;
+  value: number;
+  peak: boolean;
+}
+
+export interface GenderDatum {
+  name: string;
+  value: number;
+  color: string;
+}
+
+export interface NseCard {
+  label: string;
+  value: number;
+}
+
 /**
  * AGE_BARS — Recharts BarChart data. Cada bar tiene un valor numérico (height
  * en Figma como proxy del porcentaje relativo) y un flag peak.
  * Heights del Figma 747:2627 (bar visible Rectangle 46).
  */
-const AGE_BARS = [
+const AGE_BARS: AgeBar[] = [
   { label: "18-24", value: 58, peak: false },
   { label: "25-34", value: 80, peak: false },
   { label: "35-44", value: 95, peak: false },
@@ -60,7 +77,7 @@ const AGE_BARS = [
  * GENDER_DATA — Recharts PieChart (donut) data.
  * 52% hombres + 48% mujeres (Figma 747:2597).
  */
-const GENDER_DATA = [
+const GENDER_DATA: GenderDatum[] = [
   { name: "Hombres", value: 52, color: "#77EDED" },
   { name: "Mujeres", value: 48, color: "#561BDB" },
 ];
@@ -69,7 +86,7 @@ const GENDER_DATA = [
  * NSE_CARDS — Estratos socioeconómicos. La tarjeta con mayor % es destacada
  * automáticamente (spec Camilo: calculado dinámicamente, no hardcoded).
  */
-const NSE_CARDS = [
+const NSE_CARDS: NseCard[] = [
   { label: "ESTRATO 1 o 2", value: 22.7 },
   { label: "ESTRATO 3", value: 37.8 },
   { label: "ESTRATO 4", value: 28.9 },
@@ -78,12 +95,23 @@ const NSE_CARDS = [
 
 export interface DituAdnProps {
   anchorId?: string;
+  ageBars?: AgeBar[];
+  genderData?: GenderDatum[];
+  nseCards?: NseCard[];
 }
 
-export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
+export function DituAdnBlock({
+  anchorId = "adn",
+  ageBars = AGE_BARS,
+  genderData = GENDER_DATA,
+  nseCards = NSE_CARDS,
+}: DituAdnProps) {
   // NSE auto-highlight (spec Camilo): el estrato con mayor % es destacado.
   // Calculado dinámicamente, no hardcoded.
-  const maxNseValue = useMemo(() => Math.max(...NSE_CARDS.map((c) => c.value)), []);
+  const maxNseValue = useMemo(
+    () => Math.max(...nseCards.map((c) => c.value)),
+    [nseCards],
+  );
 
   return (
     <section
@@ -163,7 +191,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={GENDER_DATA}
+                      data={genderData}
                       dataKey="value"
                       nameKey="name"
                       cx="50%"
@@ -178,7 +206,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                       animationEasing="ease-out"
                       stroke="none"
                     >
-                      {GENDER_DATA.map((entry) => (
+                      {genderData.map((entry) => (
                         <Cell key={entry.name} fill={entry.color} />
                       ))}
                     </Pie>
@@ -234,7 +262,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
               <div className="h-[180px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={AGE_BARS}
+                    data={ageBars}
                     margin={{ top: 4, right: 0, left: 0, bottom: 0 }}
                   >
                     <Bar
@@ -245,7 +273,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                       animationDuration={1200}
                       animationEasing="ease-out"
                     >
-                      {AGE_BARS.map((bar) => (
+                      {ageBars.map((bar) => (
                         <Cell key={bar.label} fill={bar.peak ? VIOLET : "#D9D9D9"} />
                       ))}
                     </Bar>
@@ -254,7 +282,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
               </div>
               {/* Labels debajo de cada bar — Figma 747:2630+: Spline Sans 14px white center */}
               <div className="flex w-full items-start gap-3 lg:gap-[12px]">
-                {AGE_BARS.map((bar) => (
+                {ageBars.map((bar) => (
                   <p
                     key={bar.label}
                     className="flex-1 text-center text-[14px] text-white"
@@ -291,7 +319,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
             destaca automáticamente (no hardcoded). En esta data Estrato 3
             (37.8%) es el highlight, pero si cambia el dataset, se recalcula. */}
         <div className="flex w-full flex-wrap items-end justify-between gap-4 sm:gap-6">
-          {NSE_CARDS.map((card) => {
+          {nseCards.map((card) => {
             const isMax = card.value === maxNseValue;
             return (
               <div

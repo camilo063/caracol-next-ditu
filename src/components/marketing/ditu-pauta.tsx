@@ -42,9 +42,9 @@ const CYAN = "#77EDED";
 const NAVY_DARK = "#12082D";
 const VIOLET_MED = "#561BDB";
 
-type CategoryKey = "ads" | "patrocinio" | "branded" | "eventos";
+export type CategoryKey = "ads" | "patrocinio" | "branded" | "eventos";
 
-interface AdFormat {
+export interface AdFormat {
   /** ID único para key. */
   id: string;
   /** Tag pequeño arriba (e.g. "Ad-s", "Patrocinio"). */
@@ -57,7 +57,7 @@ interface AdFormat {
   image?: string;
 }
 
-interface Category {
+export interface Category {
   key: CategoryKey;
   label: string;
   formats: AdFormat[];
@@ -176,11 +176,15 @@ const CATEGORIES: Category[] = [
 
 export interface DituPautaProps {
   anchorId?: string;
+  categories?: Category[];
 }
 
-export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
+export function DituPautaBlock({
+  anchorId = "pauta",
+  categories = CATEGORIES,
+}: DituPautaProps) {
   const [activeKey, setActiveKey] = useState<CategoryKey>("ads");
-  const active = CATEGORIES.find((c) => c.key === activeKey) ?? CATEGORIES[0]!;
+  const active = categories.find((c) => c.key === activeKey) ?? categories[0]!;
 
   return (
     <section
@@ -237,7 +241,7 @@ export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
         <div className="flex w-full flex-col items-start gap-8 py-6 lg:flex-row lg:gap-[48px] lg:py-[48px]">
           {/* Sidebar — desktop sticky / mobile horizontal scroll */}
           <PautaSidebar
-            categories={CATEGORIES}
+            categories={categories}
             activeKey={activeKey}
             onSelect={setActiveKey}
           />
@@ -500,5 +504,3 @@ function FormatRow({ format, isLast }: { format: AdFormat; isLast: boolean }) {
     </div>
   );
 }
-
-export type { Category, AdFormat, CategoryKey };

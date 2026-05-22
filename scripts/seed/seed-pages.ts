@@ -1,6 +1,6 @@
 import type { Payload } from "payload";
 
-import { caracolNextDemoLayout, dituDemoLayout } from "@/lib/demo-data";
+import { caracolNextDemoLayout, dituDemoLayout } from "./source-data";
 
 import { rewriteMediaRefs } from "./rewrite-media";
 

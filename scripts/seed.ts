@@ -16,6 +16,7 @@ import { getPayload } from "payload";
 
 import config from "@payload-config";
 
+import { seedDituPage } from "./seed/seed-ditu-page";
 import { seedGlobals } from "./seed/seed-globals";
 import { seedPages } from "./seed/seed-pages";
 import { seedUsers } from "./seed/seed-users";
@@ -50,7 +51,11 @@ async function main(): Promise<void> {
   await seedGlobals(payload, assetMap);
   console.log("");
 
-  // 4. Seedear las 2 pages base.
+  // 4. Seedear el global específico de Ditu (data del DituPage).
+  await seedDituPage(payload);
+  console.log("");
+
+  // 5. Seedear las 2 pages base.
   await seedPages(payload, assetMap);
   console.log("");
 

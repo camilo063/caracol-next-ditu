@@ -14,6 +14,7 @@ import { Categories } from "./collections/Categories";
 import { Media } from "./collections/Media";
 import { Pages } from "./collections/Pages";
 import { Users } from "./collections/Users";
+import { DituPage } from "./globals/DituPage";
 import { FloatingContact } from "./globals/FloatingContact";
 import { FooterCaracolNext } from "./globals/FooterCaracolNext";
 import { FooterDitu } from "./globals/FooterDitu";
@@ -43,6 +44,7 @@ export default buildConfig({
   collections: [Pages, Media, Categories, Users],
   globals: [
     HubPage,
+    DituPage,
     HeaderCaracolNext,
     HeaderDitu,
     FooterCaracolNext,

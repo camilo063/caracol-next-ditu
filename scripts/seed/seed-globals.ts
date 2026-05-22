@@ -6,7 +6,7 @@ import {
   dituFooterDemo,
   dituHeaderDemo,
   floatingContactDemo,
-} from "@/lib/demo-data";
+} from "./source-data";
 
 import { rewriteMediaRefs } from "./rewrite-media";
 
