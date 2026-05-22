@@ -5,6 +5,15 @@
  * Cada export sabe qué tag invalidar (data cache) Y qué paths revalidar
  * (HTML/SSR cache) cuando el editor guarda algo. Mantener el mapeo aquí evita
  * que cada hook duplique la lógica.
+ *
+ * IMPORTANTE: Estos helpers se ejecutan desde 2 contextos:
+ *  1. Runtime Next (admin save) → `revalidateTag`/`revalidatePath` funcionan.
+ *  2. Seed script standalone (tsx) → `revalidateTag` lanza "Invariant: static
+ *     generation store missing" porque no hay Next runtime alrededor.
+ *
+ * Para que el seed pueda guardar globals/pages sin crashear, envolvemos cada
+ * call en try/catch + log silencioso. En runtime Next el revalidate funciona;
+ * en seed el catch silencia el error y el seed continúa.
  */
 
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -17,11 +26,27 @@ import {
   type Landing,
 } from "./cms-tags";
 
+function safeRevalidateTag(tag: string): void {
+  try {
+    revalidateTag(tag);
+  } catch {
+    // Fuera de Next runtime (seed script). Ignorar.
+  }
+}
+
+function safeRevalidatePath(path: string): void {
+  try {
+    revalidatePath(path);
+  } catch {
+    // Fuera de Next runtime. Ignorar.
+  }
+}
+
 /** Invalida el cache de un global + las rutas frontend que lo consumen. */
 export function revalidateGlobal(slug: string): void {
-  revalidateTag(cacheTags.global(slug));
+  safeRevalidateTag(cacheTags.global(slug));
   const routes = GLOBAL_TO_ROUTES[slug] ?? [];
-  for (const r of routes) revalidatePath(r);
+  for (const r of routes) safeRevalidatePath(r);
 }
 
 /** Invalida el cache + ruta de una page (caracol-next/foo, ditu/bar). */
@@ -30,12 +55,12 @@ export function revalidatePageRecord(
   slug: string,
   previousSlug?: string | null,
 ): void {
-  revalidateTag(cacheTags.page(landing, slug));
-  revalidatePath(pageRoute(landing, slug));
+  safeRevalidateTag(cacheTags.page(landing, slug));
+  safeRevalidatePath(pageRoute(landing, slug));
   // Si el slug cambió, invalidar también la URL anterior.
   if (previousSlug && previousSlug !== slug) {
-    revalidateTag(cacheTags.page(landing, previousSlug));
-    revalidatePath(pageRoute(landing, previousSlug));
+    safeRevalidateTag(cacheTags.page(landing, previousSlug));
+    safeRevalidatePath(pageRoute(landing, previousSlug));
   }
 }
 
@@ -45,6 +70,6 @@ export function revalidatePageRecord(
  * resolver las refs.
  */
 export function revalidateAllPublic(): void {
-  revalidateTag(cacheTags.media());
-  for (const r of ALL_PUBLIC_ROUTES) revalidatePath(r);
+  safeRevalidateTag(cacheTags.media());
+  for (const r of ALL_PUBLIC_ROUTES) safeRevalidatePath(r);
 }
