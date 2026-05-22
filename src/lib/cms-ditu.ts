@@ -61,6 +61,13 @@ export interface DituPageProps {
   hablamos: DituHablamosProps;
 }
 
+/**
+ * Defaults usados cuando la DB no responde durante build (deploy a entorno
+ * limpio antes del seed). Algunos arrays tienen 1 placeholder mínimo porque
+ * los componentes Ditu hacen `array[activeIndex]!.field` sin null-check —
+ * arrays vacíos crashean el prerender. Visualmente los placeholders quedan
+ * casi en blanco; tras `npm run seed` los componentes muestran data real.
+ */
 const DEFAULT_DITU_PAGE: DituPageProps = {
   heroData: {
     stickerText: "TU MARCA",
@@ -78,10 +85,18 @@ const DEFAULT_DITU_PAGE: DituPageProps = {
     networks: [],
   },
   adn: { ageBars: [], genderData: [], nseCards: [] },
-  tipoContenido: { autoplayInterval: 5000, tabs: [] },
-  canales: { tabs: [], channelsByTab: { envivo: [], fast: [], aliados: [] } },
+  tipoContenido: {
+    autoplayInterval: 5000,
+    tabs: [{ label: "", description: "" }],
+  },
+  canales: {
+    tabs: [{ key: "envivo", label: "" }],
+    channelsByTab: { envivo: [], fast: [], aliados: [] },
+  },
   calendario: { events: [] },
-  pauta: { categories: [] },
+  pauta: {
+    categories: [{ key: "ads", label: "", formats: [] }],
+  },
   hablamos: {
     stickerText: "¿HABLAMOS?",
     headingLine1: "",
