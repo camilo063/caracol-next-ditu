@@ -44,7 +44,7 @@ const VIOLET = "#8232F0";
 const VIOLET_MED = "#561BDB";
 
 /** Variantes de badge según Figma (4 colores). */
-type BadgeVariant = "cyan" | "violet" | "navy" | "white";
+export type BadgeVariant = "cyan" | "violet" | "navy" | "white";
 
 const BADGE_STYLES: Record<BadgeVariant, React.CSSProperties> = {
   cyan: { backgroundColor: CYAN, color: NAVY_DARK, borderColor: CYAN },
@@ -53,7 +53,7 @@ const BADGE_STYLES: Record<BadgeVariant, React.CSSProperties> = {
   white: { backgroundColor: "#FFFFFF", color: NAVY_DARK, borderColor: NAVY_DARK },
 };
 
-interface CalendarEvent {
+export interface CalendarEvent {
   id: string;
   /** Fecha texto a mostrar (e.g. "DEL 06 DE MARZO AL 04 DE MAYO"). */
   dateLabel: string;
@@ -67,8 +67,10 @@ interface CalendarEvent {
   badgeVariant: BadgeVariant;
 }
 
-/** Mock data — 14 eventos representativos del año 2026.
- *  TODO: cuando Payload tenga datos reales, reemplazar por fetch. */
+/** Defaults — 14 eventos representativos del año 2026.
+ *  Se usan cuando el componente se monta sin la prop `events` (testing aislado o
+ *  fallback). En `/ditu/page.tsx`, los eventos vienen del global `ditu-page`
+ *  poblado desde admin. */
 const DEMO_EVENTS: CalendarEvent[] = [
   {
     id: "filbo",

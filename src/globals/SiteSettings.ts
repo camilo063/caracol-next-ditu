@@ -1,17 +1,26 @@
 import type { GlobalConfig } from "payload";
 
-import { adminsOnly, publishedOrAuth } from "@/access";
+import { anyone, isAdmin } from "@/access";
+import { revalidateGlobal } from "@/lib/cms-revalidate";
 
 /**
  * SiteSettings — configuración global de SEO, OG, contacto fallback.
- * Solo admins lo editan.
+ * Solo admins lo editan. Lectura pública (los campos son no-secretos y los
+ * layouts SSR los leen sin auth).
  */
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
   label: "Site Settings",
   access: {
-    read: publishedOrAuth,
-    update: adminsOnly,
+    read: anyone,
+    update: isAdmin,
+  },
+  hooks: {
+    afterChange: [
+      () => {
+        revalidateGlobal("site-settings");
+      },
+    ],
   },
   fields: [
     {
@@ -83,6 +92,46 @@ export const SiteSettings: GlobalConfig = {
                 description:
                   "Marca primaria del sitio. Usada como fallback cuando un layout no especifica theme.",
               },
+            },
+            {
+              name: "copyright",
+              type: "text",
+              defaultValue: "©2026 Caracol Comercial Digital",
+              admin: {
+                description:
+                  "Copyright que aparece en el footer del Hub y en otros layouts.",
+              },
+            },
+          ],
+        },
+        {
+          label: "Mantenimiento",
+          description:
+            "Kill-switch para emergencias. Si está activo, todas las rutas públicas redirigen a la página de mantenimiento.",
+          fields: [
+            {
+              name: "maintenanceMode",
+              type: "group",
+              label: false,
+              fields: [
+                {
+                  name: "enabled",
+                  type: "checkbox",
+                  defaultValue: false,
+                  admin: {
+                    description: "Activar para sacar el sitio público de servicio.",
+                  },
+                },
+                {
+                  name: "message",
+                  type: "textarea",
+                  defaultValue: "Estamos trabajando en mejoras. Vuelve pronto.",
+                  admin: {
+                    description:
+                      "Mensaje visible mientras el sitio está en mantenimiento.",
+                  },
+                },
+              ],
             },
           ],
         },

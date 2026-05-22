@@ -43,6 +43,10 @@ next-env.d.ts
 # con ENOENT si no existe en clean checkout).
 src/payload-types.ts
 
+# Payload uploads — en prod van a Vercel Blob, en local a filesystem.
+# No commiteamos los archivos uploaded; el seed los regenera desde public/.
+/public/media
+
 # Caches locales
 .turbo
 .cache

@@ -1,6 +1,6 @@
 import type { Block, Field } from "payload";
 
-import { anchorIdField, sectionHeaderFields } from "../shared-fields";
+import { anchorIdField } from "../shared-fields";
 
 /**
  * Multimedia compartida — usada por la categoría principal y por cada secondary tab.
@@ -84,9 +84,28 @@ const multimediaFields: Field[] = [
 export const BrandedContentBlock: Block = {
   slug: "branded-content",
   labels: { singular: "Branded Content", plural: "Branded Content" },
+  dbName: "branded",
   fields: [
     anchorIdField,
-    ...sectionHeaderFields,
+    {
+      name: "eyebrow",
+      type: "text",
+      label: "Eyebrow (etiqueta superior)",
+    },
+    {
+      name: "heading",
+      type: "text",
+      label: "Título",
+      admin: {
+        description:
+          "Opcional. BrandedContent delega el título a cada categoría — deja vacío para mantener la composición original del Figma.",
+      },
+    },
+    {
+      name: "description",
+      type: "textarea",
+      label: "Descripción",
+    },
     {
       name: "categories",
       type: "array",
@@ -139,6 +158,7 @@ export const BrandedContentBlock: Block = {
           type: "array",
           label: "Secondary tabs (cambian solo el multimedia)",
           labels: { singular: "Sub-tab", plural: "Sub-tabs" },
+          dbName: "subtab",
           admin: {
             description:
               "Opcional. Ej. Realities / Series Web / Talk Shows / Lives / Documental.",

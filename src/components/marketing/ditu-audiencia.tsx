@@ -27,7 +27,7 @@ const CYAN = "#77EDED";
 const NAVY_DARK = "#12082D";
 const GREY_LIGHT = "#E4E4E4";
 
-interface StatCard {
+export interface StatCard {
   label: string;
   value: number;
   format?: (v: number) => string;
@@ -36,13 +36,13 @@ interface StatCard {
   large?: boolean;
 }
 
-interface DeviceCard {
+export interface DeviceCard {
   label: string;
   minutes: number;
   icon: string;
 }
 
-interface NetworkCount {
+export interface NetworkCount {
   network: "facebook" | "tiktok" | "x" | "youtube" | "instagram" | "whatsapp";
   followers: number;
 }
@@ -51,6 +51,9 @@ export interface DituAudienciaProps {
   anchorId?: string;
   /** Total seguidores grande (default 1700000 = +1.7M). */
   totalFollowersHeadline?: string;
+  stats?: StatCard[];
+  devices?: DeviceCard[];
+  networks?: NetworkCount[];
 }
 
 const DEFAULT_STATS: StatCard[] = [
@@ -106,6 +109,9 @@ const NETWORK_ICON: Record<NetworkCount["network"], string> = {
 export function DituAudienciaBlock({
   anchorId = "cifras",
   totalFollowersHeadline = "+1.7M",
+  stats = DEFAULT_STATS,
+  devices = DEFAULT_DEVICES,
+  networks = DEFAULT_NETWORKS,
 }: DituAudienciaProps) {
   return (
     <section
@@ -141,7 +147,7 @@ export function DituAudienciaBlock({
 
         {/* 3 stat cards row */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {DEFAULT_STATS.map((stat) => (
+          {stats.map((stat) => (
             <article
               key={stat.label}
               className={`relative flex flex-col items-end gap-2 rounded-[16px] border p-6 backdrop-blur-[30px] sm:p-8 lg:p-[40px] ${stat.large ? "md:col-span-1" : ""}`}
@@ -241,7 +247,7 @@ export function DituAudienciaBlock({
           {/* 4 device cards — Figma 738:2631/2707/2695/2677.
               gap-[18px] interno, p-[20px], border-white, backdrop-blur-[7px]. */}
           <div className="grid flex-1 grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-[24px]">
-            {DEFAULT_DEVICES.map((dev) => (
+            {devices.map((dev) => (
               <div
                 key={dev.label}
                 className="flex flex-col items-center gap-[18px] rounded-[16px] border border-white p-4 lg:p-[20px]"
@@ -335,7 +341,7 @@ export function DituAudienciaBlock({
         {/* Networks row — mobile: grid 3x2 (spec Camilo).
             Desktop: flex justify-between con todas las 6 networks en una fila. */}
         <div className="grid grid-cols-3 place-items-center gap-x-4 gap-y-8 sm:gap-x-6 lg:flex lg:flex-wrap lg:items-center lg:justify-between lg:gap-6 lg:gap-y-[68px]">
-          {DEFAULT_NETWORKS.map((net) => (
+          {networks.map((net) => (
             <div key={net.network} className="flex items-start gap-3">
               <Image
                 src={NETWORK_ICON[net.network]}

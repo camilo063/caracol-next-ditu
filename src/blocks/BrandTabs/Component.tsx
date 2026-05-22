@@ -3,6 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { CountUp } from "@/components/animations";
@@ -12,8 +13,26 @@ import { formatNumber } from "@/lib/format";
 import { mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import type { BrandTabsBlockProps } from "../types";
-import { AgePeakBarChart } from "./AgePeakBarChart";
-import { GenderPieChart } from "./GenderPieChart";
+
+/**
+ * Charts dynamic-imported para bajar el First Load JS — Recharts pesa
+ * ~80 kB y solo se necesita cuando el usuario entra al BrandTabsBlock.
+ * Placeholders mantienen las dimensiones para evitar CLS.
+ */
+const AgePeakBarChart = dynamic(
+  () => import("./AgePeakBarChart").then((m) => m.AgePeakBarChart),
+  {
+    ssr: false,
+    loading: () => <div aria-hidden="true" className="h-[88px] w-full" />,
+  },
+);
+const GenderPieChart = dynamic(
+  () => import("./GenderPieChart").then((m) => m.GenderPieChart),
+  {
+    ssr: false,
+    loading: () => <div aria-hidden="true" className="h-[140px] w-[140px]" />,
+  },
+);
 
 type Tab = NonNullable<BrandTabsBlockProps["tabs"]>[number];
 

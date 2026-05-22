@@ -6,6 +6,7 @@ import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { formBuilderPlugin } from "@payloadcms/plugin-form-builder";
 import { seoPlugin } from "@payloadcms/plugin-seo";
 import { nestedDocsPlugin } from "@payloadcms/plugin-nested-docs";
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
@@ -13,11 +14,13 @@ import { Categories } from "./collections/Categories";
 import { Media } from "./collections/Media";
 import { Pages } from "./collections/Pages";
 import { Users } from "./collections/Users";
+import { DituPage } from "./globals/DituPage";
 import { FloatingContact } from "./globals/FloatingContact";
 import { FooterCaracolNext } from "./globals/FooterCaracolNext";
 import { FooterDitu } from "./globals/FooterDitu";
 import { HeaderCaracolNext } from "./globals/HeaderCaracolNext";
 import { HeaderDitu } from "./globals/HeaderDitu";
+import { HubPage } from "./globals/HubPage";
 import { SiteSettings } from "./globals/SiteSettings";
 
 const filename = fileURLToPath(import.meta.url);
@@ -40,6 +43,8 @@ export default buildConfig({
   },
   collections: [Pages, Media, Categories, Users],
   globals: [
+    HubPage,
+    DituPage,
     HeaderCaracolNext,
     HeaderDitu,
     FooterCaracolNext,
@@ -58,10 +63,29 @@ export default buildConfig({
     },
   }),
   sharp,
-  cors: process.env.PAYLOAD_PUBLIC_SERVER_URL
-    ? [process.env.PAYLOAD_PUBLIC_SERVER_URL]
-    : "*",
+  // CORS y CSRF — restringido a los dominios del proyecto.
+  // - PAYLOAD_PUBLIC_SERVER_URL: el servidor de Payload (mismo dominio en monolito Next).
+  // - NEXT_PUBLIC_SITE_URL: el frontend público.
+  // - Cuando se configure dominio custom (https://caracol.com.co) se agrega aquí.
+  cors: [process.env.NEXT_PUBLIC_SITE_URL, process.env.PAYLOAD_PUBLIC_SERVER_URL].filter(
+    (v): v is string => Boolean(v),
+  ),
+  csrf: [process.env.NEXT_PUBLIC_SITE_URL, process.env.PAYLOAD_PUBLIC_SERVER_URL].filter(
+    (v): v is string => Boolean(v),
+  ),
   plugins: [
+    /**
+     * Vercel Blob storage para uploads en producción.
+     * En local (sin BLOB_READ_WRITE_TOKEN) Payload usa filesystem en public/media.
+     * Si el proyecto migra a AWS, este plugin se reemplaza por @payloadcms/storage-s3
+     * con la misma API.
+     */
+    vercelBlobStorage({
+      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      collections: { media: true },
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    }),
+
     /**
      * Form Builder — formularios editables desde admin.
      * Usado por `ContactBlock` para el form de contacto.
@@ -85,6 +109,39 @@ export default buildConfig({
         admin: {
           group: "Configuración",
         },
+        // Solo admins ven la lista de submissions (contiene PII: email + phone).
+        access: {
+          read: ({ req: { user } }) =>
+            Boolean(user) && (user as { role?: string }).role === "admin",
+          delete: ({ req: { user } }) =>
+            Boolean(user) && (user as { role?: string }).role === "admin",
+        },
+        hooks: {
+          beforeChange: [
+            ({ data, operation }) => {
+              if (operation !== "create") return data;
+              const submissionData = (
+                data as {
+                  submissionData?: Array<{ field?: string; value?: unknown }>;
+                }
+              ).submissionData;
+              // Honeypot: si "_hp" llega lleno, es un bot. Rechazar.
+              const honeypot = submissionData?.find((f) => f.field === "_hp");
+              if (honeypot && honeypot.value) {
+                throw new Error("Submission inválida.");
+              }
+              // Limpiar el honeypot del payload guardado (no es data real).
+              if (submissionData) {
+                (
+                  data as {
+                    submissionData?: Array<{ field?: string; value?: unknown }>;
+                  }
+                ).submissionData = submissionData.filter((f) => f.field !== "_hp");
+              }
+              return data;
+            },
+          ],
+        },
       },
     }),
 
@@ -100,6 +157,18 @@ export default buildConfig({
         typeof doc?.title === "string"
           ? `${doc.title} — Mediakit oficial Caracol Next + Ditu.`
           : "Mediakit oficial Caracol Next + Ditu.",
+      fields: ({ defaultFields }) => [
+        ...defaultFields,
+        {
+          name: "noIndex",
+          type: "checkbox",
+          defaultValue: false,
+          admin: {
+            description:
+              "Marca como 'noindex,nofollow' para evitar indexación en buscadores.",
+          },
+        },
+      ],
     }),
 
     /**

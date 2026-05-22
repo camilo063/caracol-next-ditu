@@ -79,6 +79,7 @@ export const footerSharedFields: Field[] = [
       { label: "Caracol Next deep", value: "caracolnext-deep" },
       { label: "Ditu deep", value: "ditu-deep" },
       { label: "Default (theme)", value: "default" },
+      { label: "Minimal (pill gris centrado — Caracol Next)", value: "minimal" },
     ],
   },
 ];

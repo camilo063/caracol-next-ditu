@@ -22,7 +22,7 @@ import { AnimatePresence, motion } from "framer-motion";
 const CYAN = "#77EDED";
 const NAVY_DARK = "#12082D";
 
-interface ContentTab {
+export interface ContentTab {
   label: string;
   description: string;
 }
@@ -47,16 +47,19 @@ const TABS: ContentTab[] = [
 
 export interface DituTipoContenidoProps {
   anchorId?: string;
+  autoplayInterval?: number;
+  tabs?: ContentTab[];
 }
 
 export function DituTipoContenidoBlock({
   anchorId = "tipo-contenido",
   /** Intervalo de autoplay en ms. Default 5000 (5s). */
   autoplayInterval = 5000,
-}: DituTipoContenidoProps & { autoplayInterval?: number }) {
+  tabs = TABS,
+}: DituTipoContenidoProps) {
   const [activeTab, setActiveTab] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const tab = TABS[activeTab]!;
+  const tab = tabs[activeTab]!;
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // --- Autoplay (spec Camilo): avanza automáticamente entre los 3 tabs.
@@ -64,12 +67,12 @@ export function DituTipoContenidoBlock({
   useEffect(() => {
     if (isPaused) return;
     intervalRef.current = setInterval(() => {
-      setActiveTab((prev) => (prev + 1) % TABS.length);
+      setActiveTab((prev) => (prev + 1) % tabs.length);
     }, autoplayInterval);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isPaused, autoplayInterval]);
+  }, [isPaused, autoplayInterval, tabs.length]);
 
   // Manual click reinicia el ciclo de autoplay para evitar saltos confusos.
   const handleTabClick = (idx: number) => {
@@ -124,7 +127,7 @@ export function DituTipoContenidoBlock({
         {/* Tabs row — Figma 750:2738: gap-[32px], items-center.
             Font lh-96 (2× font-size) da espacio vertical extra. */}
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-6 lg:gap-x-[32px]">
-          {TABS.map((t, idx) => (
+          {tabs.map((t, idx) => (
             <div key={t.label} className="flex items-center gap-4 lg:gap-[32px]">
               {idx > 0 ? (
                 // Separator dot — Figma 750:2743/2741: size-[20px] cyan circle
@@ -176,7 +179,7 @@ export function DituTipoContenidoBlock({
         {/* Pagination dots — Figma 750:2859: 3 dots size-[16px], gap-[16px].
             Activa = filled cyan, inactiva = outline cyan. */}
         <div className="mt-8 flex items-center gap-[16px]">
-          {TABS.map((_, idx) => (
+          {tabs.map((_, idx) => (
             <button
               key={idx}
               type="button"

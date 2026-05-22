@@ -33,9 +33,9 @@ const NAVY_DARK = "#12082D";
 const VIOLET = "#8232F0";
 const VIOLET_MID = "#312163";
 
-type TabKey = "envivo" | "fast" | "aliados";
+export type TabKey = "envivo" | "fast" | "aliados";
 
-interface ChannelCard {
+export interface ChannelCard {
   /** ID único para key. */
   id: string;
   /** Nombre del canal (mostrado en el panel derecho). */
@@ -44,7 +44,12 @@ interface ChannelCard {
   brand?: string;
 }
 
-const TABS: { key: TabKey; label: string }[] = [
+export interface CanalesTab {
+  key: TabKey;
+  label: string;
+}
+
+const TABS: CanalesTab[] = [
   { key: "envivo", label: "EN VIVO" },
   { key: "fast", label: "FAST" },
   { key: "aliados", label: "Aliados" },
@@ -72,11 +77,17 @@ const CHANNELS_BY_TAB: Record<TabKey, ChannelCard[]> = {
 
 export interface DituCanalesProps {
   anchorId?: string;
+  tabs?: CanalesTab[];
+  channelsByTab?: Record<TabKey, ChannelCard[]>;
 }
 
-export function DituCanalesBlock({ anchorId = "canales" }: DituCanalesProps) {
+export function DituCanalesBlock({
+  anchorId = "canales",
+  tabs = TABS,
+  channelsByTab = CHANNELS_BY_TAB,
+}: DituCanalesProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("envivo");
-  const channels = CHANNELS_BY_TAB[activeTab];
+  const channels = channelsByTab[activeTab];
 
   return (
     <section
@@ -136,7 +147,7 @@ export function DituCanalesBlock({ anchorId = "canales" }: DituCanalesProps) {
             className="inline-flex items-start gap-[10px] overflow-clip rounded-[54px] border border-white p-[8px]"
             style={{ backgroundColor: "rgba(255,255,255,0.2)" }}
           >
-            {TABS.map((t) => {
+            {tabs.map((t) => {
               const isActive = activeTab === t.key;
               return (
                 <button

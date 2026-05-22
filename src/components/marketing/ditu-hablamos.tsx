@@ -28,9 +28,35 @@ const VIOLET_MED = "#561BDB";
 
 export interface DituHablamosProps {
   anchorId?: string;
+  stickerText?: string;
+  headingLine1?: string;
+  headingLine2?: string;
+  headingLine2Emphasis?: string;
+  subtitle?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
 }
 
-export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) {
+export function DituHablamosBlock({
+  anchorId = "hablamos",
+  stickerText = "¿HABLAMOS?",
+  headingLine1 = "Lleva tu marca",
+  headingLine2 = "al siguiente nivel.",
+  headingLine2Emphasis = "siguiente nivel.",
+  subtitle = "Cuéntanos tus objetivos y armemos juntos la mejor estrategia.",
+  ctaLabel = "Contáctanos",
+  ctaHref = "#contacto",
+}: DituHablamosProps) {
+  // Split heading line 2 so the emphasized substring renders in cyan.
+  // If the emphasis isn't found, fall back to rendering the full line plain.
+  const emphasisIndex = headingLine2.indexOf(headingLine2Emphasis);
+  const headingLine2Prefix =
+    emphasisIndex >= 0 ? headingLine2.slice(0, emphasisIndex) : headingLine2;
+  const headingLine2EmphasisRender = emphasisIndex >= 0 ? headingLine2Emphasis : "";
+  const headingLine2Suffix =
+    emphasisIndex >= 0
+      ? headingLine2.slice(emphasisIndex + headingLine2Emphasis.length)
+      : "";
   return (
     <section
       id={anchorId}
@@ -79,7 +105,7 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
                   className="font-display text-[24px] font-bold whitespace-nowrap uppercase sm:text-[36px] lg:text-[48px]"
                   style={{ lineHeight: 1 }}
                 >
-                  ¿HABLAMOS?
+                  {stickerText}
                 </p>
               </div>
 
@@ -90,13 +116,15 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
                   className="font-display text-[36px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
                   style={{ lineHeight: 1 }}
                 >
-                  Lleva tu marca
+                  {headingLine1}
                 </p>
                 <p
                   className="font-display text-[42px] font-bold text-white uppercase sm:text-[64px] lg:text-[96px]"
                   style={{ lineHeight: 1 }}
                 >
-                  al <span style={{ color: CYAN }}>siguiente nivel.</span>
+                  {headingLine2Prefix}
+                  <span style={{ color: CYAN }}>{headingLine2EmphasisRender}</span>
+                  {headingLine2Suffix}
                 </p>
               </div>
             </div>
@@ -109,12 +137,12 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
                 lineHeight: "32px",
               }}
             >
-              Cuéntanos tus objetivos y armemos juntos la mejor estrategia.
+              {subtitle}
             </p>
 
             {/* Button "Contáctanos" — Figma 756:7961: bg white text #561BDB */}
             <Link
-              href="#contacto"
+              href={ctaHref}
               className="inline-flex items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold whitespace-nowrap transition-opacity hover:opacity-90"
               style={{
                 borderColor: "#FFFFFF",
@@ -123,7 +151,7 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
                 lineHeight: 1.5,
               }}
             >
-              Contáctanos
+              {ctaLabel}
             </Link>
           </div>
 
