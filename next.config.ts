@@ -37,16 +37,23 @@ const nextConfig: NextConfig = {
     // CSP a /admin ni /api — esos paths usan defaults de Payload + nuestros
     // headers globales de seguridad de abajo.
     //
-    // En dev: 'unsafe-eval' es necesario porque Next dev usa fast refresh con
-    // eval(). En prod se quita para máxima estrictez.
+    // CSP solo aplica en PROD. En dev, Next inyecta inline scripts dinámicos
+    // (HMR, RSC payloads sin nonce estable) que cualquier CSP estricta bloquea —
+    // lo cual rompe la app sin beneficio de seguridad en local.
+    //
+    // Nota: 'unsafe-inline' coexiste con scripts inline de Next (NO usamos
+    // 'strict-dynamic' porque ese invalida 'unsafe-inline' por design del W3C
+    // CSP y rompe los inline scripts de Next que no llevan nonce).
     const csp = [
       "default-src 'self'",
-      `script-src 'self' 'strict-dynamic' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://va.vercel-scripts.com https://vitals.vercel-insights.com`,
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://vitals.vercel-insights.com",
       // 'unsafe-inline' en styles es necesario para Tailwind v4 + style={{...}}
       // inline que usan Framer Motion y los componentes pixel-perfect.
-      "style-src 'self' 'unsafe-inline'",
+      // Google Fonts CSS endpoint (next/font/google fetcha desde aquí en dev).
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https: https://*.public.blob.vercel-storage.com",
-      "font-src 'self' data:",
+      // Google Fonts archivos woff2 + fontes locales.
+      "font-src 'self' data: https://fonts.gstatic.com",
       "connect-src 'self' https://*.vercel-insights.com https://*.vercel-analytics.com https://vitals.vercel-insights.com",
       // YouTube embeds — BrandedContent block los soporta vía iframe.
       "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
@@ -80,11 +87,11 @@ const nextConfig: NextConfig = {
       {
         // CSP estricta solo al frontend público (Hub, CN, Ditu y sub-pages).
         // Excluye /admin (Payload UI necesita reglas más laxas) y /api.
+        // En dev se omite la CSP (Next inline scripts dinámicos sin nonce).
         source: "/((?!api/|admin).*)",
-        headers: [
-          ...globalSecurityHeaders,
-          { key: "Content-Security-Policy", value: csp },
-        ],
+        headers: isDev
+          ? globalSecurityHeaders
+          : [...globalSecurityHeaders, { key: "Content-Security-Policy", value: csp }],
       },
       {
         // Admin + API: solo los headers globales (sin CSP nuestra; Payload usa sus defaults).
