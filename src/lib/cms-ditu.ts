@@ -61,22 +61,61 @@ export interface DituPageProps {
   hablamos: DituHablamosProps;
 }
 
+const DEFAULT_DITU_PAGE: DituPageProps = {
+  heroData: {
+    stickerText: "TU MARCA",
+    headingPlaceholderText: "Tu marca ",
+    headingMainText: "",
+    headingEmphasisText: "",
+    descriptionSegments: [],
+    buttons: [],
+  },
+  video: { src: undefined, alt: "" },
+  audiencia: {
+    totalFollowersHeadline: "",
+    stats: [],
+    devices: [],
+    networks: [],
+  },
+  adn: { ageBars: [], genderData: [], nseCards: [] },
+  tipoContenido: { autoplayInterval: 5000, tabs: [] },
+  canales: { tabs: [], channelsByTab: { envivo: [], fast: [], aliados: [] } },
+  calendario: { events: [] },
+  pauta: { categories: [] },
+  hablamos: {
+    stickerText: "¿HABLAMOS?",
+    headingLine1: "",
+    headingLine2: "",
+    headingLine2Emphasis: "",
+    subtitle: "",
+    ctaLabel: "Contáctanos",
+    ctaHref: "#contacto",
+  },
+};
+
 export const getDituPage = unstable_cache(
   async (): Promise<DituPageProps> => {
-    const p = await getPayload({ config });
-    const doc = (await p.findGlobal({ slug: "ditu-page" })) as DituPage;
+    try {
+      const p = await getPayload({ config });
+      const doc = (await p.findGlobal({ slug: "ditu-page" })) as DituPage;
 
-    return {
-      heroData: mapHeroData(doc.hero),
-      video: mapVideo(doc.video),
-      audiencia: mapAudiencia(doc.audiencia),
-      adn: mapAdn(doc.adn),
-      tipoContenido: mapTipoContenido(doc.tipoContenido),
-      canales: mapCanales(doc.canales),
-      calendario: mapCalendario(doc.calendario),
-      pauta: mapPauta(doc.pauta),
-      hablamos: mapHablamos(doc.hablamos),
-    };
+      return {
+        heroData: mapHeroData(doc.hero),
+        video: mapVideo(doc.video),
+        audiencia: mapAudiencia(doc.audiencia),
+        adn: mapAdn(doc.adn),
+        tipoContenido: mapTipoContenido(doc.tipoContenido),
+        canales: mapCanales(doc.canales),
+        calendario: mapCalendario(doc.calendario),
+        pauta: mapPauta(doc.pauta),
+        hablamos: mapHablamos(doc.hablamos),
+      };
+    } catch (err) {
+      console.warn(
+        `[cms] ditu-page fetch falló, usando fallback. Causa: ${(err as Error).message}`,
+      );
+      return DEFAULT_DITU_PAGE;
+    }
   },
   ["ditu-page-v1"],
   { tags: [cacheTags.global("ditu-page")], revalidate: 3600 },

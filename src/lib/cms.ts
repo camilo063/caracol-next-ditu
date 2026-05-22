@@ -38,6 +38,27 @@ async function payloadClient(): Promise<Payload> {
   return getPayload({ config });
 }
 
+/**
+ * Wrappea un fetch con try/catch + fallback. Necesario para que el build de
+ * Next pase incluso cuando la DB todavía no tiene el schema seedeado (deploy
+ * inicial a un entorno limpio). Tras correr `npm run seed`, los caches se
+ * invalidan al primer save desde admin (afterChange hooks).
+ */
+async function safeFetch<T>(
+  label: string,
+  fetcher: () => Promise<T>,
+  fallback: T,
+): Promise<T> {
+  try {
+    return await fetcher();
+  } catch (err) {
+    console.warn(
+      `[cms] ${label} fetch falló, usando fallback. Causa: ${(err as Error).message}`,
+    );
+    return fallback;
+  }
+}
+
 // =====================================================================
 // Hub page (`/`)
 // =====================================================================
@@ -107,12 +128,32 @@ function mapHubPage(doc: HubPage): HubPageProps {
   };
 }
 
-export const getHubPage = unstable_cache(
-  async (): Promise<HubPageProps> => {
-    const p = await payloadClient();
-    const doc = (await p.findGlobal({ slug: "hub-page" })) as HubPage;
-    return mapHubPage(doc);
+const DEFAULT_HUB_PAGE: HubPageProps = {
+  eyebrow: "",
+  headingSegments: [],
+  contactLabel: "Contáctenos",
+  brands: {
+    caracolNext: {
+      descriptionParagraphs: [],
+      ctaLabel: "Conoce Caracol Next",
+      href: "/caracol-next",
+    },
+    ditu: { descriptionParagraphs: [], ctaLabel: "Conoce ditu", href: "/ditu" },
   },
+  stats: [],
+};
+
+export const getHubPage = unstable_cache(
+  async (): Promise<HubPageProps> =>
+    safeFetch(
+      "hub-page",
+      async () => {
+        const p = await payloadClient();
+        const doc = (await p.findGlobal({ slug: "hub-page" })) as HubPage;
+        return mapHubPage(doc);
+      },
+      DEFAULT_HUB_PAGE,
+    ),
   ["hub-page-v1"],
   { tags: [cacheTags.global("hub-page")], revalidate: REVALIDATE_SECONDS },
 );
@@ -160,14 +201,29 @@ function mapFloatingContact(doc: FloatingContactGlobal): FloatingContactProps {
   };
 }
 
+const DEFAULT_FLOATING_CONTACT: FloatingContactProps = {
+  enabled: false,
+  buttonLabel: "Contáctanos",
+  buttonIcon: "Sparkles",
+  panelHeading: "Habla con nuestro equipo",
+  panelDescription: "",
+  representatives: [],
+  position: "bottom-right",
+};
+
 export const getFloatingContact = unstable_cache(
-  async (): Promise<FloatingContactProps> => {
-    const p = await payloadClient();
-    const doc = (await p.findGlobal({
-      slug: "floating-contact",
-    })) as FloatingContactGlobal;
-    return mapFloatingContact(doc);
-  },
+  async (): Promise<FloatingContactProps> =>
+    safeFetch(
+      "floating-contact",
+      async () => {
+        const p = await payloadClient();
+        const doc = (await p.findGlobal({
+          slug: "floating-contact",
+        })) as FloatingContactGlobal;
+        return mapFloatingContact(doc);
+      },
+      DEFAULT_FLOATING_CONTACT,
+    ),
   ["floating-contact-v1"],
   { tags: [cacheTags.global("floating-contact")], revalidate: REVALIDATE_SECONDS },
 );
@@ -213,14 +269,29 @@ function mapHeader(
   };
 }
 
+function defaultHeader(landing: Landing): SiteHeaderData {
+  return {
+    landing,
+    logoUrl: null,
+    navAnchors: [],
+    ctaButton: null,
+    sticky: true,
+  };
+}
+
 export async function getHeader(landing: Landing): Promise<SiteHeaderData> {
   const slug = landing === "ditu" ? "header-ditu" : "header-caracol-next";
   return unstable_cache(
-    async () => {
-      const p = await payloadClient();
-      const doc = (await p.findGlobal({ slug })) as HeaderCaracolNext | HeaderDitu;
-      return mapHeader(doc, landing);
-    },
+    async () =>
+      safeFetch(
+        slug,
+        async () => {
+          const p = await payloadClient();
+          const doc = (await p.findGlobal({ slug })) as HeaderCaracolNext | HeaderDitu;
+          return mapHeader(doc, landing);
+        },
+        defaultHeader(landing),
+      ),
     ["header", landing, "v1"],
     { tags: [cacheTags.global(slug)], revalidate: REVALIDATE_SECONDS },
   )();
@@ -270,14 +341,32 @@ function mapFooter(
   };
 }
 
+function defaultFooter(landing: Landing): SiteFooterData {
+  return {
+    landing,
+    logoUrl: null,
+    tagline: null,
+    columns: [],
+    socialLinks: [],
+    bottomLine: "",
+    useWave: false,
+    tone: landing === "ditu" ? "ditu-deep" : "caracolnext-deep",
+  };
+}
+
 export async function getFooter(landing: Landing): Promise<SiteFooterData> {
   const slug = landing === "ditu" ? "footer-ditu" : "footer-caracol-next";
   return unstable_cache(
-    async () => {
-      const p = await payloadClient();
-      const doc = (await p.findGlobal({ slug })) as FooterCaracolNext | FooterDitu;
-      return mapFooter(doc, landing);
-    },
+    async () =>
+      safeFetch(
+        slug,
+        async () => {
+          const p = await payloadClient();
+          const doc = (await p.findGlobal({ slug })) as FooterCaracolNext | FooterDitu;
+          return mapFooter(doc, landing);
+        },
+        defaultFooter(landing),
+      ),
     ["footer", landing, "v1"],
     { tags: [cacheTags.global(slug)], revalidate: REVALIDATE_SECONDS },
   )();
@@ -298,25 +387,46 @@ export interface SiteSettingsData {
   };
 }
 
-export const getSiteSettings = unstable_cache(
-  async (): Promise<SiteSettingsData> => {
-    const p = await payloadClient();
-    const doc = (await p.findGlobal({ slug: "site-settings" })) as SiteSetting;
-    return {
-      siteName: doc.siteName ?? "Caracol Next + Ditu",
-      copyright: doc.copyright ?? "©2026 Caracol Comercial Digital",
-      maintenanceMode: {
-        enabled: doc.maintenanceMode?.enabled ?? false,
-        message:
-          doc.maintenanceMode?.message ?? "Estamos trabajando en mejoras. Vuelve pronto.",
-      },
-      defaultSeo: {
-        title: doc.defaultMetaTitle ?? "Caracol Next + Ditu — Mediakit",
-        description: doc.defaultMetaDescription ?? "",
-        twitterHandle: doc.twitterHandle ?? null,
-      },
-    };
+const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
+  siteName: "Caracol Next + Ditu",
+  copyright: "©2026 Caracol Comercial Digital",
+  maintenanceMode: {
+    enabled: false,
+    message: "Estamos trabajando en mejoras. Vuelve pronto.",
   },
+  defaultSeo: {
+    title: "Caracol Next + Ditu — Mediakit",
+    description: "Mediakit oficial Caracol Next + Ditu.",
+    twitterHandle: null,
+  },
+};
+
+export const getSiteSettings = unstable_cache(
+  async (): Promise<SiteSettingsData> =>
+    safeFetch(
+      "site-settings",
+      async () => {
+        const p = await payloadClient();
+        const doc = (await p.findGlobal({ slug: "site-settings" })) as SiteSetting;
+        return {
+          siteName: doc.siteName ?? DEFAULT_SITE_SETTINGS.siteName,
+          copyright: doc.copyright ?? DEFAULT_SITE_SETTINGS.copyright,
+          maintenanceMode: {
+            enabled: doc.maintenanceMode?.enabled ?? false,
+            message:
+              doc.maintenanceMode?.message ??
+              DEFAULT_SITE_SETTINGS.maintenanceMode.message,
+          },
+          defaultSeo: {
+            title: doc.defaultMetaTitle ?? DEFAULT_SITE_SETTINGS.defaultSeo.title,
+            description:
+              doc.defaultMetaDescription ?? DEFAULT_SITE_SETTINGS.defaultSeo.description,
+            twitterHandle: doc.twitterHandle ?? null,
+          },
+        };
+      },
+      DEFAULT_SITE_SETTINGS,
+    ),
   ["site-settings-v1"],
   { tags: [cacheTags.global("site-settings")], revalidate: REVALIDATE_SECONDS },
 );
@@ -332,18 +442,23 @@ export const getSiteSettings = unstable_cache(
  */
 export async function getPage(landing: Landing, slug: string): Promise<Page | null> {
   return unstable_cache(
-    async () => {
-      const p = await payloadClient();
-      const result = await p.find({
-        collection: "pages",
-        where: {
-          and: [{ landing: { equals: landing } }, { slug: { equals: slug } }],
+    async () =>
+      safeFetch(
+        `page:${landing}:${slug}`,
+        async () => {
+          const p = await payloadClient();
+          const result = await p.find({
+            collection: "pages",
+            where: {
+              and: [{ landing: { equals: landing } }, { slug: { equals: slug } }],
+            },
+            limit: 1,
+            depth: 3,
+          });
+          return (result.docs[0] as Page | undefined) ?? null;
         },
-        limit: 1,
-        depth: 3, // resuelve uploads + relationships en una query
-      });
-      return (result.docs[0] as Page | undefined) ?? null;
-    },
+        null,
+      ),
     ["page", landing, slug, "v1"],
     { tags: [cacheTags.page(landing, slug)], revalidate: REVALIDATE_SECONDS },
   )();
