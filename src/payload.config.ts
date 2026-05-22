@@ -63,9 +63,16 @@ export default buildConfig({
     },
   }),
   sharp,
-  cors: process.env.PAYLOAD_PUBLIC_SERVER_URL
-    ? [process.env.PAYLOAD_PUBLIC_SERVER_URL]
-    : "*",
+  // CORS y CSRF — restringido a los dominios del proyecto.
+  // - PAYLOAD_PUBLIC_SERVER_URL: el servidor de Payload (mismo dominio en monolito Next).
+  // - NEXT_PUBLIC_SITE_URL: el frontend público.
+  // - Cuando se configure dominio custom (https://caracol.com.co) se agrega aquí.
+  cors: [process.env.NEXT_PUBLIC_SITE_URL, process.env.PAYLOAD_PUBLIC_SERVER_URL].filter(
+    (v): v is string => Boolean(v),
+  ),
+  csrf: [process.env.NEXT_PUBLIC_SITE_URL, process.env.PAYLOAD_PUBLIC_SERVER_URL].filter(
+    (v): v is string => Boolean(v),
+  ),
   plugins: [
     /**
      * Vercel Blob storage para uploads en producción.
@@ -101,6 +108,39 @@ export default buildConfig({
       formSubmissionOverrides: {
         admin: {
           group: "Configuración",
+        },
+        // Solo admins ven la lista de submissions (contiene PII: email + phone).
+        access: {
+          read: ({ req: { user } }) =>
+            Boolean(user) && (user as { role?: string }).role === "admin",
+          delete: ({ req: { user } }) =>
+            Boolean(user) && (user as { role?: string }).role === "admin",
+        },
+        hooks: {
+          beforeChange: [
+            ({ data, operation }) => {
+              if (operation !== "create") return data;
+              const submissionData = (
+                data as {
+                  submissionData?: Array<{ field?: string; value?: unknown }>;
+                }
+              ).submissionData;
+              // Honeypot: si "_hp" llega lleno, es un bot. Rechazar.
+              const honeypot = submissionData?.find((f) => f.field === "_hp");
+              if (honeypot && honeypot.value) {
+                throw new Error("Submission inválida.");
+              }
+              // Limpiar el honeypot del payload guardado (no es data real).
+              if (submissionData) {
+                (
+                  data as {
+                    submissionData?: Array<{ field?: string; value?: unknown }>;
+                  }
+                ).submissionData = submissionData.filter((f) => f.field !== "_hp");
+              }
+              return data;
+            },
+          ],
         },
       },
     }),

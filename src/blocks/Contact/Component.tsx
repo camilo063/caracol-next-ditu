@@ -163,6 +163,16 @@ function ContactForm({
       onSubmit={handleSubmit(onSubmit)}
       className="border-border bg-background space-y-4 rounded-2xl border p-6 sm:p-8"
     >
+      {/* Honeypot anti-bot — humanos no lo ven ni lo enfocan.
+          Si llega lleno al server, el hook beforeChange dropea la submission. */}
+      <input
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px" }}
+        {...register("_hp")}
+      />
       {fields.map((field, i) => {
         const name = field.name ?? `field_${i}`;
         const label = field.label ?? name;

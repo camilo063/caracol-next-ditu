@@ -30,12 +30,73 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ["lucide-react", "framer-motion", "recharts"],
   },
   async headers() {
+    const isDev = process.env.NODE_ENV !== "production";
+
+    // CSP — restricciones al frontend público. Payload admin maneja sus propios
+    // requirements (incluye eval, inline styles, etc.) así que NO aplicamos esta
+    // CSP a /admin ni /api — esos paths usan defaults de Payload + nuestros
+    // headers globales de seguridad de abajo.
+    //
+    // En dev: 'unsafe-eval' es necesario porque Next dev usa fast refresh con
+    // eval(). En prod se quita para máxima estrictez.
+    const csp = [
+      "default-src 'self'",
+      `script-src 'self' 'strict-dynamic' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://va.vercel-scripts.com https://vitals.vercel-insights.com`,
+      // 'unsafe-inline' en styles es necesario para Tailwind v4 + style={{...}}
+      // inline que usan Framer Motion y los componentes pixel-perfect.
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https: https://*.public.blob.vercel-storage.com",
+      "font-src 'self' data:",
+      "connect-src 'self' https://*.vercel-insights.com https://*.vercel-analytics.com https://vitals.vercel-insights.com",
+      // YouTube embeds — BrandedContent block los soporta vía iframe.
+      "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
+      "frame-ancestors 'none'",
+      "form-action 'self'",
+      "base-uri 'self'",
+      "object-src 'none'",
+      "upgrade-insecure-requests",
+    ].join("; ");
+
+    /**
+     * Headers globales de seguridad que aplican a TODAS las respuestas (incluye
+     * admin + api + frontend). Son no-CSP — solo refuerzan TLS, anti-MIME-sniffing,
+     * anti-clickjacking, referrer policy, permisos.
+     */
+    const globalSecurityHeaders = [
+      {
+        key: "Strict-Transport-Security",
+        value: "max-age=63072000; includeSubDomains; preload",
+      },
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "X-Frame-Options", value: "DENY" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      {
+        key: "Permissions-Policy",
+        value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+      },
+    ];
+
     return [
+      {
+        // CSP estricta solo al frontend público (Hub, CN, Ditu y sub-pages).
+        // Excluye /admin (Payload UI necesita reglas más laxas) y /api.
+        source: "/((?!api/|admin).*)",
+        headers: [
+          ...globalSecurityHeaders,
+          { key: "Content-Security-Policy", value: csp },
+        ],
+      },
+      {
+        // Admin + API: solo los headers globales (sin CSP nuestra; Payload usa sus defaults).
+        source: "/(api|admin)/:path*",
+        headers: globalSecurityHeaders,
+      },
       {
         // Assets uploadeados (Payload Media). En filesystem local + Vercel Blob,
         // los archivos tienen hash y son inmutables.
         source: "/media/:path*",
         headers: [
+          ...globalSecurityHeaders,
           {
             key: "Cache-Control",
             value: "public, max-age=31536000, immutable",

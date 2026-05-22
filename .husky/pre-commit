@@ -1,1 +1,16 @@
+# Detecta secrets hardcoded en el staged diff antes de commit.
+# Bloquea el commit si encuentra patrones tipo `PAYLOAD_SECRET=xxx` con valor real
+# (no vacío, no $VARNAME, no comentario).
+if git diff --cached --diff-filter=ACMR -U0 | \
+   grep -E '^\+[[:space:]]*(PAYLOAD_SECRET|DATABASE_URI|RESEND_API_KEY|BLOB_READ_WRITE_TOKEN|AI_GATEWAY_API_KEY|UPSTASH_REDIS_REST_TOKEN|SENTRY_AUTH_TOKEN)=[^[:space:]$#"]' > /tmp/secret-check.txt; then
+  echo ""
+  echo "✗ Secret hardcoded detectado en cambios staged:"
+  cat /tmp/secret-check.txt
+  echo ""
+  echo "Mové el valor a .env (gitignored) y referencialo via process.env.XXX."
+  rm -f /tmp/secret-check.txt
+  exit 1
+fi
+rm -f /tmp/secret-check.txt
+
 npx lint-staged
