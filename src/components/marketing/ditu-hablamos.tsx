@@ -123,7 +123,9 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
       </div>
 
       <div className="relative flex w-full flex-col items-center gap-[24px] pt-12 sm:pt-20 lg:pt-[120px]">
-        <div className="relative flex w-full flex-col items-start gap-[16px] overflow-clip pt-12 sm:pt-20 lg:pt-[120px]">
+        {/* z-10 garantiza que el botón Contáctanos quede POR ENCIMA del wave (bottom:0).
+            En mobile el wave de 131px puede solapar con el botón sin este z-index. */}
+        <div className="relative z-10 flex w-full flex-col items-start gap-[16px] overflow-clip pt-12 sm:pt-20 lg:pt-[120px]">
           {/* Content — Figma 756:6637: gap-16 items-start pl-120 */}
           <div className="mx-auto flex w-full max-w-[1440px] flex-col items-start gap-[16px] px-6 sm:px-12 lg:pl-[120px]">
             <div className="relative flex flex-col items-start gap-[4px]">
@@ -188,8 +190,12 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
             </Link>
           </div>
 
-          {/* Spacer bottom — Figma 756:6624: h-[275.356px] w-[1012px] */}
-          <div className="h-12 w-full sm:h-[120px] lg:h-[279px]" aria-hidden="true" />
+          {/* Spacer bottom — Figma 756:6624: h-[275.356px] w-[1012px].
+              Mobile: h-[160px] para que el botón Contáctanos quede por encima del wave (131px). */}
+          <div
+            className="h-[160px] w-full sm:h-[120px] lg:h-[279px]"
+            aria-hidden="true"
+          />
         </div>
       </div>
 

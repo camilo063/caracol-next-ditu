@@ -146,10 +146,11 @@ export function DituHero({
         {/* Heading hero + sticker overlay — Figma 649:4298 */}
         <motion.div className="relative w-full" variants={itemVariants}>
           <h1
-            className="font-display text-center font-bold tracking-tight text-white uppercase"
+            className="font-display pt-[clamp(2.75rem,1.5rem+5vw,6rem)] text-center font-bold tracking-tight text-white uppercase lg:pt-0"
             style={{
               wordBreak: "break-word",
               // Fluid: 44px (mobile) → 96px (1440+). lineHeight 1 = font-size (Figma usa 96/96).
+              // pt = 1 línea de altura en mobile para que "EN" no quede oculto bajo el sticker.
               fontSize: "clamp(2.75rem, 1.5rem + 5vw, 6rem)",
               lineHeight: 1,
             }}

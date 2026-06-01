@@ -121,17 +121,19 @@ export function AudienceNetworksBlockComponent({
             </div>
           </div>
 
-          {/* Right: 2 columns of stat cards con stagger */}
+          {/* Right: 2 columns of stat cards con stagger.
+              Mobile: grid 2×2 (cada col = 50% del contenedor, no overflow).
+              sm+: flex con anchos fijos originales del Figma. */}
           {items.length > 0 ? (
-            <div className="flex gap-6 py-8">
+            <div className="grid grid-cols-2 gap-3 py-8 sm:flex sm:gap-6">
               {/* Col izquierda con pt-32 (stagger Figma) */}
-              <div className="flex w-full max-w-[235.5px] flex-col gap-6 pt-8 sm:w-[235.5px]">
+              <div className="flex w-full flex-col gap-4 sm:w-[235.5px] sm:max-w-[235.5px] sm:gap-6 sm:pt-8">
                 {leftColItems.map((item) => (
                   <StatCard key={item.id ?? item.label} item={item} />
                 ))}
               </div>
               {/* Col derecha */}
-              <div className="flex w-full max-w-[235.5px] flex-col gap-6 sm:w-[235.5px]">
+              <div className="flex w-full flex-col gap-4 sm:w-[235.5px] sm:max-w-[235.5px] sm:gap-6">
                 {rightColItems.map((item) => (
                   <StatCard key={item.id ?? item.label} item={item} />
                 ))}
