@@ -197,17 +197,18 @@ export function DituHero({
         </motion.div>
 
         {/* Buttons wrapper — Figma 722:2615: gap-[24px] items-center pt-[32px].
-            Mobile (spec Camilo): botones apilados verticalmente flex-col.
+            Mobile (spec usuario): flex-wrap centrado (NO columna rígida) —
+            que los botones se apilen en columnas según ancho disponible.
             Desktop: flex-row con gap-24. */}
         <motion.div
-          className="flex flex-col items-stretch gap-3 pt-4 sm:flex-row sm:items-center sm:justify-center sm:gap-6 lg:gap-[24px] lg:pt-[32px]"
+          className="flex flex-row flex-wrap items-center justify-center gap-3 pt-4 sm:gap-6 lg:gap-[24px] lg:pt-[32px]"
           variants={itemVariants}
         >
           {finalButtons.map((btn) => (
             <Link
               key={btn.icon}
               href={btn.href}
-              className="font-display inline-flex items-center justify-center gap-[10px] rounded-[8px] p-[16px] text-[14px] leading-[20px] font-bold whitespace-nowrap uppercase transition-opacity hover:opacity-80 sm:text-[16px] lg:text-[20px]"
+              className="font-display inline-flex cursor-pointer items-center justify-center gap-[10px] rounded-[8px] p-[16px] text-[14px] leading-[20px] font-bold whitespace-nowrap uppercase transition-all duration-200 hover:bg-[#77EDED]/10 hover:shadow-md hover:shadow-[#77EDED]/20 active:scale-[0.98] sm:text-[16px] lg:text-[20px]"
               style={{
                 borderWidth: "1px",
                 borderStyle: "solid",

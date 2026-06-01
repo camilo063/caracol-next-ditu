@@ -287,11 +287,13 @@ function CtaSimpleLayout({
             </p>
           ) : null}
         </div>
-        {/* CTA: bg #015BC4 306x48 SemiBold 18px white px-48 py-12. */}
+        {/* CTA: bg #015BC4 → hover #003381 (navy oscuro), 306x48 SemiBold 18px.
+            Color sin-hover #015BC4 según Figma (bug: "color del botón sin
+            hover no corresponde al diseño" — antes era #015BC4 sin transición). */}
         <Link
           href={ctaHref}
           className={cn(
-            "font-display inline-flex h-12 w-[306px] items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-opacity hover:opacity-90",
+            "font-display group inline-flex h-12 w-[306px] cursor-pointer items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-all duration-200 hover:bg-[#003381] hover:shadow-lg hover:shadow-[#015BC4]/30 active:scale-[0.98]",
             "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
           )}
           style={{ backgroundColor: "#015BC4" }}

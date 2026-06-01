@@ -112,7 +112,9 @@ export function DituAudienciaBlock({
       id={anchorId}
       className="relative w-full overflow-hidden"
       style={{
-        background: "linear-gradient(180deg, #3B1A93 0%, #2A1469 60%, #12082D 100%)",
+        // Figma 512:2243: 145.23deg rgb(66,18,131) → rgb(89,33,215) → rgb(82,37,194) → rgb(31,22,71)
+        background:
+          "linear-gradient(145.23deg, #421283 0%, #5921D7 37.027%, #5225C2 74.432%, #1F1647 102.7%)",
       }}
     >
       {/* TOP block: Sticker + heading + stat cards */}
@@ -133,21 +135,26 @@ export function DituAudienciaBlock({
               </p>
             </div>
           </div>
-          <h2 className="font-display text-[36px] leading-[1] font-bold tracking-tight text-white uppercase sm:text-[60px] lg:text-[84px]">
+          <h2 className="font-display text-[36px] leading-[1] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
             Cada mes, <span style={{ color: CYAN }}>millones de pantallas</span>{" "}
             prendidas.
           </h2>
         </div>
 
-        {/* 3 stat cards row */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {/* 3 stat cards — flex en vez de grid (spec usuario "Cambiar grid por
+            flex para manejar tarjetas de distintos tamaños"). En mobile,
+            misma altura centradas (spec mobile: "tarjetas misma medida y
+            centradas"). En desktop, la primera más grande (large) ocupa más. */}
+        {/* Figma 738:2633: flex gap-[24px] items-center w-full — 3 tarjetas en fila.
+            Descargas flex-[1_0_0] (crece), las otras shrink-0 (tamaño natural).
+            Sin flex-wrap: las 3 siempre en una sola fila en desktop. */}
+        <div className="flex flex-col items-stretch gap-6 lg:flex-row lg:items-stretch">
           {DEFAULT_STATS.map((stat) => (
             <article
               key={stat.label}
-              className={`relative flex flex-col items-end gap-2 rounded-[16px] border p-6 backdrop-blur-[30px] sm:p-8 lg:p-[40px] ${stat.large ? "md:col-span-1" : ""}`}
+              className={`relative flex flex-col items-end gap-2 rounded-[16px] border p-6 backdrop-blur-[30px] sm:p-8 lg:p-[40px] ${stat.large ? "lg:flex-[1_0_0]" : "lg:shrink-0"}`}
               style={{
                 borderColor: CYAN,
-                backgroundColor: "rgba(255,255,255,0.04)",
               }}
             >
               <div className="flex items-center gap-2 self-end">
@@ -189,8 +196,8 @@ export function DituAudienciaBlock({
           className="flex flex-col items-stretch gap-6 rounded-[16px] border p-6 sm:flex-row sm:items-center sm:p-8 lg:gap-6 lg:p-[40px]"
           style={{ borderColor: CYAN }}
         >
-          {/* 60 MIN left */}
-          <div className="flex flex-col items-start gap-2 px-2 py-4 lg:px-8 lg:py-5">
+          {/* 60 MIN left — Figma 656:4863: backdrop-blur-[25px] rounded-[16px] px-[32px] py-[20px] */}
+          <div className="flex flex-col items-start gap-2 rounded-[16px] px-2 py-4 backdrop-blur-[25px] lg:px-[32px] lg:py-[20px]">
             <div className="flex items-center gap-2">
               <Image
                 src="/ditu/icon-schedule.svg"
@@ -200,8 +207,8 @@ export function DituAudienciaBlock({
                 className="h-[24px] w-[24px] lg:h-[30px] lg:w-[30px]"
               />
               <span
-                className="font-display inline-flex items-center rounded-[4px] px-3 py-1 text-[14px] leading-[1] font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[18px]"
-                style={{ backgroundColor: CYAN, color: NAVY_DARK }}
+                className="font-display inline-flex items-center rounded-[4px] px-[12px] py-[4px] text-[14px] font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[20px]"
+                style={{ backgroundColor: CYAN, color: NAVY_DARK, lineHeight: "14px" }}
               >
                 Watch time promedio
               </span>
@@ -246,7 +253,6 @@ export function DituAudienciaBlock({
                 key={dev.label}
                 className="flex flex-col items-center gap-[18px] rounded-[16px] border border-white p-4 lg:p-[20px]"
                 style={{
-                  backgroundColor: "rgba(255,255,255,0.02)",
                   backdropFilter: "blur(7px)",
                 }}
               >
@@ -290,7 +296,7 @@ export function DituAudienciaBlock({
         {/* Source */}
         <div className="flex items-center justify-end gap-1">
           <span
-            className="inline-block h-[10px] w-[10px] rounded-full"
+            className="inline-block h-[13px] w-[13px] shrink-0 rounded-full"
             style={{ backgroundColor: CYAN }}
           />
           <p
@@ -305,7 +311,7 @@ export function DituAudienciaBlock({
       {/* BOTTOM block: +1.7M + scrolling networks */}
       <div className="mx-auto flex max-w-[1440px] flex-col gap-10 px-6 pt-4 pb-16 sm:px-12 lg:gap-[48px] lg:px-[120px] lg:pb-[80px]">
         {/* +1.7M de seguidores headline */}
-        <div className="relative flex flex-wrap items-end gap-4 sm:gap-6">
+        <div className="relative flex flex-wrap items-start gap-4 sm:gap-6 lg:gap-[8px]">
           <p
             className="font-display text-[64px] leading-[1] font-bold whitespace-nowrap uppercase sm:text-[96px] lg:text-[128px]"
             style={{ color: CYAN }}
@@ -321,9 +327,11 @@ export function DituAudienciaBlock({
             </p>
           </div>
           {/* Mascot hand decorativo */}
-          <div className="absolute -top-4 right-4 hidden h-[90px] w-[80px] lg:-top-[11px] lg:right-[20%] lg:block lg:h-[121px] lg:w-[107px]">
+          {/* Figma 738:2526: x=816px desde section left. Flex div inicia a 120px (px-[120px]).
+              816-120=696px desde el flex div. y=-11.25px → -top-[11px]. */}
+          <div className="absolute -top-4 right-4 hidden h-[90px] w-[80px] lg:-top-[11px] lg:right-auto lg:left-[696px] lg:block lg:h-[121px] lg:w-[107px]">
             <Image
-              src="/ditu/mascot-hand.svg"
+              src="/ditu/mascot-hand.png"
               alt=""
               width={107}
               height={121}
@@ -368,7 +376,7 @@ export function DituAudienciaBlock({
         {/* Source */}
         <div className="flex items-center justify-end gap-1">
           <span
-            className="inline-block h-[10px] w-[10px] rounded-full"
+            className="inline-block h-[13px] w-[13px] shrink-0 rounded-full"
             style={{ backgroundColor: CYAN }}
           />
           <p

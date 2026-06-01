@@ -6,7 +6,7 @@ import { animate, useInView, useReducedMotion } from "framer-motion";
 export interface CountUpProps {
   /** Valor final hacia el que se anima. */
   value: number;
-  /** Duración en segundos. Default 1.6s. */
+  /** Duración en segundos. Default 2.4s (smooth easing). */
   duration?: number;
   /** Función de formato para cada frame (ej. formatCompact, formatNumber, % con decimales). */
   format?: (v: number) => string;
@@ -26,7 +26,7 @@ export interface CountUpProps {
  */
 export function CountUp({
   value,
-  duration = 1.6,
+  duration = 2.4,
   format,
   locale = "es-CO",
   rootMargin = "0px 0px -80px 0px",
@@ -48,9 +48,10 @@ export function CountUp({
       return;
     }
     if (!inView) return;
+    // Curva cubic-bezier "smooth": arranque lento, llega suavemente al final.
     const controls = animate(0, value, {
       duration,
-      ease: "easeOut",
+      ease: [0.16, 1, 0.3, 1],
       onUpdate: (latest) => setCurrent(latest),
     });
     return () => controls.stop();

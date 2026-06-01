@@ -37,7 +37,7 @@ export function BrandIconsRow({ items, className }: BrandIconsRowProps) {
 
   if (reduced) {
     return (
-      <ul className={cn("flex flex-wrap items-center justify-center gap-3", className)}>
+      <ul className={cn("flex flex-wrap items-center justify-center gap-4", className)}>
         {items.map((b, i) => (
           <li key={b.id ?? i}>
             <BrandIconCell item={b} />
@@ -59,7 +59,7 @@ export function BrandIconsRow({ items, className }: BrandIconsRowProps) {
 function StaggeredIcons({ items, className }: BrandIconsRowProps) {
   return (
     <motion.ul
-      className={cn("flex flex-wrap items-center justify-center gap-3", className)}
+      className={cn("flex flex-wrap items-center justify-center gap-4", className)}
       initial="hidden"
       animate="show"
       variants={{
@@ -109,7 +109,7 @@ function MarqueeIcons({ items, className }: BrandIconsRowProps) {
       )}
     >
       <motion.ul
-        className="flex w-max items-center gap-3"
+        className="flex w-max items-center gap-4"
         animate={{ x: ["0%", "-50%"] }}
         transition={{
           duration,

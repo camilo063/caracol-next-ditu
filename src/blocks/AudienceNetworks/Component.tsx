@@ -88,23 +88,26 @@ export function AudienceNetworksBlockComponent({
             >
               {heading || "Nuestro Alcance"}
             </h2>
-            <p
-              className="font-display text-[40px] leading-[1.125] font-extrabold whitespace-nowrap capitalize sm:text-[48px] lg:text-[64px] lg:leading-[72px]"
-              style={{ color: NEUTRO_NEGRO }}
-            >
-              <CountUp
-                value={audience.reach}
-                format={(v) => formatNumber(Math.round(v))}
-              />
-              {audience.reachSuffix ?? ""}
-            </p>
-            <p
-              className="font-display text-[20px] leading-[1.25] font-normal sm:text-[24px] lg:text-[32px] lg:leading-[40px]"
-              style={{ color: NEUTRO_GRIS_OSCURO }}
-            >
-              {audience.reachLabel ?? "Usuarios mensuales"}
-            </p>
-            <div className="mt-2 flex items-center gap-1 px-2 py-1">
+            {/* Figma 347:1604: número + label en sub-grupo gap-[6px] */}
+            <div className="flex flex-col items-start gap-[6px]">
+              <p
+                className="font-display text-[40px] leading-[1.125] font-extrabold whitespace-nowrap capitalize sm:text-[48px] lg:text-[64px] lg:leading-[72px]"
+                style={{ color: NEUTRO_NEGRO }}
+              >
+                <CountUp
+                  value={audience.reach}
+                  format={(v) => formatNumber(Math.round(v))}
+                />
+                {audience.reachSuffix ?? ""}
+              </p>
+              <p
+                className="font-display text-[20px] leading-[1.25] font-normal sm:text-[24px] lg:text-[32px] lg:leading-[40px]"
+                style={{ color: NEUTRO_GRIS_OSCURO }}
+              >
+                {audience.reachLabel ?? "Usuarios mensuales"}
+              </p>
+            </div>
+            <div className="flex items-center gap-1 px-2 py-1">
               <span
                 className="inline-block h-[13px] w-[13px] shrink-0 rounded-full"
                 style={{ backgroundColor: SCREAMIN_GREEN }}
@@ -242,7 +245,7 @@ function StatCard({ item }: { item: BreakdownItem }) {
           </>
         ) : (
           <>
-            <CountUp value={item.value} format={(v) => formatCompact(v)} />
+            <CountUp value={item.value} format={(v) => formatCompact(v, "en-US")} />
             {item.suffix ?? ""}
           </>
         )}

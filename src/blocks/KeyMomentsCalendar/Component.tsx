@@ -70,13 +70,14 @@ export function KeyMomentsCalendarComponent({
   const ctaHref = ctaText?.href ?? "#contacto";
 
   return (
-    <section id={anchorId ?? "momentos"} className="py-6 sm:py-10">
+    <section id={anchorId ?? "momentos"}>
       <div
         className="relative w-full overflow-hidden p-8 text-white sm:p-12 lg:p-[120px]"
         style={{
           backgroundColor: NAVY_DARK,
-          // Border radius asimétrico Figma: solo bottom-left con curva grande.
-          borderBottomLeftRadius: "180px",
+          // Border radius asimétrico Figma — reducido de 180px a 100px
+          // (spec usuario: "Reducir la redondez a aproximadamente 100px").
+          borderBottomLeftRadius: "100px",
         }}
       >
         <Container size="xl" className="!p-0">
@@ -100,11 +101,14 @@ export function KeyMomentsCalendarComponent({
           {mode === "list" ? (
             <CalendarList events={cappedEvents} />
           ) : (
+            // Mobile: el slider extiende -mx-8 contra el padding-8 del bloque
+            // para que las cards lleguen al borde de la pantalla (spec mobile).
+            // Desktop: grid 4 col sin anchos fijos en las cards.
             <div
               className={cn(
                 "mt-10 flex [scrollbar-width:none] gap-4 overflow-x-auto pb-4 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
-                "-mx-1 snap-x snap-mandatory scroll-px-4 px-1 sm:scroll-px-6",
-                "lg:mx-0 lg:mt-16 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:pb-0",
+                "-mx-8 snap-x snap-mandatory scroll-px-8 px-8 sm:-mx-12 sm:scroll-px-12 sm:px-12",
+                "lg:mx-0 lg:mt-16 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0",
               )}
             >
               {cappedEvents.map((e) => (
@@ -126,7 +130,7 @@ export function KeyMomentsCalendarComponent({
             <Link
               href={ctaHref}
               className={cn(
-                "font-display inline-flex h-12 w-[306px] items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-opacity hover:opacity-90",
+                "font-display inline-flex h-12 w-[306px] cursor-pointer items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-all duration-200 hover:bg-[#0099E5] hover:shadow-lg hover:shadow-[#00ACFF]/30 active:scale-[0.98]",
                 "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
               )}
               style={{ backgroundColor: AZUL_CLARO }}
@@ -159,10 +163,13 @@ function CalendarCard({ event }: { event: EventItem }) {
       className={cn(
         // Mobile carrusel widths.
         "shrink-0 snap-start",
-        "w-[66%]",
-        "sm:w-[40%]",
-        "md:w-[28%]",
-        "lg:w-[282px] lg:shrink",
+        "w-[80%]",
+        "sm:w-[42%]",
+        "md:w-[30%]",
+        // Bug "tarjetas se solapan / eliminar anchos fijos": en lg se confía
+        // en el grid (lg:grid-cols-4) para repartir el espacio. Sin w-fixed,
+        // shrink habilitado, las cards se adaptan al contenedor.
+        "lg:w-auto lg:shrink",
         // Visual de la card — glassmorphism Figma.
         "flex flex-col gap-[18px] rounded-[12px] border px-4 py-5",
         "backdrop-blur-[10px]",

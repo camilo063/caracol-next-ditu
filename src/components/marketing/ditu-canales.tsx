@@ -88,6 +88,25 @@ export function DituCanalesBlock({ anchorId = "canales" }: DituCanalesProps) {
           "linear-gradient(199.26deg, #12082D 15.056%, #3B1A93 45.857%, #12082D 79.425%)",
       }}
     >
+      {/* Personaje cámara-robot — Figma 756:6732 (ditu custom icons).
+          173×197px. Posición Figma: left:1086px top:192.75px dentro del section.
+          mix-blend-mode: multiply elimina el fondo sólido #12082D del PNG,
+          dejando solo el personaje visible sobre el gradient de la sección. Solo desktop. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/ditu/canales-icon.png"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute hidden lg:block"
+        style={{
+          top: "192.75px",
+          left: "1086px",
+          width: "173px",
+          height: "197px",
+          mixBlendMode: "multiply",
+        }}
+      />
+
       <div className="mx-auto flex max-w-[1440px] flex-col items-start gap-[10px] px-6 py-12 sm:px-12 sm:py-16 lg:px-[120px] lg:py-[64px]">
         {/* Sticker — Figma 756:6665 */}
         <div
@@ -143,7 +162,7 @@ export function DituCanalesBlock({ anchorId = "canales" }: DituCanalesProps) {
                   key={t.key}
                   type="button"
                   onClick={() => setActiveTab(t.key)}
-                  className="font-display inline-flex items-center justify-center rounded-[64px] px-[16px] py-[4px] text-[14px] whitespace-nowrap uppercase transition-colors sm:text-[20px] lg:text-[24px]"
+                  className="font-display inline-flex cursor-pointer items-center justify-center rounded-[64px] px-[16px] py-[4px] text-[14px] whitespace-nowrap uppercase transition-all duration-200 hover:opacity-90 sm:text-[20px] lg:text-[24px]"
                   style={{
                     backgroundColor: isActive ? CYAN : "transparent",
                     color: isActive ? NAVY_DARK : "#FFFFFF",
@@ -161,8 +180,14 @@ export function DituCanalesBlock({ anchorId = "canales" }: DituCanalesProps) {
 
         {/* Cards grid — Figma 756:6675: grid-cols-3 gap-[16px] py-[48px]
             Mobile (spec Camilo): 2 cols.
-            Wrapped in AnimatePresence + motion.div para fade-in 300ms entre tabs. */}
-        <div className="w-full py-8 lg:py-[48px]">
+            Wrapped in AnimatePresence + motion.div para fade-in 300ms entre tabs.
+
+            min-h calculado para el tab con MÁS contenido (envivo: 7 cards):
+            - desktop (3 cols): 3 filas × 84px + 2 gaps × 16px = 284px
+            - mobile (2 cols): 4 filas × 84px + 3 gaps × 16px = 384px
+            Fix bug usuario: "tabs deben tener la misma altura basada en el
+            contenido más alto para evitar saltos bruscos al cambiar de tab". */}
+        <div className="min-h-[384px] w-full py-8 sm:min-h-[300px] lg:min-h-[284px] lg:py-[48px]">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={activeTab}

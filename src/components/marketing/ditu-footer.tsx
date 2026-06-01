@@ -55,7 +55,10 @@ export function DituFooter({
 }: DituFooterProps) {
   return (
     <footer className="relative w-full" style={{ backgroundColor: NAVY_DARK }}>
-      <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-6 px-6 py-8 sm:flex-row sm:items-center sm:px-12 sm:py-10 lg:px-[117px] lg:py-[40px]">
+      {/* Padding-bottom amplio en mobile para que el FloatingContact (fixed
+          bottom-6 right-6) no tape los iconos de redes sociales. Spec usuario:
+          "Aumentar el padding para que el botón de contacto no tape los iconos". */}
+      <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-6 px-6 pt-8 pb-24 sm:flex-row sm:items-center sm:px-12 sm:pt-10 sm:pb-12 lg:items-start lg:px-[117px] lg:py-[40px]">
         {/* Logo Ditu — Figma uses h-40 w-82 in footer (más pequeño que header h-32 w-66).
             DituWordmark renders 66×32 — scale up con className. */}
         <Link
@@ -81,7 +84,7 @@ export function DituFooter({
               target="_blank"
               rel="noopener noreferrer"
               aria-label={social.label}
-              className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden transition-opacity hover:opacity-80 sm:h-9 sm:w-9 lg:h-[40px] lg:w-[40px]"
+              className="relative inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center overflow-hidden transition-all duration-200 hover:scale-110 hover:opacity-80 sm:h-9 sm:w-9 lg:h-[40px] lg:w-[40px]"
             >
               <Image
                 src={SOCIAL_ICONS[social.network]}

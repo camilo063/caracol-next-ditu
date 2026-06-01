@@ -50,7 +50,11 @@ export function BrandTabsBlockComponent({
 
   return (
     <section id={anchorId ?? "marcas"} className="py-6 sm:py-8 lg:py-10">
-      <div className="bg-muted w-full overflow-hidden rounded-[2rem] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
+      {/* Bug: "Eliminar el fondo y marco redondeado de la sección que no
+          existen en el diseño original." Antes había bg-muted + rounded-[2rem]
+          envolviendo todo el bloque. Ahora el bloque se integra al fondo
+          de la página y solo la card del tab activo tiene su marco. */}
+      <div className="w-full py-10 sm:py-12 lg:py-16">
         {/* Wrapper custom (no Container) — Figma: 1280px inner content,
             con px-[80px] en desktop (1440 - 160 = 1280). Permite que los tabs
             quepan exactamente en 1 línea sin scroll horizontal. */}
@@ -102,7 +106,7 @@ export function BrandTabsBlockComponent({
                     onClick={() => setActive(i)}
                     className={cn(
                       // Figma 402:5002: Large size px-48 py-12 todos los tabs.
-                      "font-display rounded-[4px] border px-[20px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-colors sm:px-[36px] lg:px-[48px]",
+                      "font-display cursor-pointer rounded-[4px] border px-[20px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-all duration-200 hover:opacity-90 sm:px-[36px] lg:px-[48px]",
                       "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
                     )}
                     style={
@@ -176,14 +180,28 @@ const AZUL_MEDIO = "#015BC4";
  * Mappings de assets por brand — Figma 402:5117-5195.
  * Side panel: wordmark logo SVG centrado + avatar PNG 76×76 top-right.
  * La Kalle: no tiene SVG export del logo wordmark, usa el avatar como fallback.
+ * BluRadio: el archivo .svg en public es un PNG binario (726KB), se omite aquí
+ * para que el right panel muestre el fallback en texto.
  */
 const BRAND_LOGO_PATHS: Record<string, string> = {
   caracoltv: "/caracol-next/brand-tabs/caracoltv-logo.svg",
   golcaracol: "/caracol-next/brand-tabs/golcaracol-logo.svg",
   caracolsports: "/caracol-next/brand-tabs/caracolsports-logo.svg",
-  bluradio: "/caracol-next/brand-tabs/bluradio-logo.svg",
   bumbox: "/caracol-next/brand-tabs/bumbox-logo.svg",
   volk: "/caracol-next/brand-tabs/volk-logo.svg",
+};
+
+/**
+ * Dimensiones intrínsecas reales por brand (extraídas del viewBox de cada SVG).
+ * Usadas para que Next/Image y el CSS aspectRatio reflejen el SVG correcto.
+ * Fallback: 320×180 (16:9 horizontal genérico).
+ */
+const BRAND_LOGO_DIMS: Record<string, [number, number]> = {
+  caracoltv: [173, 93],
+  golcaracol: [293, 77],
+  caracolsports: [152, 80],
+  bumbox: [43, 42],
+  volk: [180, 212],
 };
 const BRAND_AVATAR_PATHS: Record<string, string> = {
   caracoltv: "/caracol-next/brand-tabs/caracoltv-avatar.png",
@@ -226,12 +244,11 @@ function TabPanel({ tab }: { tab: Tab }) {
     ? (brandAccent ?? brandColor) // smaller slice = #FEFF00 (amarillo)
     : brandPanelBg;
 
-  // Figma Volk: logo wordmark con proporción VERTICAL (180w × 212h).
-  // Resto de brands tienen logos horizontales (~180×190). Sin la aspect-ratio
-  // explícita, Next/Image colapsa el SVG y se ve "expandido".
+  // Dimensiones reales SVG viewBox por brand — actualizado 2026-05-31 (viewBox). Volk es vertical (portrait).
   const isVolk = tab.brand === "volk";
-  const logoIntrinsicWidth = isVolk ? 180 : 320;
-  const logoIntrinsicHeight = isVolk ? 212 : 180;
+  const [logoIntrinsicWidth, logoIntrinsicHeight] = BRAND_LOGO_DIMS[tab.brand] ?? [
+    320, 180,
+  ];
 
   return (
     <div

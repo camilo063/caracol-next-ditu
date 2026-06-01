@@ -40,7 +40,8 @@ export default function HomePage() {
           href: "/caracol-next",
         },
         ditu: {
-          title: <DituWordmark className="!h-[32px] !w-[92px]" />,
+          // Figma 334:2080 — wordmark single 92×32, sin byline (versión card).
+          title: <DituWordmark className="h-[32px] w-[92px]" showByline={false} />,
           description:
             "Integra tu marca en el mejor contenido en vivo y On Demand en cualquier pantalla.",
           ctaLabel: "Conoce ditu",
