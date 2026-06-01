@@ -3,11 +3,26 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 import { CountUp } from "@/components/animations";
 import { cn } from "@/lib/utils";
 import { HomeContactModal, type ContactRepresentative } from "./home-contact-modal";
+
+/** Easing común para la entrada escalonada (motion.dev/examples/react-hero-stagger). */
+const STAGGER_EASE = [0.16, 1, 0.3, 1] as const;
+const STAGGER_STEP = 0.08; // delay incremental entre elementos
+
+/** Variants reutilizable: fade-in + slide-up suave. */
+const staggerItemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: STAGGER_EASE },
+  },
+};
 
 /**
  * HubLanding — landing principal en `/` (Home Caracol Medios).
@@ -127,16 +142,33 @@ export function HubLanding({
         }}
       />
 
-      {/* Header — Figma 892:6210 */}
-      <header className="relative z-10 px-6 pt-8 sm:px-10 lg:px-[40px] lg:pt-[40px]">
-        <CaracolMediosLogo />
+      {/* Header — Figma 892:6210 — centrado dentro del wrapper 1440 */}
+      <header className="relative z-10 w-full px-6 pt-8 sm:px-10 lg:pt-[40px]">
+        <div className="mx-auto w-full max-w-[1377px] lg:px-[40px]">
+          <CaracolMediosLogo />
+        </div>
       </header>
 
-      {/* Body — desktop 2-col, mobile stacked */}
-      <main className="relative z-10 flex flex-1 flex-col gap-12 px-6 py-12 sm:px-10 lg:flex-row lg:items-start lg:gap-[64px] lg:px-[84px] lg:pt-[150px] lg:pb-[80px]">
-        {/* Left — hero content */}
+      {/* Body — desktop 2-col, mobile stacked. Centrado horizontalmente
+          dentro de un wrapper max-w-[1377px] (mismo tope que Figma). */}
+      <motion.main
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: STAGGER_STEP,
+              delayChildren: 0.15,
+            },
+          },
+        }}
+        className="relative z-10 mx-auto flex w-full max-w-[1377px] flex-1 flex-col gap-12 px-6 py-12 sm:px-10 lg:flex-row lg:items-start lg:gap-[64px] lg:px-[84px] lg:pt-[150px] lg:pb-[80px]"
+      >
+        {/* Left — hero content. Cada nodo es un motion.div para stagger. */}
         <div className="flex flex-col items-start lg:max-w-[611px] lg:pt-[68px]">
-          <p
+          <motion.p
+            variants={staggerItemVariants}
             className="text-[14px] font-bold uppercase sm:text-[18px] lg:text-[20px]"
             style={{
               color: "#00ACFF",
@@ -145,79 +177,90 @@ export function HubLanding({
             }}
           >
             {eyebrow}
-          </p>
-          {/* Heading 74/lh-80 Montserrat tracking-[-2.96px] mixed weights */}
-          <h1
-            className="mt-[24px] text-[44px] font-bold sm:text-[56px] lg:text-[74px]"
+          </motion.p>
+          {/* Heading Montserrat tracking-[-2.96px] mixed weights.
+              line-height responsive: 1.05x sobre el font-size para evitar
+              que en mobile el interlineado fijo 80px separe en exceso. */}
+          <motion.h1
+            variants={staggerItemVariants}
+            className="mt-[16px] text-[40px] leading-[1.08] font-bold sm:mt-[20px] sm:text-[56px] sm:leading-[1.07] lg:mt-[24px] lg:text-[74px] lg:leading-[80px]"
             style={{
               fontFamily: "var(--font-montserrat), system-ui, sans-serif",
               color: "#FFFFFF",
-              lineHeight: "80px",
               letterSpacing: "-2.96px",
             }}
           >
             {heading}
-          </h1>
-          {/* CTA Contáctenos — bg #00ACFF, Montserrat SemiBold 18, w-306.
-              Si hay representantes → botón abre modal. Si no → link normal. */}
-          {hasModal ? (
-            <button
-              type="button"
-              onClick={() => setContactOpen(true)}
-              className="mt-[40px] inline-flex w-full max-w-[306px] items-center justify-center rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 sm:text-[18px]"
-              style={{
-                backgroundColor: "#00ACFF",
-                borderColor: "#00ACFF",
-                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-                lineHeight: "24px",
-                minHeight: "32px",
-              }}
-            >
-              {contactLabel}
-            </button>
-          ) : (
-            <Link
-              href={contactHref ?? "#"}
-              className="mt-[40px] inline-flex w-full max-w-[306px] items-center justify-center rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-opacity hover:opacity-90 sm:text-[18px]"
-              style={{
-                backgroundColor: "#00ACFF",
-                borderColor: "#00ACFF",
-                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-                lineHeight: "24px",
-                minHeight: "32px",
-              }}
-            >
-              {contactLabel}
-            </Link>
-          )}
+          </motion.h1>
+          {/* CTA Contáctenos — bg #00ACFF. cursor-pointer + hover bg darker. */}
+          <motion.div
+            variants={staggerItemVariants}
+            className="mt-[40px] w-full max-w-[306px]"
+          >
+            {hasModal ? (
+              <button
+                type="button"
+                onClick={() => setContactOpen(true)}
+                className="group inline-flex w-full cursor-pointer items-center justify-center rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-all duration-200 hover:bg-[#0099E5] hover:shadow-lg hover:shadow-[#00ACFF]/30 active:scale-[0.98] sm:text-[18px]"
+                style={{
+                  backgroundColor: "#00ACFF",
+                  borderColor: "#00ACFF",
+                  fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                  lineHeight: "24px",
+                  minHeight: "32px",
+                }}
+              >
+                {contactLabel}
+              </button>
+            ) : (
+              <Link
+                href={contactHref ?? "#"}
+                className="group inline-flex w-full cursor-pointer items-center justify-center rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-all duration-200 hover:bg-[#0099E5] hover:shadow-lg hover:shadow-[#00ACFF]/30 active:scale-[0.98] sm:text-[18px]"
+                style={{
+                  backgroundColor: "#00ACFF",
+                  borderColor: "#00ACFF",
+                  fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                  lineHeight: "24px",
+                  minHeight: "32px",
+                }}
+              >
+                {contactLabel}
+              </Link>
+            )}
+          </motion.div>
         </div>
 
         {/* Right — product cards + metrics + bottom CTAs */}
         <div className="flex flex-1 flex-col gap-6 lg:max-w-[636px]">
           {/* Product cards — Caracol Next (w-328 más largo) + Ditu (w-284).
-              Mobile stacked. Cards completas son links (Spec usuario). */}
-          <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-start lg:gap-[24px]">
-            {/* Caracol Next card — wrapped en Link a /caracol-next */}
+              Mobile: stacked, ambas full-width (sin que Next ocupe toda la
+              pantalla desplazando las demás). Cards completas son links. */}
+          <motion.div
+            variants={staggerItemVariants}
+            className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-start lg:gap-[24px]"
+          >
+            {/* Caracol Next card */}
             <ProductCard
               variant="caracolnext"
               title={brands.caracolNext.title}
               description={brands.caracolNext.description}
               href={brands.caracolNext.href}
             />
-            {/* Ditu card — wrapped en Link a /ditu */}
+            {/* Ditu card */}
             <ProductCard
               variant="ditu"
               title={brands.ditu.title}
               description={brands.ditu.description}
               href={brands.ditu.href}
             />
-          </div>
+          </motion.div>
 
           {/* Metric cards — Spec usuario: en MOBILE se ocultan. Spec Figma:
-              widths irregulares (272/340/328/288). 2 filas de 2 cards cada una.
-              Row 1: +16M (272) + +3M (340) = 612 + gap 24 = 636
-              Row 2: +127M (328) + 42Min (288) = 616 + gap 24 = 640 (alineado a la derecha) */}
-          <div className="hidden flex-col gap-[24px] sm:flex">
+              widths irregulares (272/340/328/288). 2 filas de 2 cards cada una. */}
+          <motion.div
+            variants={staggerItemVariants}
+            className="hidden flex-col gap-[24px] sm:flex"
+          >
             {/* Row 1 */}
             <div className="flex items-stretch gap-[24px]">
               {stats.slice(0, 2).map((s, i) => (
@@ -250,15 +293,16 @@ export function HubLanding({
                 />
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Bottom CTAs — Conoce Caracol Next + Conoce ditu. Mobile stacked.
-              whitespace-nowrap para evitar wrap a 2 líneas. Padding reducido
-              (px-24) en lg para que el label quepa en una línea. */}
-          <div className="flex flex-col gap-4 sm:flex-row lg:gap-[24px]">
+          {/* Bottom CTAs — Conoce Caracol Next + Conoce ditu. */}
+          <motion.div
+            variants={staggerItemVariants}
+            className="flex flex-col gap-4 sm:flex-row lg:gap-[24px]"
+          >
             <Link
               href={brands.caracolNext.href}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[4px] border px-6 py-[12px] text-[14px] font-semibold whitespace-nowrap text-white transition-opacity hover:opacity-90 lg:px-[24px] lg:text-[16px]"
+              className="group inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-[4px] border px-6 py-[12px] text-[14px] font-semibold whitespace-nowrap text-white transition-all duration-200 hover:border-[#00ACFF] hover:bg-white/10 hover:shadow-md hover:shadow-[#00ACFF]/20 active:scale-[0.98] lg:px-[24px] lg:text-[16px]"
               style={{
                 borderColor: "#FFFFFF",
                 backgroundColor: "transparent",
@@ -268,11 +312,11 @@ export function HubLanding({
               }}
             >
               {brands.caracolNext.ctaLabel}
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
             <Link
               href={brands.ditu.href}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] px-6 py-[12px] text-[14px] font-semibold whitespace-nowrap text-[#FDFDFD] transition-opacity hover:opacity-90 lg:px-[24px] lg:text-[16px]"
+              className="group inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-[10px] px-6 py-[12px] text-[14px] font-semibold whitespace-nowrap text-[#FDFDFD] transition-all duration-200 hover:shadow-lg hover:shadow-[#8232F0]/40 hover:brightness-110 active:scale-[0.98] lg:px-[24px] lg:text-[16px]"
               style={{
                 background:
                   "linear-gradient(115.47deg, #8232F0 14.111%, #561BDB 81.738%)",
@@ -281,27 +325,29 @@ export function HubLanding({
               }}
             >
               {brands.ditu.ctaLabel}
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
-          </div>
+          </motion.div>
         </div>
-      </main>
+      </motion.main>
 
-      {/* Footer copyright pill — Figma 892:6164 */}
-      <footer className="relative z-10 px-6 pb-8 sm:px-10 lg:px-[120px] lg:pb-[40px]">
-        <div
-          className="flex items-start justify-center overflow-clip rounded-[90px] p-[10px]"
-          style={{ backgroundColor: "rgba(0,0,0,0.25)" }}
-        >
-          <p
-            className="text-[14px] font-semibold whitespace-nowrap text-white sm:text-[16px]"
-            style={{
-              fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-              lineHeight: "24px",
-            }}
+      {/* Footer copyright pill — Figma 892:6164. Centrado igual que el resto. */}
+      <footer className="relative z-10 w-full px-6 pb-8 sm:px-10 lg:pb-[40px]">
+        <div className="mx-auto w-full max-w-[1377px] lg:px-[120px]">
+          <div
+            className="flex items-start justify-center overflow-clip rounded-[90px] p-[10px]"
+            style={{ backgroundColor: "rgba(0,0,0,0.25)" }}
           >
-            {copyright}
-          </p>
+            <p
+              className="text-[14px] font-semibold whitespace-nowrap text-white sm:text-[16px]"
+              style={{
+                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                lineHeight: "24px",
+              }}
+            >
+              {copyright}
+            </p>
+          </div>
         </div>
       </footer>
 
@@ -343,9 +389,13 @@ function ProductCard({
     <Link
       href={href}
       className={cn(
-        "group flex flex-col items-center justify-center gap-[24px] rounded-[8px] border px-[20px] pt-[40px] pb-[30px] transition-opacity hover:opacity-95",
-        // Caracol Next más ancho (328) que Ditu (284) per Figma 334:1559.
-        isDitu ? "w-full sm:w-[284px] sm:shrink-0" : "w-full sm:flex-1 lg:max-w-[328px]",
+        "group flex cursor-pointer flex-col items-center justify-center gap-[24px] rounded-[8px] border px-[20px] pt-[40px] pb-[30px] transition-all duration-200 hover:scale-[1.01] hover:shadow-lg",
+        // Mobile/tablet: ambas cards al mismo ancho (w-full) — fix bug
+        // "Next ocupa toda la pantalla y desplaza las demás tarjetas".
+        // Desktop: Caracol Next más ancho (328) que Ditu (284) per Figma 334:1559.
+        isDitu
+          ? "w-full sm:w-1/2 sm:shrink-0 lg:w-[284px]"
+          : "w-full sm:w-1/2 sm:flex-1 lg:max-w-[328px]",
       )}
       style={
         isDitu
@@ -557,8 +607,38 @@ export function CaracolNextWordmark({ className }: { className?: string }) {
  *  - Byline: top 80.55%, left 34.46%, right 0.54%, bottom 0.62%
  *
  * Renderiza a 66×32 en el header (escala proporcional al 180×87 original).
+ *
+ * Si `showByline` es false, devuelve sólo el wordmark "ditu" sin byline
+ * (versión limpia para product cards: Figma 334:2080 — 92×32 single SVG).
  */
-export function DituWordmark({ className }: { className?: string }) {
+export function DituWordmark({
+  className,
+  showByline = true,
+}: {
+  className?: string;
+  showByline?: boolean;
+}) {
+  // Variante simple sin byline — SVG inline para que herede currentColor.
+  // Figma 334:2080 — viewBox 92x32, paths blancos. Usamos `fill="currentColor"`
+  // para poder pintar el wordmark con `text-white` o cualquier color via CSS.
+  if (!showByline) {
+    return (
+      <svg
+        viewBox="0 0 92 32"
+        className={cn("inline-block h-8 w-[92px] text-white", className)}
+        fill="currentColor"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-label="Ditu"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <path d="M83.6204 27.1152H83.8279L84.4217 31.2972H92V6.11001H82.9085V19.3304C82.9085 22.3538 81.6157 23.9399 79.2534 23.9399C76.7571 23.9399 75.5983 22.3221 75.5983 19.3304V6.11001H66.5069V21.8251C66.5069 28.6759 69.9609 32 75.394 32C79.1513 32 82.5031 29.4325 83.6204 27.1152Z" />
+        <path d="M19.0959 6.46458C19.0959 7.92402 19.2491 8.57934 19.2491 8.57934H19.147C17.8254 6.81599 15.1344 5.4072 11.6293 5.4072C5.3821 5.4072 0 10.1907 0 18.7036C0 27.2165 5.3821 32 11.8336 32C15.3897 32 18.6394 30.1353 19.7567 27.7198H19.9642L20.5579 31.2972H28.1363V0H19.0959V6.46458ZM13.6117 24.5445C10.7163 24.5445 8.48175 22.2271 8.48175 18.7036C8.48175 15.1801 10.7163 12.8627 13.6117 12.8627C16.3027 12.8627 18.7416 14.9268 18.7416 18.7036C18.7416 22.4804 16.3027 24.5445 13.6117 24.5445Z" />
+        <path d="M40.8733 6.11001H31.7818V31.294H40.8733V6.11001Z" />
+        <path d="M63.7616 23.2624C63.7616 23.2624 62.6507 23.943 61.112 23.943C59.4552 23.943 57.6804 23.237 57.6804 20.9703V14.4298H63.8701V6.11318H43.5037V14.4298H48.7421V22.4298C48.7421 23.3858 48.8443 24.2944 48.9464 25.0985C49.8083 30.1353 53.722 32 57.9868 32C61.6036 32 63.8733 31.1041 63.8733 31.1041V23.2416V23.2416Z" />
+      </svg>
+    );
+  }
+
   return (
     <span
       className={cn("relative inline-block h-8 w-[66px] overflow-hidden", className)}

@@ -139,12 +139,15 @@ export function DituAudienciaBlock({
           </h2>
         </div>
 
-        {/* 3 stat cards row */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {/* 3 stat cards — flex en vez de grid (spec usuario "Cambiar grid por
+            flex para manejar tarjetas de distintos tamaños"). En mobile,
+            misma altura centradas (spec mobile: "tarjetas misma medida y
+            centradas"). En desktop, la primera más grande (large) ocupa más. */}
+        <div className="flex flex-col items-stretch justify-center gap-6 md:flex-row md:flex-wrap md:items-stretch">
           {DEFAULT_STATS.map((stat) => (
             <article
               key={stat.label}
-              className={`relative flex flex-col items-end gap-2 rounded-[16px] border p-6 backdrop-blur-[30px] sm:p-8 lg:p-[40px] ${stat.large ? "md:col-span-1" : ""}`}
+              className={`relative flex flex-1 flex-col items-end gap-2 rounded-[16px] border p-6 backdrop-blur-[30px] sm:p-8 lg:p-[40px] ${stat.large ? "md:flex-[1_1_40%] md:basis-[40%]" : "md:flex-[1_1_28%] md:basis-[28%]"} md:min-w-[260px]`}
               style={{
                 borderColor: CYAN,
                 backgroundColor: "rgba(255,255,255,0.04)",

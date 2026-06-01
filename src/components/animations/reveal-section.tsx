@@ -23,8 +23,12 @@ export interface RevealSectionProps {
 export function RevealSection({
   children,
   delay = 0,
-  offset = 24,
-  rootMargin = "0px 0px -120px 0px",
+  offset = 32,
+  // Margen conservador: la animación dispara cuando el top del bloque ha
+  // entrado al menos 80px dentro del viewport (no antes de que el usuario
+  // realmente llegue al bloque vía scroll — fix bug "secciones aparecen
+  // antes de que el usuario llegue a ellas").
+  rootMargin = "0px 0px -10% 0px",
   className,
 }: RevealSectionProps) {
   const reduced = useReducedMotion();
@@ -37,8 +41,8 @@ export function RevealSection({
     <motion.div
       initial={{ opacity: 0, y: offset }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: rootMargin }}
-      transition={{ duration: 0.4, ease: "easeOut", delay: delay / 1000 }}
+      viewport={{ once: true, margin: rootMargin, amount: 0.15 }}
+      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: delay / 1000 }}
       className={className}
     >
       {children}

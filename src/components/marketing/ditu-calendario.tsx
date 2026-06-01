@@ -283,14 +283,17 @@ export function DituCalendarioBlock({
               Calendario
             </h2>
 
-            {/* Decoración image-14 — Figma 756:6515: top-[-10] left-[317] w-103 h-92 */}
-            <div className="pointer-events-none absolute top-[-10px] left-[60%] hidden h-[60px] w-[68px] sm:block sm:h-[80px] sm:w-[88px] lg:top-[-10px] lg:left-[317px] lg:h-[92px] lg:w-[103px]">
+            {/* Decoración (pato) — reubicada para NO sobreponerse al título
+                "Calendario" (bug usuario). Antes en top-[-10] left-[317] hacía
+                overlap visible en mobile/tablet. Ahora top sobre el sticker y
+                desplazada hacia la derecha del container del título. */}
+            <div className="pointer-events-none absolute top-[-50px] right-[-20px] hidden h-[60px] w-[68px] sm:top-[-60px] sm:right-[-30px] sm:block sm:h-[80px] sm:w-[88px] lg:top-[-70px] lg:right-[-60px] lg:h-[92px] lg:w-[103px]">
               <Image
                 src="/ditu/calendar-decoration.png"
                 alt=""
                 width={103}
                 height={92}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
               />
             </div>
           </div>
@@ -331,7 +334,7 @@ export function DituCalendarioBlock({
           </p>
           <Link
             href="#contacto"
-            className="inline-flex items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold transition-opacity hover:opacity-90"
+            className="inline-flex cursor-pointer items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold transition-all duration-200 hover:bg-[#F3F3F3] hover:shadow-lg hover:shadow-white/30 active:scale-[0.98]"
             style={{
               borderColor: "#FFFFFF",
               color: VIOLET_MED,
@@ -433,19 +436,25 @@ function CalendarSlider({
         </motion.div>
       </div>
 
-      {/* Dots — Figma 829:6519: h-16 w-full center, gap-[16px], dots size-[16px] */}
+      {/* Dots — paginación de a 4 elementos (spec usuario: "dots pasen de
+          4 en 4 elementos"). En desktop visiblees 4 cards a la vez, así que
+          tener un dot por página tiene sentido visual.
+          Número de páginas = ceil(events.length / 4). */}
       <div className="flex h-[16px] w-full items-center justify-center">
         <div className="flex items-center gap-[8px] sm:gap-[12px] lg:gap-[16px]">
-          {events.map((event, idx) => {
-            const isActive = idx === activeIndex;
+          {Array.from({ length: Math.ceil(events.length / 4) }).map((_, pageIdx) => {
+            // Cada página corresponde a un grupo de 4 elementos.
+            const pageStart = pageIdx * 4;
+            // Página activa si activeIndex está en el rango [pageStart, pageStart+4).
+            const isActive = activeIndex >= pageStart && activeIndex < pageStart + 4;
             return (
               <button
-                key={event.id}
+                key={`page-${pageIdx}`}
                 type="button"
-                onClick={() => onGoTo(idx)}
-                aria-label={`Ir al evento ${idx + 1} de ${events.length}: ${event.title}`}
+                onClick={() => onGoTo(pageStart)}
+                aria-label={`Ir a la página ${pageIdx + 1} de ${Math.ceil(events.length / 4)}`}
                 aria-current={isActive ? "true" : undefined}
-                className="h-[10px] w-[10px] rounded-full transition-all lg:h-[16px] lg:w-[16px]"
+                className="h-[10px] w-[10px] cursor-pointer rounded-full transition-all hover:opacity-100 lg:h-[16px] lg:w-[16px]"
                 style={{
                   backgroundColor: isActive ? "#FFFFFF" : "transparent",
                   border: `1.5px solid #FFFFFF`,

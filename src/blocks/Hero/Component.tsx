@@ -85,11 +85,13 @@ export function HeroBlockComponent({
       <Container size="xl" className="relative">
         {/* Layout Figma 347:2015: gap-40 entre tagline/heading-group/icons.
             Heading-group interno: gap-24 entre h1 y subheading. */}
-        <div className="mx-auto flex flex-col items-center gap-10 text-center">
+        {/* gap-6 reducido (era gap-10): bug "label muy separado del título". */}
+        <div className="mx-auto flex flex-col items-center gap-6 text-center sm:gap-8 lg:gap-10">
           {eyebrow ? (
             // Figma: Poppins Bold 20px, uppercase, color #00ACFF.
+            // Mobile: reducir tamaño proporcionalmente (bug "label no reduce").
             <p
-              className="font-poppins text-[20px] leading-normal font-bold uppercase"
+              className="font-poppins text-[13px] leading-normal font-bold uppercase sm:text-[16px] lg:text-[20px]"
               style={{ color: "#00ACFF" }}
             >
               {eyebrow}

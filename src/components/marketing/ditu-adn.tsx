@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import Image from "next/image";
+import { useInView } from "framer-motion";
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 import { CountUp } from "@/components/animations";
@@ -85,6 +86,16 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
   // Calculado dinámicamente, no hardcoded.
   const maxNseValue = useMemo(() => Math.max(...NSE_CARDS.map((c) => c.value)), []);
 
+  // Re-mount de las gráficas Recharts cuando entran al viewport (fix bug
+  // usuario "La gráfica de torta no está animada"). Recharts solo dispara su
+  // animación al mount; pre-mount no se ve. Usamos useInView para forzar
+  // remount mediante key={chartKey} la primera vez que se ven.
+  const chartsRef = useRef<HTMLDivElement>(null);
+  const chartsInView = useInView(chartsRef, {
+    once: true,
+    margin: "0px 0px -15% 0px",
+  });
+
   return (
     <section
       id={anchorId}
@@ -114,8 +125,12 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
           </h2>
         </div>
 
-        {/* 2 cards: Género + Edad */}
-        <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[455fr_713fr] lg:gap-8">
+        {/* 2 cards: Género + Edad — ref para detectar viewport y forzar
+            remount de los charts (animación dispara al entrar al view). */}
+        <div
+          ref={chartsRef}
+          className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[455fr_713fr] lg:gap-8"
+        >
           {/* Card Género */}
           <article className="flex flex-col items-start gap-2 rounded-[16px] border border-white p-6 sm:p-8 lg:p-[40px]">
             <div className="flex items-center gap-2 self-end">
@@ -158,32 +173,36 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
               </div>
 
               {/* Donut Recharts — Figma 747:2682: size-186 con animación de
-                  entrada nativa (isAnimationActive). Spec Camilo: 1-1.5s suave. */}
+                  entrada nativa (isAnimationActive). Spec Camilo: 1-1.5s suave.
+                  key={chartsInView} fuerza remount cuando entra al viewport,
+                  reiniciando la animación Recharts (que solo corre al mount). */}
               <div className="relative h-[140px] w-[140px] shrink-0 sm:h-[186px] sm:w-[186px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={GENDER_DATA}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      innerRadius="60%"
-                      outerRadius="100%"
-                      startAngle={90}
-                      endAngle={-270}
-                      isAnimationActive
-                      animationBegin={0}
-                      animationDuration={1200}
-                      animationEasing="ease-out"
-                      stroke="none"
-                    >
-                      {GENDER_DATA.map((entry) => (
-                        <Cell key={entry.name} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
+                {chartsInView ? (
+                  <ResponsiveContainer width="100%" height="100%" key="pie-in">
+                    <PieChart>
+                      <Pie
+                        data={GENDER_DATA}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius="60%"
+                        outerRadius="100%"
+                        startAngle={90}
+                        endAngle={-270}
+                        isAnimationActive
+                        animationBegin={0}
+                        animationDuration={1200}
+                        animationEasing="ease-out"
+                        stroke="none"
+                      >
+                        {GENDER_DATA.map((entry) => (
+                          <Cell key={entry.name} fill={entry.color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : null}
               </div>
 
               {/* 48% Mujeres */}
@@ -229,28 +248,31 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
 
             {/* Bar chart Recharts — Figma 747:2627 + spec Camilo: barras crecen
                 desde 0 hasta valor final al entrar viewport (isAnimationActive),
-                duración ~1.2s. La barra peak (55-64) destacada en violet. */}
+                duración ~1.2s. La barra peak (55-64) destacada en violet.
+                Render condicional (chartsInView) → forzar animación al ver. */}
             <div className="mt-4 w-full">
               <div className="h-[180px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={AGE_BARS}
-                    margin={{ top: 4, right: 0, left: 0, bottom: 0 }}
-                  >
-                    <Bar
-                      dataKey="value"
-                      radius={[4, 4, 0, 0]}
-                      isAnimationActive
-                      animationBegin={0}
-                      animationDuration={1200}
-                      animationEasing="ease-out"
+                {chartsInView ? (
+                  <ResponsiveContainer width="100%" height="100%" key="bar-in">
+                    <BarChart
+                      data={AGE_BARS}
+                      margin={{ top: 4, right: 0, left: 0, bottom: 0 }}
                     >
-                      {AGE_BARS.map((bar) => (
-                        <Cell key={bar.label} fill={bar.peak ? VIOLET : "#D9D9D9"} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                      <Bar
+                        dataKey="value"
+                        radius={[4, 4, 0, 0]}
+                        isAnimationActive
+                        animationBegin={0}
+                        animationDuration={1200}
+                        animationEasing="ease-out"
+                      >
+                        {AGE_BARS.map((bar) => (
+                          <Cell key={bar.label} fill={bar.peak ? VIOLET : "#D9D9D9"} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : null}
               </div>
               {/* Labels debajo de cada bar — Figma 747:2630+: Spline Sans 14px white center */}
               <div className="flex w-full items-start gap-3 lg:gap-[12px]">

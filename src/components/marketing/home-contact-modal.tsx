@@ -93,15 +93,16 @@ export function HomeContactModal({
                 fontFamily: "var(--font-montserrat), system-ui, sans-serif",
               }}
             >
-              {/* Close button — absolute top-0 right-0 */}
+              {/* Close button — Figma 405:4864: top-right 32x32 con color
+                  #003381, hover bg sutil + leve scale (no opacity-70). */}
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Cerrar"
-                className="absolute top-0 right-0 flex h-[32px] w-[32px] items-center justify-center rounded-full text-[#464553] transition-opacity hover:opacity-70"
+                className="absolute top-1 right-1 flex h-[32px] w-[32px] cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:scale-110 hover:bg-[#003381]/10"
                 style={{ color: NAVY_DARK }}
               >
-                <X className="h-4 w-4" strokeWidth={2.5} />
+                <X className="h-4 w-4" strokeWidth={2} />
               </button>
 
               {/* Content */}

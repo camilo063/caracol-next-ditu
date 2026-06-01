@@ -71,8 +71,10 @@ export const BRAND_META: Record<BrandKey, BrandMeta> = {
   bluradio: {
     label: "Blu Radio",
     color: "#00AEEF", // BluRadio/Primario/Azul Medio
-    colorDark: "#00AEEF",
-    chartPeak: "#005BAA", // BluRadio/Primario/Azul Oscuro
+    // Side panel y slice menor del pie chart usan el azul oscuro, no el medio
+    // (fix bug "géneros con el mismo color" — antes pie primary == secondary).
+    colorDark: "#005BAA",
+    chartPeak: "#005BAA",
   },
   lakalle: {
     label: "La Kalle",
@@ -91,8 +93,10 @@ export const BRAND_META: Record<BrandKey, BrandMeta> = {
   bumbox: {
     label: "BumBox",
     color: "#1EB1FB", // BumBox/Primario/Azul Claro
-    colorDark: "#1EB1FB",
-    chartPeak: "#042D66", // BumBox/Primario/Azul Oscuro
+    // Side panel y slice menor del pie usan el azul oscuro real (Figma 402:8734)
+    // — antes ambos slices del pie usaban el mismo azul claro (bug reportado).
+    colorDark: "#042D66",
+    chartPeak: "#042D66",
   },
   caracolmedios: {
     label: "Caracol Medios",

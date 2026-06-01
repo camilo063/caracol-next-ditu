@@ -66,7 +66,7 @@ export function FloatingContact({
         onClick={() => setOpen(true)}
         aria-label={buttonLabel}
         aria-expanded={open}
-        className={`fixed z-40 inline-flex items-center justify-center overflow-clip rounded-[4px] border border-solid text-white shadow-md transition-opacity hover:opacity-90 ${positionClasses}`}
+        className={`fixed z-40 inline-flex cursor-pointer items-center justify-center overflow-clip rounded-[4px] border border-solid text-white shadow-md transition-all duration-200 hover:bg-[#1a4ee5] hover:shadow-lg hover:shadow-[#2862FF]/40 active:scale-95 ${positionClasses}`}
         style={{
           backgroundColor: "#2862FF",
           borderColor: "#2862FF",

@@ -11,6 +11,7 @@ const multimediaFields: Field[] = [
     type: "select",
     required: true,
     defaultValue: "youtube",
+    dbName: "bc_multimedia_type",
     options: [
       { label: "YouTube embed", value: "youtube" },
       { label: "Imagen", value: "image" },

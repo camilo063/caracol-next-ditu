@@ -114,18 +114,19 @@ export function FormatModal({ open, format, onClose }: FormatModalProps) {
             )}
             style={{ display: "flex", flexDirection: "column" }}
           >
-            {/* Close button — absolute top-right 48x48 */}
+            {/* Close button — Figma 521:7072: top-right 24x24 con stroke-2,
+                color #003381 (sin background circular). */}
             <button
               type="button"
               onClick={onClose}
               aria-label="Cerrar modal"
               className={cn(
-                "absolute top-2 right-2 inline-flex h-12 w-12 items-center justify-center rounded-full text-[#003381]",
-                "transition-colors hover:bg-[#003381]/5 focus-visible:ring-2 focus-visible:ring-[#003381] focus-visible:ring-offset-2 focus-visible:outline-none",
+                "absolute top-4 right-4 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-all duration-200",
+                "hover:scale-110 hover:bg-[#003381]/10 focus-visible:ring-2 focus-visible:ring-[#003381] focus-visible:ring-offset-2 focus-visible:outline-none",
               )}
               style={{ color: NAVY_DARK }}
             >
-              <X className="h-6 w-6" strokeWidth={2.5} />
+              <X className="h-5 w-5" strokeWidth={2} />
             </button>
 
             {/* Title — Bold 40px tracking -1px #003381 */}
@@ -189,14 +190,12 @@ export function FormatModal({ open, format, onClose }: FormatModalProps) {
               </div>
             </div>
 
-            {/* Child tabs row — solo si tiene tabs (flex-wrap gap-16 items-start) */}
+            {/* Child tabs row — Mobile: wrap a múltiples líneas (sin scroll
+                horizontal — spec usuario "pestañas internas deben desplazarse
+                hacia abajo, no mediante scroll horizontal"). Desktop: row. */}
             {hasTabs ? (
               <div
-                className={cn(
-                  "flex w-full flex-wrap items-start gap-4",
-                  "[scrollbar-width:none] overflow-x-auto pb-2 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
-                  "md:overflow-visible md:pb-0",
-                )}
+                className={cn("flex w-full flex-wrap items-start gap-3", "pb-2 md:pb-0")}
               >
                 {childTabs.map((tab, i) => {
                   const isActive = i === activeTab;
@@ -206,7 +205,7 @@ export function FormatModal({ open, format, onClose }: FormatModalProps) {
                       type="button"
                       onClick={() => setActiveTab(i)}
                       className={cn(
-                        "font-display inline-flex min-h-[32px] shrink-0 items-center justify-center rounded-[4px] px-4 py-1 text-[12px] leading-[16px] font-bold whitespace-nowrap transition-colors",
+                        "font-display inline-flex min-h-[32px] shrink-0 cursor-pointer items-center justify-center rounded-[4px] px-4 py-1 text-[12px] leading-[16px] font-bold whitespace-nowrap transition-all duration-200 hover:opacity-90",
                         "focus-visible:ring-2 focus-visible:ring-[#003381] focus-visible:ring-offset-2 focus-visible:outline-none",
                       )}
                       style={
@@ -234,7 +233,7 @@ export function FormatModal({ open, format, onClose }: FormatModalProps) {
             <div className="flex w-full justify-end">
               <Link
                 href={ctaHref}
-                className="font-display inline-flex min-h-[32px] items-center justify-center rounded-[4px] px-4 py-1 text-[12px] leading-[16px] font-bold whitespace-nowrap text-white transition-opacity hover:opacity-90"
+                className="font-display inline-flex min-h-[32px] cursor-pointer items-center justify-center rounded-[4px] px-4 py-1 text-[12px] leading-[16px] font-bold whitespace-nowrap text-white transition-all duration-200 hover:bg-[#0099E5] hover:shadow-md hover:shadow-[#00ACFF]/30 active:scale-[0.98]"
                 style={{
                   backgroundColor: AZUL_CLARO,
                   border: `1px solid ${AZUL_CLARO}`,

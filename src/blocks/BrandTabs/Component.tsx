@@ -50,7 +50,11 @@ export function BrandTabsBlockComponent({
 
   return (
     <section id={anchorId ?? "marcas"} className="py-6 sm:py-8 lg:py-10">
-      <div className="bg-muted w-full overflow-hidden rounded-[2rem] py-14 sm:rounded-[2.5rem] sm:py-16 lg:py-20">
+      {/* Bug: "Eliminar el fondo y marco redondeado de la sección que no
+          existen en el diseño original." Antes había bg-muted + rounded-[2rem]
+          envolviendo todo el bloque. Ahora el bloque se integra al fondo
+          de la página y solo la card del tab activo tiene su marco. */}
+      <div className="w-full py-10 sm:py-12 lg:py-16">
         {/* Wrapper custom (no Container) — Figma: 1280px inner content,
             con px-[80px] en desktop (1440 - 160 = 1280). Permite que los tabs
             quepan exactamente en 1 línea sin scroll horizontal. */}
@@ -102,7 +106,7 @@ export function BrandTabsBlockComponent({
                     onClick={() => setActive(i)}
                     className={cn(
                       // Figma 402:5002: Large size px-48 py-12 todos los tabs.
-                      "font-display rounded-[4px] border px-[20px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-colors sm:px-[36px] lg:px-[48px]",
+                      "font-display cursor-pointer rounded-[4px] border px-[20px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-all duration-200 hover:opacity-90 sm:px-[36px] lg:px-[48px]",
                       "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
                     )}
                     style={

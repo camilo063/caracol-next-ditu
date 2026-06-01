@@ -84,7 +84,8 @@ function AdFormatsDefault({
           className="relative w-full overflow-hidden p-8 text-white sm:p-12 lg:p-[120px]"
           style={{
             backgroundColor: NAVY_DARK,
-            borderTopRightRadius: "180px",
+            // Reducido a 100px para consistencia con Calendario (spec usuario).
+            borderTopRightRadius: "100px",
           }}
         >
           <div className="mx-auto flex max-w-[1200px] flex-col gap-12 lg:gap-16">
@@ -130,7 +131,7 @@ function AdFormatsDefault({
               <Link
                 href={ctaHref}
                 className={cn(
-                  "font-display inline-flex h-12 w-[306px] items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-opacity hover:opacity-90",
+                  "font-display inline-flex h-12 w-[306px] cursor-pointer items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-all duration-200 hover:bg-[#0099E5] hover:shadow-lg hover:shadow-[#00ACFF]/30 active:scale-[0.98]",
                   "focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:outline-none",
                 )}
                 style={{ backgroundColor: AZUL_CLARO }}
@@ -216,10 +217,14 @@ function FormatPill({
       type="button"
       onClick={() => onSelect(format)}
       initial={false}
-      whileHover={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+      whileHover={{
+        backgroundColor: "rgba(255,255,255,0.08)",
+        borderColor: AZUL_CLARO,
+      }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(
-        "flex min-h-[68px] w-full items-center gap-4 rounded-[8px] border px-4 py-2 text-left",
+        // rounded-[6px] (antes 8): visualmente menos pronunciado, más tag-like.
+        "flex min-h-[68px] w-full cursor-pointer items-center gap-4 rounded-[6px] border px-4 py-2 text-left transition-colors",
         "focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#003381] focus-visible:outline-none",
       )}
       style={{
@@ -231,7 +236,8 @@ function FormatPill({
       <span className="font-display flex-1 text-[16px] leading-[26px] font-semibold text-white">
         {format.name}
       </span>
-      <ChevronRight className="h-6 w-6 shrink-0 text-white" />
+      {/* Flecha Figma: chevron 16x16, thinner stroke 1.5. */}
+      <ChevronRight className="h-4 w-4 shrink-0 text-white" strokeWidth={1.75} />
     </motion.button>
   );
 }

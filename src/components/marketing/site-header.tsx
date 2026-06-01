@@ -61,21 +61,47 @@ export function SiteHeader({
   const [activeId, setActiveId] = React.useState<string | null>(
     navAnchors[0]?.anchorId ?? null,
   );
+  const mobileMenuRef = React.useRef<HTMLDivElement>(null);
+  const mobileToggleRef = React.useRef<HTMLButtonElement>(null);
 
   // --- Hide on scroll down, show on scroll up ---
+  // Transición más suave: thresholds más altos para evitar flicker en scroll
+  // up corto. Bug: "El estilo del header cambia drásticamente al hacer scroll
+  // hacia arriba". 8→12px de delta + 80→120 threshold de top.
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
-    setScrolled(latest > 8);
-    if (latest <= 80) {
+    setScrolled(latest > 24);
+    if (latest <= 120) {
       // En el top, siempre visible.
       setHidden(false);
       return;
     }
-    if (latest > previous + 4)
-      setHidden(true); // scroll down
-    else if (latest < previous - 4) setHidden(false); // scroll up
+    if (latest > previous + 8)
+      setHidden(true); // scroll down (delta > 8 para evitar oscilación)
+    else if (latest < previous - 12) setHidden(false); // scroll up (delta > 12)
   });
+
+  // --- Click outside / ESC: cierra menú mobile (spec usuario) ---
+  React.useEffect(() => {
+    if (!open) return;
+    const handleClick = (e: MouseEvent) => {
+      const t = e.target as Node | null;
+      if (!t) return;
+      if (mobileMenuRef.current?.contains(t)) return;
+      if (mobileToggleRef.current?.contains(t)) return;
+      setOpen(false);
+    };
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [open]);
 
   // --- Active anchor tracking (IntersectionObserver) ---
   React.useEffect(() => {
@@ -205,8 +231,9 @@ export function SiteHeader({
               </span>
             ) : null}
             <button
+              ref={mobileToggleRef}
               type="button"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-white md:hidden"
+              className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-white transition-colors hover:bg-white/10 md:hidden"
               aria-label="Abrir menú"
               aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
@@ -289,10 +316,16 @@ export function SiteHeader({
               </span>
             ) : null}
             <button
+              ref={mobileToggleRef}
               type="button"
               className={cn(
-                "inline-flex h-9 w-9 items-center justify-center rounded-md md:hidden",
-                "text-foreground",
+                "inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md transition-colors md:hidden",
+                // Bug: hamburguesa salía negro en mobile (sobre bg navy).
+                // Si el header está en estado navy (no scrolled), el icon
+                // debe ser blanco. Cuando scrolled (bg blanco), foreground.
+                isCaracolNextNavy
+                  ? "text-white hover:bg-white/10"
+                  : "text-foreground hover:bg-foreground/5",
               )}
               aria-label="Abrir menú"
               aria-expanded={open}
@@ -304,9 +337,11 @@ export function SiteHeader({
         </Container>
       )}
 
-      {/* Mobile menu (común para ambas landings) */}
+      {/* Mobile menu (común para ambas landings).
+          ref para click-outside detection: cierra menú al click fuera. */}
       {open ? (
         <div
+          ref={mobileMenuRef}
           className={cn(
             "md:hidden",
             isDitu ? "text-white" : "bg-background text-foreground",
