@@ -414,12 +414,14 @@ function TabPanel({ tab }: { tab: Tab }) {
           >
             <Pill>AUDIENCIA</Pill>
 
-            <div className="flex flex-col gap-4 px-5 sm:flex-row sm:items-start sm:gap-4">
-              {/* Género — text + pie chart side by side */}
-              <div className="flex items-center justify-center gap-[10px]">
-                <div className="flex w-[184px] flex-col items-start">
+            <div className="flex flex-col gap-4 px-3 sm:flex-row sm:items-start sm:gap-4 sm:px-5">
+              {/* Género — text + pie chart side by side.
+                  Mobile: flex-col o flex-row compacto. El w-[184px] fijo causa
+                  overflow en mobile — se usa min-w-0 flex-1 en su lugar. */}
+              <div className="flex items-center justify-between gap-3 sm:justify-center sm:gap-[10px]">
+                <div className="flex min-w-0 flex-1 flex-col items-start sm:w-[184px] sm:flex-none">
                   <p
-                    className="font-display text-[24px] leading-[32px] font-bold whitespace-nowrap"
+                    className="font-display text-[22px] leading-[30px] font-bold sm:text-[24px] sm:leading-[32px]"
                     style={{ color: NEUTRO_NEGRO }}
                   >
                     Género

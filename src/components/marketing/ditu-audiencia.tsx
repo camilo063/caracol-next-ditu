@@ -310,19 +310,21 @@ export function DituAudienciaBlock({
 
       {/* BOTTOM block: +1.7M + scrolling networks */}
       <div className="mx-auto flex max-w-[1440px] flex-col gap-10 px-6 pt-4 pb-16 sm:px-12 lg:gap-[48px] lg:px-[120px] lg:pb-[80px]">
-        {/* +1.7M de seguidores headline */}
-        <div className="relative flex flex-wrap items-start gap-4 sm:gap-6 lg:gap-[8px]">
+        {/* +1.7M de seguidores headline.
+            Mobile: flex-col para que +1.7M quede arriba y el texto abajo (sin overflow).
+            sm+: flex-row con wrap. lg+: inline con gap-[8px]. */}
+        <div className="relative flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-start sm:gap-6 lg:flex-row lg:items-end lg:gap-[8px]">
           <p
-            className="font-display text-[64px] leading-[1] font-bold whitespace-nowrap uppercase sm:text-[96px] lg:text-[128px]"
+            className="font-display text-[56px] leading-[1] font-bold whitespace-nowrap uppercase sm:text-[96px] lg:text-[128px]"
             style={{ color: CYAN }}
           >
             {totalFollowersHeadline}
           </p>
           <div className="flex flex-col gap-1">
-            <p className="font-display text-[28px] leading-[1] font-bold text-white uppercase sm:text-[44px] lg:text-[64px]">
+            <p className="font-display text-[22px] leading-[1.1] font-bold text-white uppercase sm:text-[44px] lg:text-[64px]">
               DE SEGUIDORES
             </p>
-            <p className="font-display text-[28px] leading-[1] font-medium text-white uppercase sm:text-[44px] lg:text-[64px]">
+            <p className="font-display text-[22px] leading-[1.1] font-medium text-white uppercase sm:text-[44px] lg:text-[64px]">
               QUE ESPERAN VER TU MARCA
             </p>
           </div>
@@ -340,21 +342,26 @@ export function DituAudienciaBlock({
           </div>
         </div>
 
-        {/* Networks row — mobile: grid 3x2 (spec Camilo).
-            Desktop: flex justify-between con todas las 6 networks en una fila. */}
-        <div className="grid grid-cols-3 place-items-center gap-x-4 gap-y-8 sm:gap-x-6 lg:flex lg:flex-wrap lg:items-center lg:justify-between lg:gap-6 lg:gap-y-[68px]">
+        {/* Networks row.
+            Mobile: grid 2×3 — 2 cols, icono encima del texto, más compacto.
+            sm+: 3 cols con icono+texto lado a lado.
+            lg+: flex justify-between en una fila. */}
+        <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-4 sm:gap-y-8 lg:flex lg:flex-wrap lg:items-center lg:justify-between lg:gap-6 lg:gap-y-[68px]">
           {DEFAULT_NETWORKS.map((net) => (
-            <div key={net.network} className="flex items-start gap-3">
+            <div
+              key={net.network}
+              className="flex flex-col items-center gap-1 sm:flex-row sm:items-start sm:gap-3"
+            >
               <Image
                 src={NETWORK_ICON[net.network]}
                 alt=""
                 width={48}
                 height={48}
-                className="h-10 w-10 lg:h-12 lg:w-12"
+                className="h-8 w-8 shrink-0 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
               />
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-center sm:items-start">
                 <p
-                  className="font-display text-[18px] leading-[28px] font-semibold whitespace-nowrap text-white lg:text-[20px]"
+                  className="font-display text-[14px] leading-[20px] font-semibold text-white sm:text-[16px] sm:leading-[24px] lg:text-[20px] lg:leading-[28px]"
                   style={{ fontFamily: "var(--font-montserrat), system-ui" }}
                 >
                   <CountUp
@@ -363,7 +370,7 @@ export function DituAudienciaBlock({
                   />
                 </p>
                 <p
-                  className="text-[14px] leading-[20px] text-white lg:text-[16px]"
+                  className="text-[12px] leading-[16px] text-white sm:text-[14px] sm:leading-[20px] lg:text-[16px]"
                   style={{ fontFamily: "var(--font-montserrat), system-ui" }}
                 >
                   Seguidores
