@@ -70,7 +70,7 @@ export function KeyMomentsCalendarComponent({
   const ctaHref = ctaText?.href ?? "#contacto";
 
   return (
-    <section id={anchorId ?? "momentos"} className="py-6 sm:py-10">
+    <section id={anchorId ?? "momentos"}>
       <div
         className="relative w-full overflow-hidden p-8 text-white sm:p-12 lg:p-[120px]"
         style={{

@@ -54,7 +54,7 @@ export function BrandedContentBlockComponent({
   return (
     <section
       id={anchorId ?? "branded"}
-      className="px-4 py-12 sm:px-6 sm:py-20 lg:px-[120px] lg:py-[160px]"
+      className="px-4 py-12 sm:px-6 sm:py-20 lg:px-[120px] lg:py-[220px]"
     >
       {isMobile ? (
         <MobileSlider categories={categories} defaultIndex={safeDefault} />

@@ -50,8 +50,8 @@ export function HeroBlockComponent({
     <Section
       id={anchorId ?? undefined}
       tone={sectionTone}
-      padding="xl"
-      className="relative overflow-hidden"
+      padding="none"
+      className="relative overflow-hidden py-[40px] sm:py-[60px] md:py-[94px]"
       style={heroBg ? { background: heroBg } : undefined}
     >
       {hasBackground ? (
@@ -86,7 +86,7 @@ export function HeroBlockComponent({
         {/* Layout Figma 347:2015: gap-40 entre tagline/heading-group/icons.
             Heading-group interno: gap-24 entre h1 y subheading. */}
         {/* gap-6 reducido (era gap-10): bug "label muy separado del título". */}
-        <div className="mx-auto flex flex-col items-center gap-6 text-center sm:gap-8 lg:gap-10">
+        <div className="mx-auto flex flex-col items-center gap-[10px] text-center">
           {eyebrow ? (
             // Figma: Poppins Bold 20px, uppercase, color #00ACFF.
             // Mobile: reducir tamaño proporcionalmente (bug "label no reduce").
@@ -125,7 +125,7 @@ export function HeroBlockComponent({
           </div>
 
           {brandIcons && brandIcons.length > 0 ? (
-            <BrandIconsRow items={brandIcons} />
+            <BrandIconsRow items={brandIcons} className="p-4" />
           ) : null}
 
           {primaryCta?.label || secondaryCta?.label ? (

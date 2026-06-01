@@ -180,14 +180,28 @@ const AZUL_MEDIO = "#015BC4";
  * Mappings de assets por brand — Figma 402:5117-5195.
  * Side panel: wordmark logo SVG centrado + avatar PNG 76×76 top-right.
  * La Kalle: no tiene SVG export del logo wordmark, usa el avatar como fallback.
+ * BluRadio: el archivo .svg en public es un PNG binario (726KB), se omite aquí
+ * para que el right panel muestre el fallback en texto.
  */
 const BRAND_LOGO_PATHS: Record<string, string> = {
   caracoltv: "/caracol-next/brand-tabs/caracoltv-logo.svg",
   golcaracol: "/caracol-next/brand-tabs/golcaracol-logo.svg",
   caracolsports: "/caracol-next/brand-tabs/caracolsports-logo.svg",
-  bluradio: "/caracol-next/brand-tabs/bluradio-logo.svg",
   bumbox: "/caracol-next/brand-tabs/bumbox-logo.svg",
   volk: "/caracol-next/brand-tabs/volk-logo.svg",
+};
+
+/**
+ * Dimensiones intrínsecas reales por brand (extraídas del viewBox de cada SVG).
+ * Usadas para que Next/Image y el CSS aspectRatio reflejen el SVG correcto.
+ * Fallback: 320×180 (16:9 horizontal genérico).
+ */
+const BRAND_LOGO_DIMS: Record<string, [number, number]> = {
+  caracoltv: [173, 93],
+  golcaracol: [293, 77],
+  caracolsports: [152, 80],
+  bumbox: [43, 42],
+  volk: [180, 212],
 };
 const BRAND_AVATAR_PATHS: Record<string, string> = {
   caracoltv: "/caracol-next/brand-tabs/caracoltv-avatar.png",
@@ -230,12 +244,11 @@ function TabPanel({ tab }: { tab: Tab }) {
     ? (brandAccent ?? brandColor) // smaller slice = #FEFF00 (amarillo)
     : brandPanelBg;
 
-  // Figma Volk: logo wordmark con proporción VERTICAL (180w × 212h).
-  // Resto de brands tienen logos horizontales (~180×190). Sin la aspect-ratio
-  // explícita, Next/Image colapsa el SVG y se ve "expandido".
+  // Dimensiones reales SVG viewBox por brand — actualizado 2026-05-31 (viewBox). Volk es vertical (portrait).
   const isVolk = tab.brand === "volk";
-  const logoIntrinsicWidth = isVolk ? 180 : 320;
-  const logoIntrinsicHeight = isVolk ? 212 : 180;
+  const [logoIntrinsicWidth, logoIntrinsicHeight] = BRAND_LOGO_DIMS[tab.brand] ?? [
+    320, 180,
+  ];
 
   return (
     <div

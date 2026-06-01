@@ -126,7 +126,7 @@ export function HubLanding({
           width: "1210px",
           height: "1210px",
           background:
-            "radial-gradient(circle at center, rgba(1,91,196,1) 0%, rgba(0,51,129,0) 100%)",
+            "radial-gradient(circle 605px at center, rgba(1,91,196,1) 0%, rgba(0,51,129,0) 100%)",
         }}
       />
       <div
@@ -138,7 +138,7 @@ export function HubLanding({
           width: "1210px",
           height: "1210px",
           background:
-            "radial-gradient(circle at center, rgba(1,91,196,1) 0%, rgba(0,51,129,0) 100%)",
+            "radial-gradient(circle 605px at center, rgba(1,91,196,1) 0%, rgba(0,51,129,0) 100%)",
         }}
       />
 
@@ -163,7 +163,7 @@ export function HubLanding({
             },
           },
         }}
-        className="relative z-10 mx-auto flex w-full max-w-[1377px] flex-1 flex-col gap-12 px-6 py-12 sm:px-10 lg:flex-row lg:items-start lg:gap-[64px] lg:px-[84px] lg:pt-[150px] lg:pb-[80px]"
+        className="relative z-10 mx-auto flex w-full max-w-[1377px] flex-1 flex-col gap-12 px-6 py-12 sm:px-10 lg:flex-row lg:items-start lg:gap-[26px] lg:px-[84px] lg:pt-[150px] lg:pb-[80px]"
       >
         {/* Left — hero content. Cada nodo es un motion.div para stagger. */}
         <div className="flex flex-col items-start lg:max-w-[611px] lg:pt-[68px]">
@@ -183,7 +183,7 @@ export function HubLanding({
               que en mobile el interlineado fijo 80px separe en exceso. */}
           <motion.h1
             variants={staggerItemVariants}
-            className="mt-[16px] text-[40px] leading-[1.08] font-bold sm:mt-[20px] sm:text-[56px] sm:leading-[1.07] lg:mt-[24px] lg:text-[74px] lg:leading-[80px]"
+            className="mt-[16px] w-full text-[40px] leading-[1.08] font-bold sm:mt-[20px] sm:text-[56px] sm:leading-[1.07] lg:mt-[24px] lg:text-[74px] lg:leading-[80px]"
             style={{
               fontFamily: "var(--font-montserrat), system-ui, sans-serif",
               color: "#FFFFFF",
@@ -538,9 +538,11 @@ function CaracolMediosLogo({ className }: { className?: string }) {
           style={{ maxWidth: "none" }}
         />
       </div>
-      {/* Divider line — Figma 397:1984: bg #D9D9D9 flex-1 h-full 1px */}
+      {/* Divider — Figma 397:1984 (Rectangle 53): 2×32 px, #D9D9D9.
+          self-stretch (sin h-full) deja que flexbox asigne la altura = 32 px del logo.
+          h-full + self-stretch compiten: height:100% gana y resuelve a 0 en contenedor auto. */}
       <div
-        className="hidden h-[1px] flex-1 self-center sm:block"
+        className="hidden w-[2px] shrink-0 self-stretch sm:block"
         style={{ backgroundColor: "#D9D9D9" }}
         aria-hidden="true"
       />

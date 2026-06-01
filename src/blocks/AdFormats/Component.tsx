@@ -79,7 +79,7 @@ function AdFormatsDefault({
 
   return (
     <>
-      <section id={anchorId ?? "pauta"} className="py-6 sm:py-10">
+      <section id={anchorId ?? "pauta"}>
         <div
           className="relative w-full overflow-hidden p-8 text-white sm:p-12 lg:p-[120px]"
           style={{

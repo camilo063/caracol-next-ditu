@@ -58,7 +58,7 @@ export function DituFooter({
       {/* Padding-bottom amplio en mobile para que el FloatingContact (fixed
           bottom-6 right-6) no tape los iconos de redes sociales. Spec usuario:
           "Aumentar el padding para que el botón de contacto no tape los iconos". */}
-      <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-6 px-6 pt-8 pb-24 sm:flex-row sm:items-center sm:px-12 sm:pt-10 sm:pb-12 lg:px-[117px] lg:py-[40px]">
+      <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-6 px-6 pt-8 pb-24 sm:flex-row sm:items-center sm:px-12 sm:pt-10 sm:pb-12 lg:items-start lg:px-[117px] lg:py-[40px]">
         {/* Logo Ditu — Figma uses h-40 w-82 in footer (más pequeño que header h-32 w-66).
             DituWordmark renders 66×32 — scale up con className. */}
         <Link

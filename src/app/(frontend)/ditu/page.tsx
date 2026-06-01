@@ -49,6 +49,10 @@ export default function DituPage() {
         <RevealSection>
           <DituCalendarioBlock />
         </RevealSection>
+        {/* Video 2 — Figma 857:3974: mismo componente que 512:2244, sin props adicionales. */}
+        <RevealSection>
+          <DituVideoBlock />
+        </RevealSection>
         <RevealSection>
           <DituPautaBlock />
         </RevealSection>

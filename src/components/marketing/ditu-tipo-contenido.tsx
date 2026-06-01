@@ -92,6 +92,20 @@ export function DituTipoContenidoBlock({
           "linear-gradient(115.78deg, #7129D4 11.561%, #5F20DF 63.291%, #1E1446 101.84%)",
       }}
     >
+      {/* Wave de transición — Figma 803:3486: misma silueta cityscape que el
+          wave del ADN, posicionada arriba del bloque (top≈-362px en Figma).
+          scaleY(-1) voltea el PNG para que las shapes apunten HACIA ABAJO
+          (desde el ADN oscuro hacia el fondo violeta de TipoContenido).
+          mix-blend-mode:multiply hace el fondo blanco del PNG transparente. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/ditu/wave-hablamos-bottom.png"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 left-0 hidden w-full object-fill lg:block"
+        style={{ height: "131px", transform: "scaleY(-1)", mixBlendMode: "multiply" }}
+      />
+
       <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-[9px] px-6 py-24 sm:px-12 sm:py-32 lg:px-[120px] lg:py-[180px]">
         {/* Sticker — Figma 750:2722. Texto literal: "tipo de contenido"
             (Figma sin uppercase explícito en p, pero usa `uppercase` class

@@ -40,29 +40,91 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
         background: "linear-gradient(180deg, #8232F0 0%, #561BDB 100%)",
       }}
     >
-      <div className="relative flex w-full flex-col items-center gap-[24px] pt-12 sm:pt-20 lg:pt-[120px]">
-        <div className="relative flex w-full flex-col items-start gap-[16px] overflow-clip pt-12 sm:pt-20 lg:pt-[120px]">
-          {/* Mascot PatoDitu — Figma 833:3850: absolute left-[915] top-[38.31]
-              w-[530] h-[493], rotate(171.39deg) -scale-y-100 (flipped + rotated).
-              Mobile: oculto. Desktop: posicionado a la derecha. */}
-          <div className="pointer-events-none absolute top-[38px] right-[-100px] hidden h-[400px] w-[420px] lg:right-auto lg:left-[915px] lg:block lg:h-[493.161px] lg:w-[530.251px]">
-            <div
-              className="h-full w-full"
-              style={{
-                transform: "scaleY(-1) rotate(171.39deg)",
-                transformOrigin: "center center",
-              }}
-            >
+      {/* PatoDitu — Figma 833:3850: composite de 6 SVGs transparentes.
+          bottom: 131px → las patas tocan el top del wave (height=131px).
+          left: 915px → posición Figma dentro del frame de 1440px.
+          Sacado del inner-div (que tenía overflow-clip) al section para que
+          el duck sea visible en el área baja donde pertenece. */}
+      <div
+        className="pointer-events-none absolute hidden lg:block"
+        style={{
+          bottom: "131px",
+          left: "915px",
+          height: "493.161px",
+          width: "530.251px",
+        }}
+      >
+        <div
+          className="flex h-full w-full items-center justify-center"
+          style={{
+            transform: "scaleY(-1) rotate(171.39deg)",
+            transformOrigin: "center center",
+          }}
+        >
+          <div
+            className="relative overflow-clip"
+            style={{ width: "471.567px", height: "427.358px" }}
+          >
+            <div className="absolute" style={{ inset: "64.79% 20.24% 0 62.61%" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/ditu/pato-ditu.png"
+                src="/ditu/pato-a.svg"
                 alt=""
-                className="block h-full w-full object-contain"
+                className="block h-full w-full"
+                style={{ maxWidth: "none" }}
+              />
+            </div>
+            <div className="absolute" style={{ inset: "64.79% 57.75% 0 25.1%" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/ditu/pato-b.svg"
+                alt=""
+                className="block h-full w-full"
+                style={{ maxWidth: "none" }}
+              />
+            </div>
+            <div className="absolute" style={{ inset: "0 3.84% 0.22% 0" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/ditu/pato-c.svg"
+                alt=""
+                className="block h-full w-full"
+                style={{ maxWidth: "none" }}
+              />
+            </div>
+            <div className="absolute" style={{ inset: "53.49% 50.37% 12.54% 9.93%" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/ditu/pato-g.svg"
+                alt=""
+                className="block h-full w-full"
+                style={{ maxWidth: "none" }}
+              />
+            </div>
+            <div className="absolute" style={{ inset: "26.71% 0 57.37% 69.84%" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/ditu/pato-i.svg"
+                alt=""
+                className="block h-full w-full"
+                style={{ maxWidth: "none" }}
+              />
+            </div>
+            <div className="absolute" style={{ inset: "14.29% 35.29% 64.49% 45.52%" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/ditu/pato-j.svg"
+                alt=""
+                className="block h-full w-full"
                 style={{ maxWidth: "none" }}
               />
             </div>
           </div>
+        </div>
+      </div>
 
+      <div className="relative flex w-full flex-col items-center gap-[24px] pt-12 sm:pt-20 lg:pt-[120px]">
+        <div className="relative flex w-full flex-col items-start gap-[16px] overflow-clip pt-12 sm:pt-20 lg:pt-[120px]">
           {/* Content — Figma 756:6637: gap-16 items-start pl-120 */}
           <div className="mx-auto flex w-full max-w-[1440px] flex-col items-start gap-[16px] px-6 sm:px-12 lg:pl-[120px]">
             <div className="relative flex flex-col items-start gap-[4px]">
@@ -128,8 +190,31 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
           </div>
 
           {/* Spacer bottom — Figma 756:6624: h-[275.356px] w-[1012px] */}
-          <div className="h-12 w-full sm:h-[120px] lg:h-[275px]" aria-hidden="true" />
+          <div className="h-12 w-full sm:h-[120px] lg:h-[279px]" aria-hidden="true" />
         </div>
+      </div>
+
+      {/* Bottom wave — Figma 808:5736: cityscape 1440×131px que hace la
+          transición visual al footer oscuro.
+          La wave PNG tiene fondo blanco + silueta oscura (#1E1E1E).
+          - multiply: blend para eliminar el fondo blanco; hace que la silueta
+            quede más oscura que #12082D → leve seam con el footer.
+          - Fix: strip de 4px bg-[#12082D] en la base que une el wave con el
+            footer sin brecha de color visible. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0 left-0 w-full overflow-hidden"
+        style={{ height: "135px" }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/ditu/wave-hablamos-bottom.png"
+          alt=""
+          className="block w-full"
+          style={{ objectFit: "fill", mixBlendMode: "multiply", height: "131px" }}
+        />
+        {/* Relleno de unión — 4px en color exacto del footer para eliminar seam */}
+        <div className="w-full" style={{ height: "4px", backgroundColor: "#12082D" }} />
       </div>
     </section>
   );

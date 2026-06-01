@@ -283,11 +283,13 @@ export function DituCalendarioBlock({
               Calendario
             </h2>
 
-            {/* Decoración (pato) — reubicada para NO sobreponerse al título
-                "Calendario" (bug usuario). Antes en top-[-10] left-[317] hacía
-                overlap visible en mobile/tablet. Ahora top sobre el sticker y
-                desplazada hacia la derecha del container del título. */}
-            <div className="pointer-events-none absolute top-[-50px] right-[-20px] hidden h-[60px] w-[68px] sm:top-[-60px] sm:right-[-30px] sm:block sm:h-[80px] sm:w-[88px] lg:top-[-70px] lg:right-[-60px] lg:h-[92px] lg:w-[103px]">
+            {/* Decoración (image 14) — Figma 756:6515: absolute h-[92px]
+                left-[317px] top-[-10px] w-[103px] relativo al heading container.
+                En mobile se oculta (el container no tiene 449px de ancho). */}
+            <div
+              className="pointer-events-none absolute hidden lg:block"
+              style={{ top: "-10px", left: "317px", width: "103px", height: "92px" }}
+            >
               <Image
                 src="/ditu/calendar-decoration.png"
                 alt=""
@@ -319,7 +321,7 @@ export function DituCalendarioBlock({
         />
 
         {/* CTA — Figma 829:4787: w-1200 gap-24 items-center */}
-        <div className="flex w-full flex-col items-center gap-[24px]">
+        <div className="flex w-full flex-col items-center gap-[24px] lg:w-[1200px]">
           <p
             className="text-center text-[18px] text-white sm:text-[20px] lg:text-[24px]"
             style={{
@@ -380,7 +382,7 @@ function CalendarSlider({
   };
 
   return (
-    <div className="flex w-full flex-col items-start gap-[32px]">
+    <div className="flex w-full flex-col items-start gap-[32px] lg:w-[1200px]">
       {/* Cards container */}
       <div className="relative w-full overflow-hidden">
         {/* Desktop: row de cards visible 4 a la vez con páginas de 1.

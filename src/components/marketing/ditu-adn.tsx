@@ -105,7 +105,36 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
           "linear-gradient(175.32deg, #12082D 9.84%, #291266 47.99%, #12082D 85.01%)",
       }}
     >
-      <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-12 px-6 pt-16 pb-24 sm:gap-16 sm:px-12 sm:pb-32 lg:gap-[64px] lg:px-[120px] lg:pb-[180px]">
+      {/* Wave — Figma 738:3033 (Frame 14504): transición visual entre la sección
+          Audiencia stats y el bloque ADN. Silhoueta RGBA 1440×233 px. Solo desktop
+          (en mobile las secciones hacen transición directa sin ola). */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/ditu/wave-adn.png"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 left-0 hidden w-full object-fill lg:block"
+        style={{ height: "233px" }}
+      />
+
+      {/* Ditu custom icons — Figma 512:2823: decorativo RGBA 181×204 px.
+          x=1327 px del borde izq. del frame 1440 → desborda 68 px por la dcha.
+          (intencional en el Figma — overflow-hidden del section lo recorta). */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/ditu/adn-custom-icon.png"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute hidden lg:block"
+        style={{
+          top: "1023px" /* 233 (wave h) + 790 (y en Frame 14510, Figma 512:2823) */,
+          left: "1327px" /* Figma x=1327 en frame 1440 px */,
+          width: "181px",
+          height: "204px",
+        }}
+      />
+
+      <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-12 px-6 pt-16 pb-24 sm:gap-16 sm:px-12 sm:pb-32 lg:gap-[64px] lg:px-[120px] lg:pt-[233px] lg:pb-[180px]">
         {/* Heading */}
         <div className="flex flex-col items-center gap-3">
           <div
@@ -295,7 +324,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
 
         {/* Y dónde encontrarlo */}
         <div className="flex w-full flex-col gap-3">
-          <h3 className="font-display text-[36px] leading-[1] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
+          <h3 className="font-display text-[36px] leading-[1] font-bold whitespace-nowrap text-white uppercase sm:text-[60px] lg:text-[84px]">
             y dónde <span style={{ color: CYAN }}>encontrarlo</span>
           </h3>
           <p
