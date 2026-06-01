@@ -327,9 +327,11 @@ export function DituAudienciaBlock({
             </p>
           </div>
           {/* Mascot hand decorativo */}
-          <div className="absolute -top-4 right-4 hidden h-[90px] w-[80px] lg:-top-[11px] lg:right-[20%] lg:block lg:h-[121px] lg:w-[107px]">
+          {/* Figma 738:2526: x=816px desde section left. Flex div inicia a 120px (px-[120px]).
+              816-120=696px desde el flex div. y=-11.25px → -top-[11px]. */}
+          <div className="absolute -top-4 right-4 hidden h-[90px] w-[80px] lg:-top-[11px] lg:right-auto lg:left-[696px] lg:block lg:h-[121px] lg:w-[107px]">
             <Image
-              src="/ditu/mascot-hand.svg"
+              src="/ditu/mascot-hand.png"
               alt=""
               width={107}
               height={121}

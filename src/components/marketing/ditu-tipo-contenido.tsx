@@ -106,6 +106,18 @@ export function DituTipoContenidoBlock({
         style={{ height: "131px", transform: "scaleY(-1)", mixBlendMode: "multiply" }}
       />
 
+      {/* Personaje "ojo Ditu" — Figma I750:3361;650:7349.
+          Dimensiones: 131×148px. Posición corregida: top:131px (justo debajo del wave,
+          encima del sticker/heading). left:658px según Figma. Solo desktop. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/ditu/tipoc-icon.png"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute hidden lg:block"
+        style={{ top: "131px", left: "658px", width: "131px", height: "148px" }}
+      />
+
       <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-[9px] px-6 py-24 sm:px-12 sm:py-32 lg:px-[120px] lg:py-[180px]">
         {/* Sticker — Figma 750:2722. Texto literal: "tipo de contenido"
             (Figma sin uppercase explícito en p, pero usa `uppercase` class

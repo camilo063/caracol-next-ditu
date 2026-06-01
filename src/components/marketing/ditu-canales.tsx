@@ -88,6 +88,25 @@ export function DituCanalesBlock({ anchorId = "canales" }: DituCanalesProps) {
           "linear-gradient(199.26deg, #12082D 15.056%, #3B1A93 45.857%, #12082D 79.425%)",
       }}
     >
+      {/* Personaje cámara-robot — Figma 756:6732 (ditu custom icons).
+          173×197px. Posición Figma: left:1086px top:192.75px dentro del section.
+          mix-blend-mode: multiply elimina el fondo sólido #12082D del PNG,
+          dejando solo el personaje visible sobre el gradient de la sección. Solo desktop. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/ditu/canales-icon.png"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute hidden lg:block"
+        style={{
+          top: "192.75px",
+          left: "1086px",
+          width: "173px",
+          height: "197px",
+          mixBlendMode: "multiply",
+        }}
+      />
+
       <div className="mx-auto flex max-w-[1440px] flex-col items-start gap-[10px] px-6 py-12 sm:px-12 sm:py-16 lg:px-[120px] lg:py-[64px]">
         {/* Sticker — Figma 756:6665 */}
         <div

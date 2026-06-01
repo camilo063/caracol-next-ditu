@@ -61,7 +61,7 @@ export default function DituPage() {
         </RevealSection>
       </main>
       <DituFooter />
-      <FloatingContact {...floatingContactDemo} />
+      <FloatingContact {...floatingContactDemo} tone="ditu" />
     </div>
   );
 }

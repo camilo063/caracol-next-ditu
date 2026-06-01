@@ -20,10 +20,13 @@ export interface FloatingContactProps {
   panelDescription?: string;
   representatives: FloatingContactRep[];
   position?: "bottom-right" | "bottom-left";
+  /** "ditu" aplica estilo Ditu (#77EDED bg, #12082D texto, rounded-[12px], fuente Ditu Display Bold + mini PatoDitu encima).
+   *  Default undefined = estilo Caracol (#2862FF). */
+  tone?: "ditu";
 }
 
 /**
- * FloatingContact — Botón flotante de contacto (Spec Camilo + Figma 405:4865).
+ * FloatingContact — Botón flotante de contacto (Spec Camilo + Figma 405:4865 / 775:4636).
  *
  * Spec usuario (mayo 2026):
  *  - Botón siempre visible bottom-right (fixed) — sigue scroll
@@ -31,8 +34,9 @@ export interface FloatingContactProps {
  *  - Cerrar: X esquina top-right del panel | click overlay | ESC
  *  - Fade-in 300ms ease (Framer Motion)
  *  - Representantes desde CMS (repetibles)
- *  - Estilo del BOTÓN igual al "Contáctanos" del AudienceNetworks block:
- *    bg #00ACFF, w-188 h-48, Montserrat SemiBold 16 white, rounded
+ *  - tone="ditu": bg #77EDED, texto #12082D, rounded-[12px], Ditu Display Bold 16px,
+ *    mini PatoDitu (c+g+i+j) encima: absolute left-[130px] top-[-6px] w-[54px] h-[49px],
+ *    transform scaleY(-1) rotate(-177.48deg). Figma 775:4636.
  *
  * El PANEL es idéntico al modal Home (Figma 405:4864/4865), por lo que
  * reutilizamos HomeContactModal directamente.
@@ -42,6 +46,7 @@ export function FloatingContact({
   buttonLabel = "Contáctanos",
   representatives,
   position = "bottom-right",
+  tone,
 }: FloatingContactProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -57,28 +62,97 @@ export function FloatingContact({
     whatsapp: r.whatsapp,
   }));
 
+  const isDitu = tone === "ditu";
+
   return (
     <>
-      {/* Botón flotante fixed — Figma 484:2246 (btn_contancto).
-          Color CaracolTV/Digital/Azul Claro #2862FF (no #00ACFF) */}
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label={buttonLabel}
-        aria-expanded={open}
-        className={`fixed z-40 inline-flex cursor-pointer items-center justify-center overflow-clip rounded-[4px] border border-solid text-white shadow-md transition-all duration-200 hover:bg-[#1a4ee5] hover:shadow-lg hover:shadow-[#2862FF]/40 active:scale-95 ${positionClasses}`}
-        style={{
-          backgroundColor: "#2862FF",
-          borderColor: "#2862FF",
-          padding: "12px 48px",
-          fontSize: "16px",
-          fontWeight: 600,
-          lineHeight: "24px",
-          fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-        }}
-      >
-        {buttonLabel}
-      </button>
+      {/* Wrapper relative para el mini PatoDitu absoluto (solo Ditu tone) */}
+      <div className={`fixed z-40 ${positionClasses}`} style={{ position: "fixed" }}>
+        {/* Mini PatoDitu — Figma 775:4636: composite c+g+i+j, canvas 52×47px.
+            Posición: absolute left-[130px] top-[-6px].
+            Transform: scaleY(-1) rotate(-177.48deg). Solo tone="ditu". */}
+        {isDitu && (
+          <div
+            className="pointer-events-none absolute"
+            style={{
+              left: "130px",
+              top: "-6px",
+              width: "54px",
+              height: "49px",
+              transform: "scaleY(-1) rotate(-177.48deg)",
+              transformOrigin: "center center",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/ditu/mascot/body.svg"
+              alt=""
+              className="absolute inset-0 h-full w-full"
+              style={{ maxWidth: "none" }}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/ditu/mascot/g.svg"
+              alt=""
+              className="absolute inset-0 h-full w-full"
+              style={{ maxWidth: "none" }}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/ditu/mascot/i.svg"
+              alt=""
+              className="absolute inset-0 h-full w-full"
+              style={{ maxWidth: "none" }}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/ditu/mascot/j.svg"
+              alt=""
+              className="absolute inset-0 h-full w-full"
+              style={{ maxWidth: "none" }}
+            />
+          </div>
+        )}
+
+        {/* Botón flotante fixed.
+            Ditu (Figma 775:4636): bg #77EDED text #12082D rounded-[12px] Ditu Display Bold 16px.
+            Default Caracol (Figma 484:2246): bg #2862FF text white rounded-[4px] Montserrat SemiBold. */}
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={buttonLabel}
+          aria-expanded={open}
+          className={`inline-flex cursor-pointer items-center justify-center overflow-clip border border-solid shadow-md transition-all duration-200 active:scale-95 ${
+            isDitu
+              ? "rounded-[12px] hover:opacity-90"
+              : "rounded-[4px] text-white hover:bg-[#1a4ee5] hover:shadow-lg hover:shadow-[#2862FF]/40"
+          }`}
+          style={
+            isDitu
+              ? {
+                  backgroundColor: "#77EDED",
+                  borderColor: "#77EDED",
+                  color: "#12082D",
+                  padding: "12px 48px",
+                  fontSize: "16px",
+                  fontWeight: 700,
+                  lineHeight: "24px",
+                  fontFamily: "var(--font-ditu-display), system-ui, sans-serif",
+                }
+              : {
+                  backgroundColor: "#2862FF",
+                  borderColor: "#2862FF",
+                  padding: "12px 48px",
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  lineHeight: "24px",
+                  fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                }
+          }
+        >
+          {buttonLabel}
+        </button>
+      </div>
 
       {/* Panel contacto — reusa HomeContactModal (Figma 405:4865 = 405:4864) */}
       <HomeContactModal

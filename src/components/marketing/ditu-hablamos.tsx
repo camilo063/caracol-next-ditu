@@ -41,14 +41,13 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
       }}
     >
       {/* PatoDitu — Figma 833:3850: composite de 6 SVGs transparentes.
-          bottom: 131px → las patas tocan el top del wave (height=131px).
-          left: 915px → posición Figma dentro del frame de 1440px.
-          Sacado del inner-div (que tenía overflow-clip) al section para que
-          el duck sea visible en el área baja donde pertenece. */}
+          Posición corregida: top:240px (= outer pt-120 + inner pt-120 desde section top)
+          → alineado con la zona media-derecha del heading, como en el Figma.
+          left: 915px → posición Figma dentro del frame de 1440px. */}
       <div
         className="pointer-events-none absolute hidden lg:block"
         style={{
-          bottom: "131px",
+          top: "240px",
           left: "915px",
           height: "493.161px",
           width: "530.251px",
@@ -213,8 +212,17 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
           className="block w-full"
           style={{ objectFit: "fill", mixBlendMode: "multiply", height: "131px" }}
         />
-        {/* Relleno de unión — 4px en color exacto del footer para eliminar seam */}
-        <div className="w-full" style={{ height: "4px", backgroundColor: "#12082D" }} />
+        {/* Relleno de unión — 20px en color exacto del footer para eliminar seam visual */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "20px",
+            backgroundColor: "#12082D",
+          }}
+        />
       </div>
     </section>
   );

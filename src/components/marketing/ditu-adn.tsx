@@ -118,8 +118,10 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
       />
 
       {/* Ditu custom icons — Figma 512:2823: decorativo RGBA 181×204 px.
-          x=1327 px del borde izq. del frame 1440 → desborda 68 px por la dcha.
-          (intencional en el Figma — overflow-hidden del section lo recorta). */}
+          x=1327.72 px del borde izq. del frame 1440 → desborda 68 px por la dcha.
+          (intencional en el Figma — overflow-hidden del section lo recorta).
+          Audit 2026-06-01: posición verificada vs metadata Figma (x=1327.72 en Frame 14510).
+          top=1023px = 233 (wave h) + 790 (y en Frame 14510). CORRECTO — no mover. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/ditu/adn-custom-icon.png"
@@ -128,7 +130,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
         className="pointer-events-none absolute hidden lg:block"
         style={{
           top: "1023px" /* 233 (wave h) + 790 (y en Frame 14510, Figma 512:2823) */,
-          left: "1327px" /* Figma x=1327 en frame 1440 px */,
+          left: "1327px" /* Figma x=1327.72 en frame 1440 px — verificado correcto */,
           width: "181px",
           height: "204px",
         }}
@@ -251,7 +253,8 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
 
           {/* Card Edad pico */}
           <article className="flex flex-col items-start gap-2 rounded-[16px] border border-white p-6 sm:p-8 lg:p-[40px]">
-            <div className="flex items-center gap-2 self-end">
+            {/* Figma 748:2639: header alineado a la DERECHA (justify-end). */}
+            <div className="flex w-full items-center justify-end gap-2">
               <Image
                 src="/ditu/icon-cake.svg"
                 alt=""
@@ -322,10 +325,15 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
           </article>
         </div>
 
-        {/* Y dónde encontrarlo */}
+        {/* Y dónde encontrarlo — Figma 747:2646: DOS líneas separadas.
+            Línea 1: "y dónde " blanco · Línea 2: "encontrarlo" cyan #77EDED.
+            SIN whitespace-nowrap para que hagan break natural. */}
         <div className="flex w-full flex-col gap-3">
-          <h3 className="font-display text-[36px] leading-[1] font-bold whitespace-nowrap text-white uppercase sm:text-[60px] lg:text-[84px]">
-            y dónde <span style={{ color: CYAN }}>encontrarlo</span>
+          <h3 className="font-display text-[36px] leading-[1] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
+            <span className="block">y dónde</span>
+            <span className="block" style={{ color: CYAN }}>
+              encontrarlo
+            </span>
           </h3>
           <p
             className="max-w-[687px] text-[18px] leading-snug text-white sm:text-[22px]"
