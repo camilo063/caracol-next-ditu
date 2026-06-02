@@ -1865,13 +1865,6 @@ export const floatingContactDemo = {
       whatsapp: "573009876543",
       photo: null,
     },
-    {
-      name: "Andrea Vargas",
-      role: "Digital",
-      email: "avargas@caracoltv.com.co",
-      whatsapp: "573005551234",
-      photo: null,
-    },
   ],
   position: "bottom-right" as const,
 };
