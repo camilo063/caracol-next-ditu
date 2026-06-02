@@ -23,7 +23,8 @@ export interface HomeContactModalProps {
   onClose: () => void;
   representatives: ContactRepresentative[];
   headline?: string;
-  position: { top?: number; bottom?: number; left: number; width: number };
+  /** Posición calculada por el trigger. Si no se pasa, se centra en pantalla. */
+  position?: { top?: number; bottom?: number; left: number; width: number };
 }
 
 export function HomeContactModal({
@@ -68,12 +69,22 @@ export function HomeContactModal({
           exit={{ opacity: 0, y: -6, scale: 0.98 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="fixed z-50"
-          style={{
-            top: position.top ?? "auto",
-            bottom: position.bottom ?? "auto",
-            left: position.left,
-            width: position.width,
-          }}
+          style={
+            position
+              ? {
+                  top: position.top ?? "auto",
+                  bottom: position.bottom ?? "auto",
+                  left: position.left,
+                  width: position.width,
+                }
+              : {
+                  // Fallback centrado (FloatingContact sin posición explícita)
+                  top: "50%",
+                  left: "50%",
+                  width: 256,
+                  transform: "translate(-50%, -50%)",
+                }
+          }
         >
           <div
             className="relative flex flex-col items-center overflow-clip rounded-[4px] bg-white px-4 py-6 pt-8"
