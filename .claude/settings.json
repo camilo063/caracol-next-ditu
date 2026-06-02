@@ -4,7 +4,11 @@
       "Bash(lsof -iTCP -sTCP:LISTEN -n -P)",
       "Bash(curl -sS -o /tmp/curl_root.html -w \"%{http_code}\\\\n\" http://localhost:3000/)",
       "Bash(curl -sS -o /tmp/curl_ditu.html -w \"%{http_code}\\\\n\" http://localhost:3000/ditu)",
-      "Bash(curl -sS -o /tmp/curl_cn.html -w \"%{http_code}\\\\n\" http://localhost:3000/caracol-next)"
+      "Bash(curl -sS -o /tmp/curl_cn.html -w \"%{http_code}\\\\n\" http://localhost:3000/caracol-next)",
+      "Bash(pnpm install *)",
+      "Bash(git -C /Users/mac/Documents/Niveleads/project/caracol-next-ditu checkout -- package-lock.json)",
+      "Bash(git -C /Users/mac/Documents/Niveleads/project/caracol-next-ditu add pnpm-workspace.yaml)",
+      "Bash(git -C /Users/mac/Documents/Niveleads/project/caracol-next-ditu status)"
     ]
   }
 }
