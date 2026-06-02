@@ -1,28 +1,29 @@
 "use client";
 
 import * as React from "react";
-import { animate, useInView, useReducedMotion } from "framer-motion";
+import { useInView, useReducedMotion } from "framer-motion";
 
 export interface CountUpProps {
-  /** Valor final hacia el que se anima. */
   value: number;
-  /** Duración en segundos. Default 2.4s (smooth easing). */
+  /** Duración total en segundos. Default 2.4s. */
   duration?: number;
-  /** Función de formato para cada frame (ej. formatCompact, formatNumber, % con decimales). */
   format?: (v: number) => string;
-  /** Locale de fallback si no se pasa `format`. Default es-CO. */
   locale?: string;
-  /** Margen del viewport para disparar la animación. */
   rootMargin?: string;
-  /** className passthrough. */
   className?: string;
+  /**
+   * Reserva el ancho del valor final desde el inicio con texto invisible,
+   * evitando saltos de layout mientras el número crece.
+   */
+  reserveWidth?: boolean;
 }
 
 /**
- * CountUp — anima un número de 0 al valor final cuando entra al viewport.
- * - Usa Framer Motion `animate()` con onUpdate para actualizar el estado del componente.
- * - Dispara una sola vez (useInView once:true).
- * - Respeta `prefers-reduced-motion` → muestra el valor final sin animar.
+ * CountUp — efecto odómetro digital.
+ *
+ * Los números cambian en ticks discretos a intervalo fijo (≈60ms),
+ * con ease-out cubico: ticks rápidos al inicio, lentos al final.
+ * Simula un marcador o reloj digital que "cae" hacia el valor final.
  */
 export function CountUp({
   value,
@@ -31,11 +32,10 @@ export function CountUp({
   locale = "es-CO",
   rootMargin = "0px 0px -80px 0px",
   className,
+  reserveWidth = false,
 }: CountUpProps) {
   const reduced = useReducedMotion();
   const ref = React.useRef<HTMLSpanElement>(null);
-  // Cast: framer-motion v11 tipa `margin` como template literal; nuestro
-  // valor sigue el mismo formato `<X>px <X>px <X>px <X>px`.
   const inView = useInView(ref, {
     once: true,
     margin: rootMargin as `${number}px ${number}px ${number}px ${number}px`,
@@ -48,19 +48,53 @@ export function CountUp({
       return;
     }
     if (!inView) return;
-    // Curva cubic-bezier "smooth": arranque lento, llega suavemente al final.
-    const controls = animate(0, value, {
-      duration,
-      ease: [0.16, 1, 0.3, 1],
-      onUpdate: (latest) => setCurrent(latest),
-    });
-    return () => controls.stop();
+
+    // Un tick cada ~60ms → ~16 ticks/s (sensación de display digital)
+    const TICK_MS = 60;
+    const totalSteps = Math.round((duration * 1000) / TICK_MS);
+    let step = 0;
+
+    const finalRounded = Math.round(value);
+
+    const timer = setInterval(() => {
+      step++;
+      const t = step / totalSteps;
+      const eased = 1 - Math.pow(1 - t, 3);
+      const next = value * eased;
+
+      setCurrent(next);
+
+      // Para en cuanto el valor redondeado ya alcanzó el final,
+      // evitando ticks "congelados" donde el display no cambia.
+      if (step >= totalSteps || Math.round(next) >= finalRounded) {
+        clearInterval(timer);
+        setCurrent(value);
+      }
+    }, TICK_MS);
+
+    return () => clearInterval(timer);
   }, [inView, value, duration, reduced]);
 
   const display = format?.(current) ?? Math.round(current).toLocaleString(locale);
+  const finalDisplay = format?.(value) ?? Math.round(value).toLocaleString(locale);
+
+  if (reserveWidth) {
+    return (
+      <span
+        ref={ref}
+        className={`relative inline-block ${className ?? ""}`}
+        style={{ fontVariantNumeric: "tabular-nums" }}
+      >
+        <span aria-hidden="true" className="invisible">
+          {finalDisplay}
+        </span>
+        <span className="absolute inset-0 flex items-center justify-end">{display}</span>
+      </span>
+    );
+  }
 
   return (
-    <span ref={ref} className={className}>
+    <span ref={ref} className={className} style={{ fontVariantNumeric: "tabular-nums" }}>
       {display}
     </span>
   );

@@ -1,26 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-import { CountUp } from "@/components/animations";
 import { cn } from "@/lib/utils";
 import { HomeContactModal, type ContactRepresentative } from "./home-contact-modal";
 
 /** Easing común para la entrada escalonada (motion.dev/examples/react-hero-stagger). */
-const STAGGER_EASE = [0.16, 1, 0.3, 1] as const;
-const STAGGER_STEP = 0.08; // delay incremental entre elementos
+const STAGGER_STEP = 0.13; // delay entre elementos — más espaciado = más elegante
 
-/** Variants reutilizable: fade-in + slide-up suave. */
+/** Fade-up: sube 56px + opacidad 0→1 + leve blur inicial. */
 const staggerItemVariants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 56, filter: "blur(4px)" },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: STAGGER_EASE },
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.85,
+      ease: [0.25, 0.46, 0.45, 0.94], // ease-out suave — no rush
+    },
   },
 };
 
@@ -108,8 +110,39 @@ export function HubLanding({
   copyright,
 }: HubLandingProps) {
   const [contactOpen, setContactOpen] = useState(false);
+  const [contactPos, setContactPos] = useState<{
+    top?: number;
+    bottom?: number;
+    left: number;
+    width: number;
+  }>({ left: 0, width: 0 });
+  const contactBtnRef = useRef<HTMLButtonElement>(null);
   // Si hay representantes, el CTA abre el modal. Si no, navega como Link.
   const hasModal = !!representatives && representatives.length > 0;
+
+  const handleContactClick = () => {
+    if (!contactBtnRef.current) return;
+    const rect = contactBtnRef.current.getBoundingClientRect();
+    const GAP = 8;
+    const isDesktop = window.innerWidth >= 1280; // breakpoint xl
+
+    if (isDesktop) {
+      // Desktop: a la derecha del botón, ancho fijo 256px, anclado por bottom
+      setContactPos({
+        bottom: window.innerHeight - rect.bottom,
+        left: rect.right + GAP,
+        width: 256,
+      });
+    } else {
+      // Mobile/tablet: debajo del botón, mismo ancho que el botón
+      setContactPos({
+        top: rect.bottom + GAP,
+        left: rect.left,
+        width: rect.width,
+      });
+    }
+    setContactOpen(true);
+  };
 
   return (
     <div
@@ -143,11 +176,16 @@ export function HubLanding({
       />
 
       {/* Header — Figma 892:6210 — centrado dentro del wrapper 1440 */}
-      <header className="relative z-10 w-full px-6 pt-8 sm:px-10 lg:pt-[40px]">
+      <motion.header
+        className="relative z-10 w-full px-6 pt-8 sm:px-10 lg:pt-[40px]"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
         <div className="mx-auto w-full max-w-[1377px] lg:px-[40px]">
           <CaracolMediosLogo />
         </div>
-      </header>
+      </motion.header>
 
       {/* Body — desktop 2-col, mobile stacked. Centrado horizontalmente
           dentro de un wrapper max-w-[1377px] (mismo tope que Figma). */}
@@ -159,17 +197,17 @@ export function HubLanding({
           visible: {
             transition: {
               staggerChildren: STAGGER_STEP,
-              delayChildren: 0.15,
+              delayChildren: 0.2,
             },
           },
         }}
-        className="relative z-10 mx-auto flex w-full max-w-[1377px] flex-1 flex-col gap-12 px-6 py-12 sm:px-10 lg:flex-row lg:items-start lg:gap-[26px] lg:px-[84px] lg:pt-[150px] lg:pb-[80px]"
+        className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-10 px-6 py-12 sm:px-10 xl:flex-row xl:items-center xl:gap-[26px] xl:px-[84px] xl:py-[60px]"
       >
         {/* Left — hero content. Cada nodo es un motion.div para stagger. */}
-        <div className="flex flex-col items-start lg:max-w-[611px] lg:pt-[68px]">
+        <div className="flex flex-col items-center xl:max-w-[611px] xl:items-start xl:pt-[68px]">
           <motion.p
             variants={staggerItemVariants}
-            className="text-[14px] font-bold uppercase sm:text-[18px] lg:text-[20px]"
+            className="text-center text-[14px] font-bold uppercase sm:text-[18px] xl:text-left xl:text-[20px]"
             style={{
               color: "#00ACFF",
               fontFamily: "var(--font-poppins), system-ui, sans-serif",
@@ -183,7 +221,7 @@ export function HubLanding({
               que en mobile el interlineado fijo 80px separe en exceso. */}
           <motion.h1
             variants={staggerItemVariants}
-            className="mt-[16px] w-full text-[40px] leading-[1.08] font-bold sm:mt-[20px] sm:text-[56px] sm:leading-[1.07] lg:mt-[24px] lg:text-[74px] lg:leading-[80px]"
+            className="mt-[16px] w-full text-center text-[40px] leading-[1.08] font-bold sm:text-[56px] sm:leading-[1.07] xl:mt-[24px] xl:text-left xl:text-[74px] xl:leading-[80px]"
             style={{
               fontFamily: "var(--font-montserrat), system-ui, sans-serif",
               color: "#FFFFFF",
@@ -195,18 +233,22 @@ export function HubLanding({
           {/* CTA Contáctenos — bg #00ACFF. cursor-pointer + hover bg darker. */}
           <motion.div
             variants={staggerItemVariants}
-            className="mt-[40px] w-full max-w-[306px]"
+            className="mt-[40px] w-full max-w-[306px] sm:mx-0"
           >
             {hasModal ? (
               <button
+                ref={contactBtnRef}
                 type="button"
-                onClick={() => setContactOpen(true)}
-                className="group inline-flex w-full cursor-pointer items-center justify-center rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-all duration-200 hover:bg-[#0099E5] hover:shadow-lg hover:shadow-[#00ACFF]/30 active:scale-[0.98] sm:text-[18px]"
+                onClick={handleContactClick}
+                className="group inline-flex w-full cursor-pointer items-center justify-center rounded-[4px] border border-[#00ACFF] bg-[#00ACFF] px-[48px] py-[12px] text-[16px] font-semibold text-white [transition:background-color_0.35s_ease-in-out,border-color_0.35s_ease-in-out,box-shadow_0.35s_ease-in-out,transform_0.12s_ease] hover:border-[#2862FF] hover:bg-[#2862FF] hover:shadow-lg hover:shadow-[#2862FF]/30 active:scale-[0.98] sm:text-[18px]"
                 style={{
-                  backgroundColor: "#00ACFF",
-                  borderColor: "#00ACFF",
                   fontFamily: "var(--font-montserrat), system-ui, sans-serif",
                   lineHeight: "24px",
+                  // Mantiene estilos del hover mientras el popover está abierto
+                  ...(contactOpen && {
+                    backgroundColor: "#2862FF",
+                    borderColor: "#2862FF",
+                  }),
                   minHeight: "32px",
                 }}
               >
@@ -215,10 +257,8 @@ export function HubLanding({
             ) : (
               <Link
                 href={contactHref ?? "#"}
-                className="group inline-flex w-full cursor-pointer items-center justify-center rounded-[4px] border px-[48px] py-[12px] text-[16px] font-semibold text-white transition-all duration-200 hover:bg-[#0099E5] hover:shadow-lg hover:shadow-[#00ACFF]/30 active:scale-[0.98] sm:text-[18px]"
+                className="group inline-flex w-full cursor-pointer items-center justify-center rounded-[4px] border border-[#00ACFF] bg-[#00ACFF] px-[48px] py-[12px] text-[16px] font-semibold text-white [transition:background-color_0.35s_ease-in-out,border-color_0.35s_ease-in-out,box-shadow_0.35s_ease-in-out,transform_0.12s_ease] hover:border-[#2862FF] hover:bg-[#2862FF] hover:shadow-lg hover:shadow-[#2862FF]/30 active:scale-[0.98] sm:text-[18px]"
                 style={{
-                  backgroundColor: "#00ACFF",
-                  borderColor: "#00ACFF",
                   fontFamily: "var(--font-montserrat), system-ui, sans-serif",
                   lineHeight: "24px",
                   minHeight: "32px",
@@ -231,28 +271,69 @@ export function HubLanding({
         </div>
 
         {/* Right — product cards + metrics + bottom CTAs */}
-        <div className="flex flex-1 flex-col gap-6 lg:max-w-[636px]">
-          {/* Product cards — Caracol Next (w-328 más largo) + Ditu (w-284).
-              Mobile: stacked, ambas full-width (sin que Next ocupe toda la
-              pantalla desplazando las demás). Cards completas son links. */}
+        <div className="mx-auto flex w-full max-w-[640px] flex-col gap-4 xl:mx-0 xl:max-w-[636px] xl:flex-1">
+          {/* Product cards — Caracol Next (w-328 más largo) + Ditu (w-284). */}
           <motion.div
             variants={staggerItemVariants}
-            className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-start lg:gap-[24px]"
+            className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-stretch"
           >
-            {/* Caracol Next card */}
-            <ProductCard
-              variant="caracolnext"
-              title={brands.caracolNext.title}
-              description={brands.caracolNext.description}
-              href={brands.caracolNext.href}
-            />
-            {/* Ditu card */}
-            <ProductCard
-              variant="ditu"
-              title={brands.ditu.title}
-              description={brands.ditu.description}
-              href={brands.ditu.href}
-            />
+            {/* Caracol Next: card + CTA mobile debajo */}
+            <div className="flex flex-col gap-3 sm:contents">
+              <ProductCard
+                variant="caracolnext"
+                title={brands.caracolNext.title}
+                description={brands.caracolNext.description}
+                href={brands.caracolNext.href}
+              />
+              <Link
+                href={brands.caracolNext.href}
+                className="group mx-auto inline-flex w-full max-w-[360px] cursor-pointer items-center justify-center gap-2 rounded-[4px] border border-white bg-transparent px-6 py-[12px] text-[14px] font-semibold text-white [transition:background-color_0.35s_ease-in-out,border-color_0.35s_ease-in-out,box-shadow_0.35s_ease-in-out,transform_0.12s_ease] hover:border-[#00ACFF] hover:bg-[#00ACFF]/15 active:scale-[0.98] sm:hidden"
+                style={{
+                  fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                  lineHeight: "24px",
+                }}
+              >
+                {brands.caracolNext.ctaLabel}
+                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+
+            {/* Ditu: card + CTA mobile debajo */}
+            <div className="flex flex-col gap-3 sm:contents">
+              <ProductCard
+                variant="ditu"
+                title={brands.ditu.title}
+                description={brands.ditu.description}
+                href={brands.ditu.href}
+              />
+              <Link
+                href={brands.ditu.href}
+                className="group relative mx-auto inline-flex w-full max-w-[360px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-[10px] px-6 py-[12px] text-[14px] font-semibold text-[#FDFDFD] [transition:box-shadow_0.35s_ease-in-out,transform_0.12s_ease] active:scale-[0.98] sm:hidden"
+                style={{
+                  fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                  lineHeight: 1.5,
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0"
+                  style={{
+                    background: "linear-gradient(to left, #8232F0 0%, #561BDB 100%)",
+                  }}
+                />
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 opacity-0 transition-opacity duration-[350ms] ease-in-out group-hover:opacity-100"
+                  style={{
+                    background: "linear-gradient(to left, #561BDB 0%, #8232F0 100%)",
+                  }}
+                />
+                <span className="relative z-10 flex items-center gap-2">
+                  {brands.ditu.ctaLabel}
+                  <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                </span>
+              </Link>
+            </div>
           </motion.div>
 
           {/* Metric cards — Spec usuario: en MOBILE se ocultan. Spec Figma:
@@ -262,7 +343,7 @@ export function HubLanding({
             className="hidden flex-col gap-[24px] sm:flex"
           >
             {/* Row 1 */}
-            <div className="flex items-stretch gap-[24px]">
+            <div className="flex items-stretch gap-4">
               {stats.slice(0, 2).map((s, i) => (
                 <MetricCard
                   key={i}
@@ -278,7 +359,7 @@ export function HubLanding({
               ))}
             </div>
             {/* Row 2 */}
-            <div className="flex items-stretch gap-[24px]">
+            <div className="flex items-stretch gap-4">
               {stats.slice(2, 4).map((s, i) => (
                 <MetricCard
                   key={i}
@@ -295,17 +376,15 @@ export function HubLanding({
             </div>
           </motion.div>
 
-          {/* Bottom CTAs — Conoce Caracol Next + Conoce ditu. */}
+          {/* Bottom CTAs — Conoce Caracol Next + Conoce ditu. Solo sm+. */}
           <motion.div
             variants={staggerItemVariants}
-            className="flex flex-col gap-4 sm:flex-row lg:gap-[24px]"
+            className="hidden gap-4 sm:flex sm:flex-row lg:gap-[24px]"
           >
             <Link
               href={brands.caracolNext.href}
-              className="group inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-[4px] border px-6 py-[12px] text-[14px] font-semibold whitespace-nowrap text-white transition-all duration-200 hover:border-[#00ACFF] hover:bg-white/10 hover:shadow-md hover:shadow-[#00ACFF]/20 active:scale-[0.98] lg:px-[24px] lg:text-[16px]"
+              className="group inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-[4px] border border-white bg-transparent px-6 py-[12px] text-[14px] font-semibold whitespace-nowrap text-white [transition:background-color_0.35s_ease-in-out,border-color_0.35s_ease-in-out,box-shadow_0.35s_ease-in-out,transform_0.12s_ease] hover:border-[#00ACFF] hover:bg-[#00ACFF]/15 hover:shadow-lg hover:shadow-[#00ACFF]/30 active:scale-[0.98] lg:px-[24px] lg:text-[16px]"
               style={{
-                borderColor: "#FFFFFF",
-                backgroundColor: "transparent",
                 fontFamily: "var(--font-montserrat), system-ui, sans-serif",
                 lineHeight: "24px",
                 minHeight: "32px",
@@ -316,23 +395,44 @@ export function HubLanding({
             </Link>
             <Link
               href={brands.ditu.href}
-              className="group inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-[10px] px-6 py-[12px] text-[14px] font-semibold whitespace-nowrap text-[#FDFDFD] transition-all duration-200 hover:shadow-lg hover:shadow-[#8232F0]/40 hover:brightness-110 active:scale-[0.98] lg:px-[24px] lg:text-[16px]"
+              className="group relative inline-flex flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-[10px] px-6 py-[12px] text-[14px] font-semibold whitespace-nowrap text-[#FDFDFD] [transition:box-shadow_0.35s_ease-in-out,transform_0.12s_ease] hover:shadow-lg hover:shadow-[#8232F0]/40 active:scale-[0.98] lg:px-[24px] lg:text-[16px]"
               style={{
-                background:
-                  "linear-gradient(115.47deg, #8232F0 14.111%, #561BDB 81.738%)",
                 fontFamily: "var(--font-montserrat), system-ui, sans-serif",
                 lineHeight: 1.5,
               }}
             >
-              {brands.ditu.ctaLabel}
-              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+              {/* Gradiente base: derecha #8232F0 → izquierda #561BDB */}
+              <span
+                aria-hidden="true"
+                className="absolute inset-0"
+                style={{
+                  background: "linear-gradient(to left, #8232F0 0%, #561BDB 100%)",
+                }}
+              />
+              {/* Gradiente hover invertido — fade-in 350ms */}
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 opacity-0 transition-opacity duration-[350ms] ease-in-out group-hover:opacity-100"
+                style={{
+                  background: "linear-gradient(to left, #561BDB 0%, #8232F0 100%)",
+                }}
+              />
+              <span className="relative z-10 flex items-center gap-2">
+                {brands.ditu.ctaLabel}
+                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+              </span>
             </Link>
           </motion.div>
         </div>
       </motion.main>
 
       {/* Footer copyright pill — Figma 892:6164. Centrado igual que el resto. */}
-      <footer className="relative z-10 w-full px-6 pb-8 sm:px-10 lg:pb-[40px]">
+      <motion.footer
+        className="relative z-10 w-full px-6 pb-8 sm:px-10 lg:pb-[40px]"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.9 }}
+      >
         <div className="mx-auto w-full max-w-[1377px] lg:px-[120px]">
           <div
             className="flex items-start justify-center overflow-clip rounded-[90px] p-[10px]"
@@ -349,7 +449,7 @@ export function HubLanding({
             </p>
           </div>
         </div>
-      </footer>
+      </motion.footer>
 
       {/* Modal contacto — abre al hacer click en CTA Contáctenos */}
       {hasModal ? (
@@ -357,6 +457,7 @@ export function HubLanding({
           open={contactOpen}
           onClose={() => setContactOpen(false)}
           representatives={representatives}
+          position={contactPos}
         />
       ) : null}
     </div>
@@ -389,13 +490,13 @@ function ProductCard({
     <Link
       href={href}
       className={cn(
-        "group flex cursor-pointer flex-col items-center justify-center gap-[24px] rounded-[8px] border px-[20px] pt-[40px] pb-[30px] transition-all duration-200 hover:scale-[1.01] hover:shadow-lg",
+        "group flex cursor-pointer flex-col items-center justify-center gap-[24px] rounded-[8px] border px-[20px] pt-[40px] pb-[30px] transition-all duration-500 hover:scale-[1.01] hover:shadow-lg",
         // Mobile/tablet: ambas cards al mismo ancho (w-full) — fix bug
         // "Next ocupa toda la pantalla y desplaza las demás tarjetas".
         // Desktop: Caracol Next más ancho (328) que Ditu (284) per Figma 334:1559.
         isDitu
-          ? "w-full sm:w-1/2 sm:shrink-0 lg:w-[284px]"
-          : "w-full sm:w-1/2 sm:flex-1 lg:max-w-[328px]",
+          ? "mx-auto w-full max-w-[360px] sm:mx-0 sm:max-w-none sm:flex-1 lg:w-[284px] lg:flex-none"
+          : "mx-auto w-full max-w-[360px] sm:mx-0 sm:max-w-none sm:flex-1 lg:max-w-[328px]",
       )}
       style={
         isDitu
@@ -456,6 +557,16 @@ function MetricCard({
 }) {
   const borderColor = accent === "ditu" ? "#561BDB" : "#003381";
   const numberColor = accent === "ditu" ? "#12082D" : "#003381";
+  // Solo aplicar ancho fijo del Figma en desktop (≥ 1024px).
+  // En sm/md los cards son flex-1 iguales para no desbordar el viewport.
+  const [isLg, setIsLg] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    setIsLg(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsLg(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   return (
     <div
@@ -463,8 +574,7 @@ function MetricCard({
       style={{
         backgroundColor: "#F1F1F1",
         borderColor,
-        // Desktop width específico Figma (272/340/328/288). Sin lgWidth: flex-1.
-        ...(lgWidth ? { width: `${lgWidth}px`, flex: "0 0 auto" } : {}),
+        ...(isLg && lgWidth ? { width: `${lgWidth}px`, flex: "0 0 auto" } : {}),
       }}
     >
       {/* Icon top-left 40px */}
@@ -488,23 +598,7 @@ function MetricCard({
             lineHeight: "48px",
           }}
         >
-          {numericValue != null ? (
-            <>
-              {prefix ?? ""}
-              <CountUp
-                value={numericValue}
-                format={(v) => {
-                  // Format helper para mostrar números como +16M, +127M, etc.
-                  if (suffix === "M") return Math.round(v).toString();
-                  if (suffix === "Min") return Math.round(v).toString();
-                  return Math.round(v).toLocaleString("es-CO");
-                }}
-              />
-              {suffix ?? ""}
-            </>
-          ) : (
-            fallbackValue
-          )}
+          {fallbackValue}
         </p>
         <p
           className="text-right text-[16px] font-semibold sm:text-[18px] lg:text-[20px]"
@@ -528,21 +622,18 @@ function MetricCard({
 function CaracolMediosLogo({ className }: { className?: string }) {
   return (
     <div className={cn("flex w-full items-center gap-[24px] sm:w-[395px]", className)}>
-      {/* Logo Caracol MEDIOS SVG real — Figma 397:1981: w-241 h-32 */}
-      <div className="relative h-[32px] w-[180px] flex-shrink-0 overflow-hidden sm:w-[241px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/home/logo-caracol-medios.svg"
-          alt="Caracol Medios"
-          className="block h-full w-full"
-          style={{ maxWidth: "none" }}
-        />
-      </div>
+      {/* Logo Caracol MEDIOS — h fija, w se adapta a la proporción natural del SVG */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/home/logo-caracol-medios.svg"
+        alt="Caracol Medios"
+        className="block h-[26px] w-auto flex-shrink-0 sm:h-[32px]"
+      />
       {/* Divider — Figma 397:1984 (Rectangle 53): 2×32 px, #D9D9D9.
           self-stretch (sin h-full) deja que flexbox asigne la altura = 32 px del logo.
           h-full + self-stretch compiten: height:100% gana y resuelve a 0 en contenedor auto. */}
       <div
-        className="hidden w-[2px] shrink-0 self-stretch sm:block"
+        className="block w-[2px] shrink-0 self-stretch"
         style={{ backgroundColor: "#D9D9D9" }}
         aria-hidden="true"
       />
@@ -569,33 +660,67 @@ function CaracolMediosLogo({ className }: { className?: string }) {
 export function CaracolNextWordmark({ className }: { className?: string }) {
   return (
     <svg
+      width="205"
+      height="32"
       viewBox="0 0 205 32"
-      className={cn("h-8 w-[205px]", className)}
-      fill="currentColor"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="Caracol Next"
     >
-      {/* Orbital eye logo (Figma 9:1710) — viewBox 50.14x26.04. */}
-      <g transform="translate(0.45, 2.95) scale(1.117)">
-        <path d="M17.2685 16.8453C18.7565 19.5318 21.6415 21.3552 24.9586 21.3552C29.7962 21.3552 33.724 17.4683 33.724 12.6761C33.724 11.9267 33.6266 11.1999 33.4479 10.5056C37.6909 10.7846 41.8007 11.7287 40.7741 14.4411C39.1854 18.6395 24.7247 24.3174 12.535 25.1123C23.4446 28.2854 50.29 23.0066 50.1405 14.1783C50.0593 9.26293 40.4134 9.07799 33.1685 9.63605C31.9242 6.34613 28.7175 4.00036 24.9586 4.00036C20.1178 4.00036 16.1932 7.88402 16.1932 12.6794C16.1932 13.815 16.4141 14.8986 16.817 15.8914C12.3433 15.5183 7.71364 14.4639 8.89948 11.6347C10.6376 7.49468 25.2575 0.804528 37.47 0.441144C21.6123 -1.94356 0.150287 5.80429 0.000839749 12.5301C-0.106373 17.3774 10.0756 17.4196 17.2685 16.8453Z" />
+      <g clipPath="url(#clip0_892_6206)">
+        <path
+          d="M20.1211 20.3717C21.8157 23.4419 25.1014 25.5258 28.8792 25.5258C34.3886 25.5258 38.862 21.0837 38.862 15.6069C38.862 14.7504 38.751 13.9198 38.5475 13.1263C43.3799 13.4452 48.0605 14.5242 46.8912 17.6241C45.0819 22.4222 28.6128 28.9112 14.73 29.8197C27.1549 33.4461 57.7288 27.4132 57.5586 17.3237C57.4661 11.7061 46.4805 11.4948 38.2293 12.1326C36.8122 8.37265 33.1602 5.69177 28.8792 5.69177C23.366 5.69177 18.8963 10.1302 18.8963 15.6107C18.8963 16.9085 19.1479 18.1469 19.6067 19.2816C14.5117 18.8552 9.23908 17.6501 10.5896 14.4167C12.5692 9.68528 29.2196 2.03939 43.1282 1.6241C25.0681 -1.10128 0.625262 7.75341 0.455058 15.4401C0.332955 20.9798 11.9291 21.028 20.1211 20.3717Z"
+          fill="white"
+        />
+        <path
+          d="M81.9423 8.30589L83.5667 21.4396H80.2847L81.946 8.30589H81.9423ZM79.3745 2.82918L75.6004 29.13H79.3412L79.8333 25.003H84.0218L84.5509 29.13H88.5544L84.7396 2.82918H79.3745Z"
+          fill="white"
+        />
+        <path
+          d="M94.2525 6.42965H96.2173C97.2385 6.42965 97.7306 6.9191 97.7306 7.92768V13.4823C97.7306 14.5724 97.1978 15.0952 96.0656 15.0952H94.2525V6.42965ZM94.2525 18.5882H96.0656C97.2385 18.5882 97.7639 19.1147 97.7639 20.2753V29.1337H101.808V20.2011C101.808 18.2137 101.124 17.2014 99.466 16.749C100.939 16.152 101.771 15.0248 101.771 12.6962V7.74598C101.771 4.48295 100.147 2.86997 96.8611 2.86997H90.212V29.1374H94.2562V18.5919L94.2525 18.5882Z"
+          fill="white"
+        />
+        <path
+          d="M109.737 8.30589L111.362 21.4396H108.076L109.737 8.30589ZM107.17 2.82918L103.395 29.13H107.136L107.628 25.003H111.821L112.35 29.13H116.353L112.538 2.82918H107.17Z"
+          fill="white"
+        />
+        <path
+          d="M125.492 24.2911C125.492 25.3404 125 25.8299 123.983 25.8299H123.228C122.166 25.8299 121.678 25.3404 121.678 24.2911V7.7052C121.678 6.65213 122.166 6.16638 123.228 6.16638H123.905C124.926 6.16638 125.415 6.65213 125.415 7.7052V12.8482H129.381V7.48272C129.381 4.21968 127.798 2.64008 124.508 2.64008H122.547C119.261 2.64008 117.637 4.25305 117.637 7.51609V24.4765C117.637 27.7395 119.261 29.3525 122.547 29.3525H124.549C127.831 29.3525 129.459 27.7395 129.459 24.4765V18.362H125.492V24.2911Z"
+          fill="white"
+        />
+        <path
+          d="M139.582 24.2948C139.582 25.3441 139.09 25.8299 138.073 25.8299H137.24C136.182 25.8299 135.694 25.3441 135.694 24.2948V7.70891C135.694 6.65954 136.182 6.17009 137.24 6.17009H138.073C139.09 6.17009 139.582 6.65954 139.582 7.70891V24.2948ZM138.713 2.64378H136.559C133.274 2.64378 131.649 4.25305 131.649 7.5198V24.4802C131.649 27.7432 133.274 29.3562 136.559 29.3562H138.713C141.999 29.3562 143.623 27.7432 143.623 24.4802V7.5198C143.623 4.25305 141.999 2.64378 138.713 2.64378Z"
+          fill="white"
+        />
+        <path
+          d="M145.813 2.86626V29.13H154.312V25.4887H149.854V2.86626H145.813Z"
+          fill="white"
+        />
+        <path
+          d="M74.3127 12.8482V7.48272C74.3127 4.21968 72.7291 2.64378 69.4397 2.64378H67.475C64.193 2.64378 62.5649 4.25305 62.5649 7.5198V24.4802C62.5649 27.7432 64.1893 29.3562 67.475 29.3562H69.4804C72.7661 29.3562 74.3904 27.7432 74.3904 24.4802V18.3657H70.4239V24.2948C70.4239 25.3441 69.9355 25.8336 68.9143 25.8336H68.1595C67.0976 25.8336 66.6091 25.3441 66.6091 24.2948V7.7052C66.6091 6.65213 67.0976 6.16638 68.1595 6.16638H68.8366C69.8578 6.16638 70.3462 6.65213 70.3462 7.7052V12.8482H74.3127Z"
+          fill="white"
+        />
+        <path
+          d="M167.118 2.86627V29.13H164.321L159.607 12.4069L159.37 10.794V29.13H156.499V2.86627H159.259L163.973 19.6079L164.21 21.3655V2.86627H167.118Z"
+          fill="white"
+        />
+        <path
+          d="M179.018 5.11703H173.353V14.8431H178.633V17.0976H173.353V26.8792H179.018V29.1337H170.482V2.86627H179.018V5.12073V5.11703Z"
+          fill="white"
+        />
+        <path
+          d="M191.424 2.86627L187.31 15.8888L191.387 29.13H188.427L185.815 18.781L183.092 29.13H180.169L184.246 16.1075L180.132 2.86627H183.129L185.852 13.067L188.594 2.86627H191.428H191.424Z"
+          fill="white"
+        />
+        <path
+          d="M204.548 2.86627V5.19118H199.909V29.13H196.985V5.19118H192.342V2.86627H204.552H204.548Z"
+          fill="white"
+        />
       </g>
-      {/* "CARACOL" wordmark (Figma 9:1711) — viewBox 80.56x23.38. */}
-      <g transform="translate(62.5, 2.64) scale(1.038, 1.117)">
-        <path d="M17.0143 4.95759L18.4406 16.4496H15.5588L17.0175 4.95759H17.0143ZM14.7596 0.165469L11.4457 23.1787H14.7303L15.1624 19.5676H18.8402L19.3047 23.1787H22.82L19.4704 0.165469H14.7596Z" />
-        <path d="M27.8233 3.31587H29.5484C30.4451 3.31587 30.8772 3.74415 30.8772 4.62665V9.48691C30.8772 10.4408 30.4094 10.8983 29.4152 10.8983H27.8233V3.31587ZM27.8233 13.9546H29.4152C30.4451 13.9546 30.9064 14.4153 30.9064 15.4308V23.1819H34.4574V15.3659C34.4574 13.6269 33.8564 12.7411 32.4009 12.3453C33.694 11.8229 34.425 10.8366 34.425 8.79907V4.46767C34.425 1.61251 32.9987 0.201159 30.1137 0.201159H24.2755V23.1852H27.8265V13.9578L27.8233 13.9546Z" />
-        <path d="M41.4198 4.95759L42.846 16.4496H39.961L41.4198 4.95759ZM39.1651 0.165469L35.8512 23.1787H39.1358L39.5679 19.5676H43.2489L43.7135 23.1787H47.2287L43.8791 0.165469H39.1651Z" />
-        <path d="M55.2534 18.9446C55.2534 19.8628 54.8213 20.2911 53.9279 20.2911H53.2651C52.3327 20.2911 51.9038 19.8628 51.9038 18.9446V4.43198C51.9038 3.51054 52.3327 3.08552 53.2651 3.08552H53.8597C54.7563 3.08552 55.1852 3.51054 55.1852 4.43198V8.9321H58.668V4.23731C58.668 1.38216 57.2775 0 54.3892 0H52.6673C49.7823 0 48.3561 1.41136 48.3561 4.26651V19.1068C48.3561 21.962 49.7823 23.3733 52.6673 23.3733H54.425C57.3067 23.3733 58.7362 21.962 58.7362 19.1068V13.7567H55.2534V18.9446Z" />
-        <path d="M67.6251 18.9479C67.6251 19.866 67.193 20.2911 66.2996 20.2911H65.5686C64.6394 20.2911 64.2105 19.866 64.2105 18.9479V4.43523C64.2105 3.51703 64.6394 3.08876 65.5686 3.08876H66.2996C67.193 3.08876 67.6251 3.51703 67.6251 4.43523V18.9479ZM66.8616 0.00324457H64.9708C62.0858 0.00324457 60.6595 1.41136 60.6595 4.26976V19.1101C60.6595 21.9652 62.0858 23.3766 64.9708 23.3766H66.8616C69.7466 23.3766 71.1728 21.9652 71.1728 19.1101V4.26976C71.1728 1.41136 69.7466 0.00324457 66.8616 0.00324457Z" />
-        <path d="M73.0962 0.197914V23.1787H80.5588V19.9926H76.6439V0.197914H73.0962Z" />
-        <path d="M10.3151 8.9321V4.23731C10.3151 1.38216 8.92463 0.00324457 6.03639 0.00324457H4.31124C1.4295 0.00324457 0 1.41136 0 4.26976V19.1101C0 21.9652 1.42625 23.3766 4.31124 23.3766H6.07213C8.95712 23.3766 10.3834 21.9652 10.3834 19.1101V13.7599H6.90059V18.9479C6.90059 19.866 6.47174 20.2943 5.57505 20.2943H4.91228C3.97986 20.2943 3.55101 19.866 3.55101 18.9479V4.43198C3.55101 3.51054 3.97986 3.08552 4.91228 3.08552H5.50682C6.40351 3.08552 6.83236 3.51054 6.83236 4.43198V8.9321H10.3151Z" />
-      </g>
-      {/* "NEXT" wordmark (Figma 9:1712) — viewBox 42.19x22.98. */}
-      <g transform="translate(156.5, 2.86) scale(1.119, 1.137)">
-        <path d="M9.32424 0V22.9808H6.8681L2.72904 8.34809L2.52112 6.93673V22.9808H0V0H2.42366L6.56271 14.6489L6.77063 16.1868V0H9.32424Z" />
-        <path d="M19.7726 1.96941H14.7986V10.4797H19.4347V12.4524H14.7986V21.0114H19.7726V22.984H12.2775V0H19.7726V1.97265V1.96941Z" />
-        <path d="M30.666 0L27.0533 11.3947L30.6335 22.9808H28.0344L25.7407 13.9254L23.3496 22.9808H20.783L24.3632 11.5861L20.7505 0H23.3821L25.7732 8.92561L28.1806 0H30.6693H30.666Z" />
-        <path d="M42.1897 0V2.0343H38.1157V22.9808H35.5491V2.0343H31.4717V0H42.193H42.1897Z" />
-      </g>
+      <defs>
+        <clipPath id="clip0_892_6206">
+          <rect width="205" height="32" fill="white" />
+        </clipPath>
+      </defs>
     </svg>
   );
 }
