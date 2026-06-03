@@ -21,7 +21,7 @@ export function AgePeakBarChart({
   baseColor = "#D9D9D9",
 }: AgePeakBarChartProps) {
   return (
-    <div className="h-[88px] w-full min-w-[260px]">
+    <div className="h-22 w-full min-w-65">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
           <XAxis
@@ -36,7 +36,7 @@ export function AgePeakBarChart({
             radius={[2, 2, 0, 0]}
             isAnimationActive
             animationBegin={0}
-            animationDuration={400}
+            animationDuration={900}
             animationEasing="ease-out"
           >
             {data.map((d, i) => (

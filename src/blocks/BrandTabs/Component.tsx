@@ -3,7 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 
 import { CountUp } from "@/components/animations";
 import { NetworkIcon } from "@/components/marketing";
@@ -13,6 +13,7 @@ import { mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import type { BrandTabsBlockProps } from "../types";
 import { AgePeakBarChart } from "./AgePeakBarChart";
+import { BrandNetworkIcon } from "./BrandNetworkIcon";
 import { GenderPieChart } from "./GenderPieChart";
 
 type Tab = NonNullable<BrandTabsBlockProps["tabs"]>[number];
@@ -86,7 +87,7 @@ export function BrandTabsBlockComponent({
           {/* Tabs pill row — Figma: 1 línea siempre (1280px wide).
               Mobile (<lg): scroll horizontal. Desktop (lg+): visible sin scroll. */}
           <div
-            className="-mx-4 mt-8 [scrollbar-width:none] overflow-x-auto px-4 [-ms-overflow-style:none] lg:overflow-x-visible lg:px-0 [&::-webkit-scrollbar]:hidden"
+            className="-mx-4 mt-8 scrollbar-none overflow-x-auto px-4 [-ms-overflow-style:none] lg:px-0 xl:overflow-x-visible [&::-webkit-scrollbar]:hidden"
             role="tablist"
             aria-label="Marcas del ecosistema"
           >
@@ -103,7 +104,14 @@ export function BrandTabsBlockComponent({
                     type="button"
                     role="tab"
                     aria-selected={isActive}
-                    onClick={() => setActive(i)}
+                    onClick={(e) => {
+                      setActive(i);
+                      e.currentTarget.scrollIntoView({
+                        behavior: "smooth",
+                        inline: "center",
+                        block: "nearest",
+                      });
+                    }}
                     className={cn(
                       // Figma 402:5002: Large size px-48 py-12 todos los tabs.
                       "font-display cursor-pointer rounded-[4px] border px-[20px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-all duration-200 hover:opacity-90 sm:px-[36px] lg:px-[48px]",
@@ -135,10 +143,10 @@ export function BrandTabsBlockComponent({
             <AnimatePresence mode="wait">
               <motion.div
                 key={current.brand}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
+                initial={{ opacity: 0, y: 16, scale: 0.98, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -8, scale: 0.99, filter: "blur(3px)" }}
+                transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
                 <TabPanel tab={current} />
               </motion.div>
@@ -174,7 +182,14 @@ const PILL_BG = "#00ACFF";
 const CARD_BORDER = "#95999A";
 const NEUTRO_NEGRO = "#121212";
 const NEUTRO_GRIS_OSCURO = "#464553";
-const AZUL_MEDIO = "#015BC4";
+
+const BRAND_ICON_COLOR: Record<string, string> = {
+  caracoltv: "#003381",
+  golcaracol: "#071D49",
+  caracolsports: "#005294",
+  bluradio: "#005BAA",
+  lakalle: "#353535",
+};
 
 /**
  * Mappings de assets por brand — Figma 402:5117-5195.
@@ -214,6 +229,11 @@ const BRAND_AVATAR_PATHS: Record<string, string> = {
 };
 
 function TabPanel({ tab }: { tab: Tab }) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const containerInView = useInView(containerRef, {
+    once: true,
+    margin: "0px 0px -5% 0px",
+  });
   const meta = brandMeta(tab.brand);
   const displayName = tab.displayName ?? meta.label;
   // Logo wordmark del Figma (centrado en side panel) + avatar (top-right 76×76)
@@ -252,29 +272,30 @@ function TabPanel({ tab }: { tab: Tab }) {
 
   return (
     <div
-      className="grid overflow-hidden rounded-[24px] bg-white md:grid-cols-[3fr_2fr]"
+      ref={containerRef}
+      className="grid overflow-hidden rounded-[24px] bg-white xl:grid-cols-[3fr_2fr]"
       style={{ border: "1px solid rgba(207,206,204,0.81)" }}
     >
       {/* Columna izquierda — content */}
-      <div className="relative flex flex-col gap-5 p-6 sm:p-8 md:pt-10 md:pr-10 md:pb-10 md:pl-20">
-        {/* Brand icon top-right corner — visible solo en mobile */}
-        {logoUrl ? (
+      <div className="relative flex flex-col items-center gap-5 p-6 sm:p-8 md:pt-10 md:pr-10 md:pb-10 md:pl-20 lg:items-start">
+        {/* Brand icon top-right corner — visible solo en mobile, usa avatar */}
+        {avatarUrl ? (
           <div
-            className="absolute top-4 right-4 flex h-12 w-12 items-center justify-center rounded-lg md:hidden"
+            className="absolute top-4 right-4 z-10 flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg lg:hidden"
             style={{ backgroundColor: brandPanelBg }}
           >
             <Image
-              src={logoUrl}
+              src={avatarUrl}
               alt={displayName}
-              width={40}
-              height={40}
-              className="h-7 w-auto object-contain"
+              width={48}
+              height={48}
+              className="h-full w-full object-cover"
             />
           </div>
         ) : null}
 
-        {/* Brand name + tagline */}
-        <div className="flex flex-col gap-5">
+        {/* Brand name + tagline — siempre left-aligned */}
+        <div className="flex w-full flex-col gap-5">
           <h3
             className="font-display text-[40px] leading-[0.95] font-bold tracking-[-1.5px] sm:text-[48px] lg:text-[64px]"
             style={{ color: brandColor }}
@@ -295,16 +316,16 @@ function TabPanel({ tab }: { tab: Tab }) {
             BumBox (402:8734) ni Volk (402:8828) — esos tabs solo tienen
             AUDIENCIA + CTA. */}
         {showWebAndNetworks ? (
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+          <div className="m-auto flex flex-col gap-5 min-[920px]:flex-row lg:items-start">
             {/* WEB box */}
             {tab.webMetrics &&
             (tab.webMetrics.usersPerMonth || tab.webMetrics.viewsPerMonth) ? (
               <div
-                className="flex flex-col items-start gap-2 rounded-[8px] bg-white p-5"
+                className="flex h-full w-full flex-col items-start gap-2 rounded-[8px] bg-white p-5 md:w-auto"
                 style={{ border: `1px solid ${CARD_BORDER}` }}
               >
                 <Pill>WEB</Pill>
-                <div className="flex flex-col gap-4 px-5">
+                <div className="m-auto flex flex-col gap-4 px-5">
                   {tab.webMetrics.usersPerMonth ? (
                     <div className="flex flex-col items-end justify-center gap-2 whitespace-nowrap">
                       <p
@@ -314,6 +335,8 @@ function TabPanel({ tab }: { tab: Tab }) {
                         <CountUp
                           value={tab.webMetrics.usersPerMonth}
                           format={(v) => formatNumber(Math.round(v))}
+                          shouldStart={containerInView}
+                          reserveWidth
                         />
                       </p>
                       <p
@@ -339,6 +362,8 @@ function TabPanel({ tab }: { tab: Tab }) {
                         <CountUp
                           value={tab.webMetrics.viewsPerMonth}
                           format={(v) => formatNumber(Math.round(v))}
+                          shouldStart={containerInView}
+                          reserveWidth
                         />
                       </p>
                       <p
@@ -356,26 +381,23 @@ function TabPanel({ tab }: { tab: Tab }) {
             {/* REDES box */}
             {tab.networks && tab.networks.length > 0 ? (
               <div
-                className="flex flex-1 flex-col items-start gap-2 rounded-[8px] bg-white p-5"
+                className="flex h-full w-full flex-1 flex-col items-start gap-2 rounded-[8px] bg-white p-5"
                 style={{ border: `1px solid ${CARD_BORDER}` }}
               >
                 <Pill>REDES</Pill>
-                <div className="flex w-full flex-col gap-4 px-5 py-2">
+                <div className="flex w-full flex-col gap-4 py-2">
                   {/* 3 rows × 2 cols layout. */}
-                  <ul className="grid grid-cols-1 gap-x-[18px] gap-y-4 sm:grid-cols-2">
+                  <ul className="grid grid-cols-1 gap-x-4.5 gap-y-4 md:grid-cols-2">
                     {tab.networks.slice(0, 6).map((net, i) => (
                       <li
                         key={net.id ?? net.network}
                         className="flex min-w-0 items-start gap-3"
                       >
-                        {/* Figma: icons silhouettes navy (32x32, asset oficial). */}
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center">
-                          <NetworkIcon
-                            network={net.network}
-                            className="h-8 w-8"
-                            variant="navy"
-                          />
-                        </span>
+                        <BrandNetworkIcon
+                          network={net.network}
+                          color={BRAND_ICON_COLOR[tab.brand] ?? brandPanelBg}
+                          className="h-8 w-8 shrink-0"
+                        />
                         <div className="flex min-w-0 flex-col items-start justify-center whitespace-nowrap">
                           <p
                             className={cn(
@@ -387,6 +409,8 @@ function TabPanel({ tab }: { tab: Tab }) {
                             <CountUp
                               value={net.followers}
                               format={(v) => formatNumber(Math.round(v))}
+                              shouldStart={containerInView}
+                              reserveWidth
                             />
                           </p>
                           <p
@@ -409,12 +433,12 @@ function TabPanel({ tab }: { tab: Tab }) {
         {tab.audience?.genderSplit?.femalePercent !== undefined &&
         tab.audience?.genderSplit?.femalePercent !== null ? (
           <div
-            className="flex flex-col items-start gap-2 rounded-[8px] bg-white p-5"
+            className="m-auto flex flex-col items-start gap-2 rounded-[8px] bg-white p-5"
             style={{ border: `1px solid ${CARD_BORDER}` }}
           >
             <Pill>AUDIENCIA</Pill>
 
-            <div className="flex flex-col gap-4 px-3 sm:flex-row sm:items-start sm:gap-4 sm:px-5">
+            <div className="m-auto flex flex-col gap-4 px-3 min-[920px]:flex-row sm:gap-4 sm:px-5 lg:items-start">
               {/* Género — text + pie chart side by side.
                   Mobile: flex-col o flex-row compacto. El w-[184px] fijo causa
                   overflow en mobile — se usa min-w-0 flex-1 en su lugar. */}
@@ -437,13 +461,28 @@ function TabPanel({ tab }: { tab: Tab }) {
                     </span>
                   </p>
                 </div>
-                <GenderPieChart
-                  femalePercent={tab.audience.genderSplit.femalePercent}
-                  femaleLabel={tab.audience.genderSplit.femaleLabel ?? "Mujeres"}
-                  maleLabel={tab.audience.genderSplit.maleLabel ?? "Hombres"}
-                  primaryColor={piePrimaryColor}
-                  secondaryColor={pieSecondaryColor}
-                />
+                <motion.div
+                  initial={{ scale: 0.4, opacity: 0 }}
+                  animate={
+                    containerInView
+                      ? { scale: 1, opacity: 1 }
+                      : { scale: 0.4, opacity: 0 }
+                  }
+                  transition={{
+                    duration: 0.55,
+                    ease: [0.34, 1.56, 0.64, 1],
+                    delay: 0.25,
+                  }}
+                  className="shrink-0"
+                >
+                  <GenderPieChart
+                    femalePercent={tab.audience.genderSplit.femalePercent}
+                    femaleLabel={tab.audience.genderSplit.femaleLabel ?? "Mujeres"}
+                    maleLabel={tab.audience.genderSplit.maleLabel ?? "Hombres"}
+                    primaryColor={piePrimaryColor}
+                    secondaryColor={pieSecondaryColor}
+                  />
+                </motion.div>
               </div>
 
               {/* Divisor vertical */}
@@ -454,10 +493,10 @@ function TabPanel({ tab }: { tab: Tab }) {
 
               {/* Edad Pico */}
               {tab.audience?.agePicks && tab.audience.agePicks.length > 0 ? (
-                <div className="flex flex-col items-start gap-[10px]">
+                <div className="flex flex-col items-start gap-2.5">
                   <div className="flex flex-col items-end whitespace-nowrap">
                     <p
-                      className="font-display text-[24px] leading-[32px] font-bold"
+                      className="font-display text-[24px] leading-8 font-bold"
                       style={{ color: NEUTRO_NEGRO }}
                     >
                       Edad Pico
@@ -471,15 +510,27 @@ function TabPanel({ tab }: { tab: Tab }) {
                       </p>
                     ) : null}
                   </div>
-                  <AgePeakBarChart
-                    data={tab.audience.agePicks.map((a) => ({
-                      range: a.range,
-                      value: a.value,
-                      isPeak: a.isPeak,
-                    }))}
-                    peakColor={brandChartPeak}
-                    baseColor="#D9D9D9"
-                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={
+                      containerInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }
+                    }
+                    transition={{
+                      duration: 0.5,
+                      ease: [0.25, 0.46, 0.45, 0.94],
+                      delay: 0.35,
+                    }}
+                  >
+                    <AgePeakBarChart
+                      data={tab.audience.agePicks.map((a) => ({
+                        range: a.range,
+                        value: a.value,
+                        isPeak: a.isPeak,
+                      }))}
+                      peakColor={brandChartPeak}
+                      baseColor="#D9D9D9"
+                    />
+                  </motion.div>
                 </div>
               ) : null}
             </div>
@@ -488,12 +539,11 @@ function TabPanel({ tab }: { tab: Tab }) {
 
         {/* CTA "Conoce más" bottom-right — bg #015BC4 size Medium */}
         {tab.ctaContact?.label && tab.ctaContact?.href ? (
-          <div className="flex justify-end pt-2">
+          <div className="m-auto flex justify-center pt-2 min-[920px]:m-0 min-[920px]:ml-auto min-[920px]:justify-end">
             <Link
               href={tab.ctaContact.href}
               target={tab.ctaContact.openInNewTab ? "_blank" : undefined}
-              className="font-display inline-flex items-center justify-center rounded-[4px] px-[32px] py-[8px] text-[14px] leading-[20px] font-semibold text-white"
-              style={{ backgroundColor: AZUL_MEDIO }}
+              className="font-display inline-flex items-center justify-center rounded-[4px] border border-[#015BC4] bg-[#015BC4] px-8 py-2 text-[14px] leading-5 font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#015BC4]"
             >
               {tab.ctaContact.label}
             </Link>
@@ -505,29 +555,10 @@ function TabPanel({ tab }: { tab: Tab }) {
           Background sólido brandPanelBg + wordmark logo centrado + avatar
           76×76 absolute top-right. Oculta en mobile. */}
       <div
-        className="relative hidden items-center justify-center md:flex"
+        className="relative hidden items-center justify-center lg:flex"
         style={{ backgroundColor: brandPanelBg }}
       >
-        {/* Wordmark logo centrado — Figma export per brand.
-            Volk usa proporción VERTICAL 180×212 (no horizontal como el resto).
-            La aspect-ratio explícita evita que Next/Image colapse el SVG. */}
-        {logoUrl ? (
-          <Image
-            src={logoUrl}
-            alt={displayName}
-            width={logoIntrinsicWidth}
-            height={logoIntrinsicHeight}
-            className={cn(
-              "h-auto w-auto object-contain",
-              isVolk ? "max-h-[70%] max-w-[45%]" : "max-h-[60%] max-w-[70%]",
-            )}
-            style={{ aspectRatio: `${logoIntrinsicWidth} / ${logoIntrinsicHeight}` }}
-          />
-        ) : (
-          <span className="font-display text-3xl font-black text-white sm:text-4xl">
-            {displayName.toUpperCase()}
-          </span>
-        )}
+        {/* Wordmark logo centrado — pendiente de assets definitivos */}
         {/* Avatar top-right (76×76 rounded-16 border-2) — Figma muestra una
             imagen distinta del logo (avatar/icon del brand).
             Excepciones de border: La Kalle yellow, BumBox/Volk white,

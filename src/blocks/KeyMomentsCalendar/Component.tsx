@@ -72,7 +72,7 @@ export function KeyMomentsCalendarComponent({
   return (
     <section id={anchorId ?? "momentos"}>
       <div
-        className="relative w-full overflow-hidden p-8 text-white sm:p-12 lg:p-[120px]"
+        className="relative w-full overflow-hidden px-6 py-12 text-white sm:p-12 lg:p-30"
         style={{
           backgroundColor: NAVY_DARK,
           // Border radius asimétrico Figma — reducido de 180px a 100px
@@ -111,14 +111,14 @@ export function KeyMomentsCalendarComponent({
                 "lg:mx-0 lg:mt-16 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0",
               )}
             >
-              {cappedEvents.map((e) => (
-                <CalendarCard key={e.id ?? e.name} event={e} />
+              {cappedEvents.map((e: EventItem, index: number) => (
+                <CalendarCard key={e.id ?? e.name} event={e} index={index} />
               ))}
             </div>
           )}
 
           {/* Footer CTA — gap-24 entre texto y botón (Figma 634:4283). */}
-          <div className="mt-12 flex flex-col items-center gap-6 text-center sm:mt-16 lg:mt-16">
+          <div className="mt-6 flex flex-col items-center gap-6 text-center sm:mt-16">
             <div className="flex flex-col items-center gap-1 text-center">
               <p className="font-display text-[16px] leading-normal font-bold text-white sm:text-[20px] lg:text-[24px]">
                 {ctaHeading}
@@ -130,10 +130,9 @@ export function KeyMomentsCalendarComponent({
             <Link
               href={ctaHref}
               className={cn(
-                "font-display inline-flex h-12 w-[306px] cursor-pointer items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-all duration-200 hover:bg-[#0099E5] hover:shadow-lg hover:shadow-[#00ACFF]/30 active:scale-[0.98]",
+                "font-display inline-flex h-12 w-76.5 cursor-pointer items-center justify-center rounded-[4px] bg-[#00ACFF] text-[18px] leading-[24px] font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-[#2862FF] active:scale-[0.98]",
                 "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
               )}
-              style={{ backgroundColor: AZUL_CLARO }}
             >
               {ctaLabel}
             </Link>
@@ -144,7 +143,7 @@ export function KeyMomentsCalendarComponent({
   );
 }
 
-function CalendarCard({ event }: { event: EventItem }) {
+function CalendarCard({ event, index }: { event: EventItem; index: number }) {
   const cat = event.category ?? "other";
   const badgeColor = event.badgeColor ?? CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.other;
   const dateLabel =
@@ -154,21 +153,27 @@ function CalendarCard({ event }: { event: EventItem }) {
 
   return (
     <motion.article
-      initial={false}
-      whileHover={{
-        y: -2,
-        borderColor: `${badgeColor}80`, // alpha 0.5 ≈ hex "80"
+      custom={index * 0.08}
+      variants={{
+        hidden: { opacity: 0, y: 28, scale: 0.97 },
+        visible: (delay: number) => ({
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay },
+        }),
       }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: false, amount: 0.15 }}
+      whileHover={{ y: -2, borderColor: `${badgeColor}80` }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(
-        // Mobile carrusel widths.
+        // Mobile carrusel: 1.5 → 2.5 → 3.5 cards visibles según breakpoint.
         "shrink-0 snap-start",
-        "w-[80%]",
-        "sm:w-[42%]",
-        "md:w-[30%]",
-        // Bug "tarjetas se solapan / eliminar anchos fijos": en lg se confía
-        // en el grid (lg:grid-cols-4) para repartir el espacio. Sin w-fixed,
-        // shrink habilitado, las cards se adaptan al contenedor.
+        "w-[67%]",
+        "sm:w-[38%]",
+        "md:w-[27%]",
         "lg:w-auto lg:shrink",
         // Visual de la card — glassmorphism Figma.
         "flex flex-col gap-[18px] rounded-[12px] border px-4 py-5",

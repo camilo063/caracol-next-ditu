@@ -17,6 +17,8 @@ import { RepresentativeCard } from "@/components/marketing";
 import { cn } from "@/lib/utils";
 import type { ContactBlockProps } from "../types";
 
+type RepresentativeItem = NonNullable<ContactBlockProps["representatives"]>[number];
+
 type FormShape = Record<string, string | boolean>;
 
 interface PluginField {
@@ -102,7 +104,7 @@ export function ContactBlockComponent(props: ContactBlockProps) {
                   : "grid-cols-1",
               )}
             >
-              {reps.map((rep, i) => (
+              {reps.map((rep: RepresentativeItem, i: number) => (
                 <RepresentativeCard
                   key={i}
                   name={rep.name}
@@ -293,10 +295,9 @@ function CtaSimpleLayout({
         <Link
           href={ctaHref}
           className={cn(
-            "font-display group inline-flex h-12 w-[306px] cursor-pointer items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-all duration-200 hover:bg-[#003381] hover:shadow-lg hover:shadow-[#015BC4]/30 active:scale-[0.98]",
+            "font-display group inline-flex h-12 w-76.5 cursor-pointer items-center justify-center rounded-[4px] border border-[#015BC4] bg-[#015BC4] text-[18px] leading-[24px] font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#015BC4] active:scale-[0.98]",
             "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
           )}
-          style={{ backgroundColor: "#015BC4" }}
         >
           {ctaLabel}
         </Link>

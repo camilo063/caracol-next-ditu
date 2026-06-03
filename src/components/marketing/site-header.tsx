@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
-import { Button, Container } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { FullscreenToggle } from "./fullscreen-toggle";
 
@@ -73,13 +73,12 @@ export function SiteHeader({
     const previous = scrollY.getPrevious() ?? 0;
     setScrolled(latest > 24);
     if (latest <= 120) {
-      // En el top, siempre visible.
       setHidden(false);
       return;
     }
-    if (latest > previous + 8)
-      setHidden(true); // scroll down (delta > 8 para evitar oscilación)
-    else if (latest < previous - 12) setHidden(false); // scroll up (delta > 12)
+    if (latest > previous + 20)
+      setHidden(true); // scroll down — delta mayor = menos sensible
+    else if (latest < previous - 24) setHidden(false); // scroll up — delta mayor = menos sensible
   });
 
   // --- Click outside / ESC: cierra menú mobile (spec usuario) ---
@@ -133,7 +132,7 @@ export function SiteHeader({
 
   const isDitu = landing === "ditu";
   // Figma 430:519: Caracol Next header inicia con bg navy + texto blanco; al scroll bg blanco + texto dark.
-  const isCaracolNextNavy = !isDitu && !scrolled;
+  const isCaracolNextNavy = !isDitu; // siempre navy en Caracol Next
   // Ditu: bg semi-transparente con blur (Figma 722:2582)
   const dituBg = "rgba(18, 8, 45, 0.55)";
   // Ditu active accent
@@ -143,16 +142,12 @@ export function SiteHeader({
     <motion.header
       initial={{ y: 0 }}
       animate={{ y: hidden ? "-100%" : "0%" }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
+      transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
       className={cn(
         sticky ? "fixed top-0 right-0 left-0 z-40" : "relative w-full",
         isDitu || isCaracolNextNavy ? "text-white" : "text-foreground",
         // Caracol Next: bg color directo (sin blur). Ditu: bg con blur (siempre).
-        isDitu
-          ? "backdrop-blur-[7px]"
-          : scrolled
-            ? "bg-background/95 border-border border-b shadow-sm backdrop-blur"
-            : "bg-[#003381]",
+        isDitu ? "backdrop-blur-[7px]" : "bg-[#003381]",
         "transition-colors duration-300 ease-in-out",
       )}
       style={isDitu ? { backgroundColor: dituBg } : undefined}
@@ -243,11 +238,11 @@ export function SiteHeader({
           </div>
         </div>
       ) : (
-        // --- Caracol Next header (sin cambios) ---
-        <Container size="xl" className="flex h-16 items-center justify-between gap-4">
+        // --- Caracol Next header ---
+        <div className="mx-auto flex h-12 w-full max-w-[1920px] items-center justify-between gap-4 px-[12px] sm:px-10 lg:px-[40px] xl:h-16">
           <Link
             href="/caracol-next"
-            className="flex shrink-0 items-center gap-2"
+            className="lg:max-w-[250px]: flex w-full max-w-[160px] shrink-0 items-center gap-2"
             aria-label="Caracol Next"
           >
             {logoUrl ? (
@@ -256,7 +251,7 @@ export function SiteHeader({
                 alt="Caracol Next"
                 width={160}
                 height={28}
-                className="h-7 w-auto object-contain"
+                className="h-5 w-auto object-contain xl:h-7"
                 priority
               />
             ) : (
@@ -264,12 +259,8 @@ export function SiteHeader({
             )}
           </Link>
 
-          <nav
-            className={cn(
-              "hidden items-center gap-6 md:flex",
-              isCaracolNextNavy ? "text-white/90" : "text-foreground/75",
-            )}
-          >
+          {/* Nav — px-[32px] py-[8px] por enlace, hover bg #00ACFF */}
+          <nav className="hidden items-center gap-1 xl:flex">
             {navAnchors.map((a) => {
               const isActive = activeId === a.anchorId;
               return (
@@ -278,15 +269,18 @@ export function SiteHeader({
                   href={`#${a.anchorId}`}
                   aria-current={isActive ? "true" : undefined}
                   className={cn(
-                    "relative text-sm font-semibold tracking-wide uppercase transition-colors",
-                    !isActive && "hover:opacity-80",
+                    "relative rounded px-[32px] py-[8px] text-sm font-semibold tracking-wide uppercase [transition:background-color_0.3s_ease-in-out,color_0.3s_ease-in-out]",
+                    isActive
+                      ? "text-[#00ACFF]"
+                      : isCaracolNextNavy
+                        ? "text-white/90 hover:bg-[#00ACFF]/30"
+                        : "text-foreground/75 hover:bg-[#00ACFF]/30",
                   )}
-                  style={isActive ? { color: activeColor } : undefined}
                 >
                   {a.label}
                   <span
                     className={cn(
-                      "pointer-events-none absolute right-0 -bottom-1 left-0 mx-auto h-0.5 origin-center rounded-full transition-transform duration-300",
+                      "pointer-events-none absolute right-0 -bottom-0.5 left-0 mx-auto h-0.5 origin-center rounded-full transition-transform duration-300",
                       isActive ? "scale-x-100" : "scale-x-0",
                     )}
                     style={{ backgroundColor: activeColor }}
@@ -297,21 +291,36 @@ export function SiteHeader({
             })}
           </nav>
 
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-2">
+            {/* CTA — gradiente Ditu (mismo estilo que home) */}
             {ctaButton?.enabled !== false && ctaButton?.label ? (
-              <Button
-                size="sm"
-                variant={ctaButton.variant ?? "default"}
-                asChild
-                className="hidden sm:inline-flex"
+              <Link
+                href={ctaButton.href}
+                className="group relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-[8px] px-3 py-1.5 text-[12px] font-semibold whitespace-nowrap text-[#FDFDFD] [transition:box-shadow_0.35s_ease-in-out,transform_0.12s_ease] hover:shadow-lg hover:shadow-[#8232F0]/40 active:scale-[0.98] xl:rounded-[10px] xl:px-5 xl:py-[8px] xl:text-[14px]"
+                style={{
+                  fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+                  lineHeight: 1.5,
+                }}
               >
-                <Link href={ctaButton.href}>{ctaButton.label}</Link>
-              </Button>
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0"
+                  style={{
+                    background: "linear-gradient(to left, #8232F0 0%, #561BDB 100%)",
+                  }}
+                />
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 opacity-0 transition-opacity duration-[350ms] ease-in-out group-hover:opacity-100"
+                  style={{
+                    background: "linear-gradient(to left, #561BDB 0%, #8232F0 100%)",
+                  }}
+                />
+                <span className="relative z-10">{ctaButton.label}</span>
+              </Link>
             ) : null}
             {showFullscreenToggle ? (
-              <span className="hidden md:inline-flex">
-                {/* Figma 430:529: icono blanco. Caracol Next inicia con bg navy
-                    (icono blanco) y al scroll cambia a bg white (icono dark). */}
+              <span className="hidden xl:inline-flex">
                 <FullscreenToggle tone={isCaracolNextNavy ? "dark" : "light"} />
               </span>
             ) : null}
@@ -319,10 +328,7 @@ export function SiteHeader({
               ref={mobileToggleRef}
               type="button"
               className={cn(
-                "inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md transition-colors md:hidden",
-                // Bug: hamburguesa salía negro en mobile (sobre bg navy).
-                // Si el header está en estado navy (no scrolled), el icon
-                // debe ser blanco. Cuando scrolled (bg blanco), foreground.
+                "inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md transition-colors xl:hidden",
                 isCaracolNextNavy
                   ? "text-white hover:bg-white/10"
                   : "text-foreground hover:bg-foreground/5",
@@ -334,71 +340,71 @@ export function SiteHeader({
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
-        </Container>
+        </div>
       )}
 
       {/* Mobile menu (común para ambas landings).
           ref para click-outside detection: cierra menú al click fuera. */}
-      {open ? (
-        <div
-          ref={mobileMenuRef}
-          className={cn(
-            "md:hidden",
-            isDitu ? "text-white" : "bg-background text-foreground",
-            isDitu ? "border-t border-white/10" : "border-border border-t",
-          )}
-          style={isDitu ? { backgroundColor: "rgba(18, 8, 45, 0.95)" } : undefined}
-        >
-          <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 py-4 sm:px-6 lg:px-[40px]">
-            {navAnchors.map((a) => {
-              const isActive = activeId === a.anchorId;
-              return (
-                <Link
-                  key={a.anchorId}
-                  href={`#${a.anchorId}`}
-                  aria-current={isActive ? "true" : undefined}
-                  className="rounded-md px-2 py-2 text-sm font-medium transition-colors"
-                  style={{
-                    color: isActive ? activeColor : isDitu ? "#FFFFFF" : "currentColor",
-                    fontFamily: isDitu
-                      ? "var(--font-spline-sans), system-ui, sans-serif"
-                      : undefined,
-                  }}
-                  onClick={() => setOpen(false)}
-                >
-                  {a.label}
-                </Link>
-              );
-            })}
-            {ctaButton?.enabled !== false && ctaButton?.label ? (
-              isDitu ? (
-                <Link
-                  href={ctaButton.href}
-                  className="font-display mt-2 inline-flex h-10 w-full items-center justify-center rounded-[4px] px-6 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-opacity hover:opacity-90"
-                  style={{
-                    backgroundColor: "#00ACFF",
-                    fontFamily: "var(--font-montserrat), system-ui",
-                  }}
-                  onClick={() => setOpen(false)}
-                >
+      <div
+        ref={mobileMenuRef}
+        className={cn(
+          "overflow-hidden transition-[max-height] duration-300 ease-in-out xl:hidden",
+          open ? "max-h-150" : "max-h-0",
+          open ? "border-t border-white/10" : "",
+          "text-white",
+        )}
+        style={{ backgroundColor: isDitu ? "rgba(18, 8, 45, 0.95)" : "#003381" }}
+      >
+        <div className="mx-auto flex max-w-360 flex-col gap-1 px-5 py-3 sm:px-10">
+          {navAnchors.map((a) => {
+            const isActive = activeId === a.anchorId;
+            return (
+              <Link
+                key={a.anchorId}
+                href={`#${a.anchorId}`}
+                aria-current={isActive ? "true" : undefined}
+                className="rounded px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
+                style={{
+                  color: isActive ? activeColor : "#FFFFFF",
+                  fontFamily: isDitu
+                    ? "var(--font-spline-sans), system-ui, sans-serif"
+                    : undefined,
+                }}
+                onClick={() => setOpen(false)}
+              >
+                {a.label}
+              </Link>
+            );
+          })}
+          {/* CTA solo en Ditu — Caracol Next lo mueve al header junto al hamburger */}
+          {isDitu && ctaButton?.enabled !== false && ctaButton?.label ? (
+            isDitu ? (
+              <Link
+                href={ctaButton.href}
+                className="font-display mt-2 inline-flex h-10 w-full items-center justify-center rounded-[4px] px-6 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-opacity hover:opacity-90"
+                style={{
+                  backgroundColor: "#00ACFF",
+                  fontFamily: "var(--font-montserrat), system-ui",
+                }}
+                onClick={() => setOpen(false)}
+              >
+                {ctaButton.label}
+              </Link>
+            ) : (
+              <Button
+                size="sm"
+                variant={ctaButton.variant ?? "default"}
+                asChild
+                className="mt-2 w-full"
+              >
+                <Link href={ctaButton.href} onClick={() => setOpen(false)}>
                   {ctaButton.label}
                 </Link>
-              ) : (
-                <Button
-                  size="sm"
-                  variant={ctaButton.variant ?? "default"}
-                  asChild
-                  className="mt-2 w-full"
-                >
-                  <Link href={ctaButton.href} onClick={() => setOpen(false)}>
-                    {ctaButton.label}
-                  </Link>
-                </Button>
-              )
-            ) : null}
-          </div>
+              </Button>
+            )
+          ) : null}
         </div>
-      ) : null}
+      </div>
     </motion.header>
   );
 }

@@ -201,10 +201,10 @@ export function HubLanding({
             },
           },
         }}
-        className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-10 px-6 py-12 sm:px-10 xl:flex-row xl:items-center xl:gap-[26px] xl:px-[84px] xl:py-[60px]"
+        className="relative z-10 mx-auto flex w-full max-w-360 flex-1 flex-col gap-10 px-6 py-12 sm:px-10 xl:flex-row xl:items-center xl:gap-[26px] xl:px-[84px] xl:py-[60px]"
       >
         {/* Left — hero content. Cada nodo es un motion.div para stagger. */}
-        <div className="flex flex-col items-center xl:max-w-[611px] xl:items-start xl:pt-[68px]">
+        <div className="flex flex-col items-center xl:max-w-152.75 xl:items-start">
           <motion.p
             variants={staggerItemVariants}
             className="text-center text-[14px] font-bold uppercase sm:text-[18px] xl:text-left xl:text-[20px]"
@@ -340,7 +340,7 @@ export function HubLanding({
               widths irregulares (272/340/328/288). 2 filas de 2 cards cada una. */}
           <motion.div
             variants={staggerItemVariants}
-            className="hidden flex-col gap-[24px] sm:flex"
+            className="hidden flex-col gap-4 sm:flex"
           >
             {/* Row 1 */}
             <div className="flex items-stretch gap-4">
