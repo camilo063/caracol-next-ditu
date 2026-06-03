@@ -70,7 +70,7 @@ export function GenderPieChart({
             stroke="none"
             isAnimationActive
             animationBegin={0}
-            animationDuration={400}
+            animationDuration={600}
             animationEasing="ease-out"
           >
             {data.map((d) => (

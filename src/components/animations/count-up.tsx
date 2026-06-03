@@ -16,6 +16,12 @@ export interface CountUpProps {
    * evitando saltos de layout mientras el número crece.
    */
   reserveWidth?: boolean;
+  /**
+   * Override externo del trigger de inicio. Cuando se pasa, ignora el
+   * useInView propio — útil para sincronizar varios CountUps desde un
+   * ref de contenedor compartido y que todos terminen al mismo tiempo.
+   */
+  shouldStart?: boolean;
 }
 
 /**
@@ -33,13 +39,15 @@ export function CountUp({
   rootMargin = "0px 0px -80px 0px",
   className,
   reserveWidth = false,
+  shouldStart,
 }: CountUpProps) {
   const reduced = useReducedMotion();
   const ref = React.useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, {
+  const ownInView = useInView(ref, {
     once: true,
     margin: rootMargin as `${number}px ${number}px ${number}px ${number}px`,
   });
+  const inView = shouldStart !== undefined ? shouldStart : ownInView;
   const [current, setCurrent] = React.useState(0);
 
   React.useEffect(() => {

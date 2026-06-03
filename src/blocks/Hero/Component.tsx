@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 import { ParallaxBackground } from "@/components/animations";
 import { Button, Container, Section, Stat } from "@/components/ui";
@@ -7,6 +10,16 @@ import { isMediaVideo, mediaAlt, mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import { BrandIconsRow } from "./BrandIconsRow";
 import type { HeroBlockProps } from "../types";
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 56, filter: "blur(4px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 1.0, ease: [0.25, 0.46, 0.45, 0.94] as const },
+  },
+};
 
 const TONE_TO_SECTION = {
   default: "default",
@@ -86,21 +99,29 @@ export function HeroBlockComponent({
         {/* Layout Figma 347:2015: gap-40 entre tagline/heading-group/icons.
             Heading-group interno: gap-24 entre h1 y subheading. */}
         {/* gap-6 reducido (era gap-10): bug "label muy separado del título". */}
-        <div className="mx-auto flex flex-col items-center gap-[10px] text-center">
+        <motion.div
+          className="mx-auto flex flex-col items-center gap-[10px] text-center"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.2, delayChildren: 0.15 } },
+          }}
+        >
           {eyebrow ? (
-            // Figma: Poppins Bold 20px, uppercase, color #00ACFF.
-            // Mobile: reducir tamaño proporcionalmente (bug "label no reduce").
-            <p
+            <motion.p
+              variants={itemVariants}
               className="font-poppins text-[13px] leading-normal font-bold uppercase sm:text-[16px] lg:text-[20px]"
               style={{ color: "#00ACFF" }}
             >
               {eyebrow}
-            </p>
+            </motion.p>
           ) : null}
-          {/* Heading + subheading group: gap-24 entre ellos (Figma Frame 109). */}
-          <div className="flex flex-col items-center gap-6 text-center">
-            {/* Heading: Montserrat 64px line-height 72px. Línea 1 Regular + línea 2 Bold.
-                Nota: usamos style inline para color (twMerge colapsa text-* sino). */}
+
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col items-center gap-6 text-center"
+          >
             <h1
               className="font-display text-[40px] leading-[1.125] font-normal sm:text-[48px] lg:text-[64px] lg:leading-[72px]"
               style={{ color: isDarkTone ? "#FFFFFF" : undefined }}
@@ -114,7 +135,6 @@ export function HeroBlockComponent({
               ) : null}
             </h1>
             {subheading ? (
-              // Subheading: Montserrat Medium 32px / line-height 32px / color rgba(207,206,204,0.81).
               <p
                 className="font-display text-[20px] leading-[1] font-medium sm:text-[24px] lg:text-[32px]"
                 style={{ color: isDarkTone ? "rgba(207,206,204,0.81)" : undefined }}
@@ -122,14 +142,19 @@ export function HeroBlockComponent({
                 {subheading}
               </p>
             ) : null}
-          </div>
+          </motion.div>
 
           {brandIcons && brandIcons.length > 0 ? (
-            <BrandIconsRow items={brandIcons} className="p-4" />
+            <motion.div variants={itemVariants}>
+              <BrandIconsRow items={brandIcons} className="p-4" />
+            </motion.div>
           ) : null}
 
           {primaryCta?.label || secondaryCta?.label ? (
-            <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+            <motion.div
+              variants={itemVariants}
+              className="mt-2 flex flex-wrap items-center justify-center gap-3"
+            >
               {primaryCta?.label && primaryCta?.href ? (
                 <Button size="lg" variant={primaryCta.variant ?? "default"} asChild>
                   <Link
@@ -150,9 +175,9 @@ export function HeroBlockComponent({
                   </Link>
                 </Button>
               ) : null}
-            </div>
+            </motion.div>
           ) : null}
-        </div>
+        </motion.div>
 
         {keyStats && keyStats.length > 0 ? (
           <div

@@ -81,17 +81,17 @@ function AdFormatsDefault({
     <>
       <section id={anchorId ?? "pauta"}>
         <div
-          className="relative w-full overflow-hidden p-8 text-white sm:p-12 lg:p-[120px]"
+          className="relative w-full overflow-hidden px-6 py-12 text-white sm:p-12 lg:p-[120px]"
           style={{
             backgroundColor: NAVY_DARK,
             // Reducido a 100px para consistencia con Calendario (spec usuario).
             borderTopRightRadius: "100px",
           }}
         >
-          <div className="mx-auto flex max-w-[1200px] flex-col gap-12 lg:gap-16">
+          <div className="mx-auto flex max-w-300 flex-col gap-12 lg:gap-16">
             {/* Heading + description */}
             <div className="flex flex-col gap-4">
-              <h2 className="font-display text-[40px] leading-[1.125] font-bold whitespace-nowrap text-white sm:text-[48px] lg:text-[64px] lg:leading-[72px]">
+              <h2 className="font-display text-[40px] leading-[1.125] font-bold whitespace-nowrap text-white sm:text-[48px] lg:text-[64px] lg:leading-18">
                 {heading || "Pauta Digital"}
               </h2>
               {description ? (
@@ -105,7 +105,7 @@ function AdFormatsDefault({
             </div>
 
             {/* 2-col layout: Display | Video & Audio, 343px each, gap 37 */}
-            <div className="mx-auto flex w-full flex-col items-start gap-8 sm:flex-row sm:justify-center sm:gap-[37px]">
+            <div className="mx-auto flex w-full flex-col items-center gap-8 sm:flex-row sm:items-baseline sm:justify-center sm:gap-9.25">
               <FormatColumn
                 title="Display"
                 items={displayFormats}
@@ -131,10 +131,9 @@ function AdFormatsDefault({
               <Link
                 href={ctaHref}
                 className={cn(
-                  "font-display inline-flex h-12 w-[306px] cursor-pointer items-center justify-center rounded-[4px] text-[18px] leading-[24px] font-semibold text-white transition-all duration-200 hover:bg-[#0099E5] hover:shadow-lg hover:shadow-[#00ACFF]/30 active:scale-[0.98]",
-                  "focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:outline-none",
+                  "font-display inline-flex h-12 w-76.5 cursor-pointer items-center justify-center rounded-[4px] bg-[#00ACFF] text-[18px] leading-[24px] font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-[#2862FF] active:scale-[0.98]",
+                  "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
                 )}
-                style={{ backgroundColor: AZUL_CLARO }}
               >
                 {ctaLabel}
               </Link>
@@ -173,9 +172,9 @@ function FormatColumn({
         aria-hidden="true"
       />
       <ul className="flex flex-col gap-4">
-        {items.map((f) => (
+        {items.map((f, index) => (
           <li key={f.id ?? f.name}>
-            <FormatPill format={f} onSelect={onSelect} />
+            <FormatPill format={f} onSelect={onSelect} index={index} />
           </li>
         ))}
       </ul>
@@ -208,15 +207,29 @@ function CheckCircleIcon({ className }: { className?: string }) {
 function FormatPill({
   format,
   onSelect,
+  index,
 }: {
   format: FormatItem;
   onSelect: (f: FormatItem) => void;
+  index: number;
 }) {
   return (
     <motion.button
       type="button"
       onClick={() => onSelect(format)}
-      initial={false}
+      custom={index * 0.07}
+      variants={{
+        hidden: { opacity: 0, y: 16, scale: 0.98 },
+        visible: (delay: number) => ({
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94], delay },
+        }),
+      }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: false, amount: 0.3 }}
       whileHover={{
         backgroundColor: "rgba(255,255,255,0.08)",
         borderColor: AZUL_CLARO,
@@ -282,7 +295,7 @@ function AdFormatsVerticalTabs({
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[260px_1fr]">
           <ul className="space-y-2">
-            {formats.map((f, i) => (
+            {formats.map((f: FormatItem, i: number) => (
               <li key={f.id ?? f.name}>
                 <button
                   type="button"
