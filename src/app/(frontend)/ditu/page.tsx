@@ -31,9 +31,7 @@ export default function DituPage() {
         <DituHero />
         {/* Spec animaciones (Camilo): fade-in slide-up 400ms en todas las
             secciones excepto Hero. RevealSection respeta reduced-motion. */}
-        <RevealSection>
-          <DituVideoBlock />
-        </RevealSection>
+        <DituVideoBlock />
         <RevealSection>
           <DituAudienciaBlock />
         </RevealSection>
@@ -49,10 +47,8 @@ export default function DituPage() {
         <RevealSection>
           <DituCalendarioBlock />
         </RevealSection>
-        {/* Video 2 — Figma 857:3974: mismo componente que 512:2244, sin props adicionales. */}
-        <RevealSection>
-          <DituVideoBlock />
-        </RevealSection>
+        {/* Video 2 — Figma 857:3974 */}
+        <DituVideoBlock />
         <RevealSection>
           <DituPautaBlock />
         </RevealSection>

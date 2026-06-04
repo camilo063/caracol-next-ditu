@@ -85,55 +85,21 @@ export function FloatingContact({
         className={`fixed z-40 ${positionClasses}`}
         style={{ position: "fixed" }}
       >
-        {/* Mini PatoDitu — Figma 775:4636: composite c+g+i+j, canvas 52×47px.
-            Posición: absolute left-[130px] top-[-6px].
-            Transform: scaleY(-1) rotate(-177.48deg). Solo tone="ditu". */}
-        {isDitu && (
-          <div
-            className="pointer-events-none absolute"
-            style={{
-              left: "130px",
-              top: "-6px",
-              width: "54px",
-              height: "49px",
-              transform: "scaleY(-1) rotate(-177.48deg)",
-              transformOrigin: "center center",
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/ditu/mascot/body.svg"
-              alt=""
-              className="absolute inset-0 h-full w-full"
-              style={{ maxWidth: "none" }}
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/ditu/mascot/g.svg"
-              alt=""
-              className="absolute inset-0 h-full w-full"
-              style={{ maxWidth: "none" }}
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/ditu/mascot/i.svg"
-              alt=""
-              className="absolute inset-0 h-full w-full"
-              style={{ maxWidth: "none" }}
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/ditu/mascot/j.svg"
-              alt=""
-              className="absolute inset-0 h-full w-full"
-              style={{ maxWidth: "none" }}
-            />
-          </div>
+        {/* PatoDitu — z-10 para que las patas queden sobre el botón. Solo cuando modal cerrado. */}
+        {isDitu && !open && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src="/ditu/mascot/pato-ditu.svg"
+            alt=""
+            className="pointer-events-none absolute -top-11.5 right-0 z-10"
+            width={52}
+            height={47}
+          />
         )}
 
         {/* Botón flotante fixed.
-            Ditu (Figma 775:4636): bg #77EDED text #12082D rounded-[12px] Ditu Display Bold 16px.
-            Default Caracol (Figma 484:2246): bg #2862FF text white rounded-[4px] Montserrat SemiBold. */}
+            Ditu: bg #77EDED text #12082D rounded-[12px], hover/active #8232F0 text white.
+            Default Caracol: bg #2862FF text white rounded-[4px], hover #003CCA. */}
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -142,19 +108,21 @@ export function FloatingContact({
           aria-label={buttonLabel}
           aria-expanded={open}
           className={`inline-flex cursor-pointer items-center justify-center overflow-clip border border-solid shadow-md transition-all duration-200 active:scale-95 ${
-            isDitu ? "rounded-[12px] hover:opacity-90" : "rounded-[4px] text-white"
+            isDitu ? "rounded-[12px]" : "rounded-[4px] text-white"
           }`}
           style={
             isDitu
               ? {
-                  backgroundColor: "#77EDED",
-                  borderColor: "#77EDED",
-                  color: "#12082D",
+                  backgroundColor: open || hovered ? "#8232F0" : "#77EDED",
+                  borderColor: open || hovered ? "#8232F0" : "#77EDED",
+                  color: open || hovered ? "white" : "#12082D",
                   padding: "12px 48px",
                   fontSize: "16px",
                   fontWeight: 700,
                   lineHeight: "24px",
                   fontFamily: "var(--font-ditu-display), system-ui, sans-serif",
+                  transition:
+                    "background-color 0.25s ease-in-out, border-color 0.25s ease-in-out, color 0.25s ease-in-out",
                 }
               : {
                   backgroundColor: open || hovered ? "#003CCA" : "#2862FF",
@@ -177,6 +145,13 @@ export function FloatingContact({
         onClose={() => setOpen(false)}
         representatives={reps}
         position={open ? getModalPosition() : undefined}
+        tone={tone}
+        topRightDecoration={
+          isDitu ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src="/ditu/mascot/pato-ditu.svg" alt="" width={52} height={47} />
+          ) : undefined
+        }
       />
     </>
   );

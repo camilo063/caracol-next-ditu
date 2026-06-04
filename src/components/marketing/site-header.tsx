@@ -56,6 +56,7 @@ export function SiteHeader({
   const [open, setOpen] = React.useState(false);
   const [hidden, setHidden] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const [headerHovered, setHeaderHovered] = React.useState(false);
   // Default active = primer item del nav (spec Camilo: en Caracol Next debe
   // ser "marcas" por defecto). Se actualiza vía IntersectionObserver al scroll.
   const [activeId, setActiveId] = React.useState<string | null>(
@@ -72,13 +73,14 @@ export function SiteHeader({
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
     setScrolled(latest > 24);
+    // Ditu: siempre visible, sin hide-on-scroll.
+    if (landing === "ditu") return;
     if (latest <= 120) {
       setHidden(false);
       return;
     }
-    if (latest > previous + 12)
-      setHidden(true); // esconde: 12px down
-    else if (latest < previous - 4) setHidden(false); // muestra: 4px up — reacciona inmediato
+    if (latest > previous + 12) setHidden(true);
+    else if (latest < previous - 4) setHidden(false);
   });
 
   // --- Click outside / ESC: cierra menú mobile (spec usuario) ---
@@ -143,14 +145,15 @@ export function SiteHeader({
       initial={{ y: 0 }}
       animate={{ y: hidden ? "-100%" : "0%" }}
       transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+      onMouseEnter={() => isDitu && setHeaderHovered(true)}
+      onMouseLeave={() => isDitu && setHeaderHovered(false)}
       className={cn(
         sticky ? "fixed top-0 right-0 left-0 z-40" : "relative w-full",
         isDitu || isCaracolNextNavy ? "text-white" : "text-foreground",
-        // Caracol Next: bg color directo (sin blur). Ditu: bg con blur (siempre).
         isDitu ? "backdrop-blur-[7px]" : "bg-[#003381]",
         "transition-colors duration-300 ease-in-out",
       )}
-      style={isDitu ? { backgroundColor: dituBg } : undefined}
+      style={isDitu ? { backgroundColor: headerHovered ? "#12082D" : dituBg } : undefined}
     >
       {/* Ditu usa padding exacto del Figma; Caracol Next usa Container. */}
       {isDitu ? (
@@ -158,7 +161,7 @@ export function SiteHeader({
           {/* Logo */}
           <Link
             href="/ditu"
-            className="flex shrink-0 items-center"
+            className="flex flex-1 items-center"
             aria-label="Ditu — por Caracol"
           >
             {logoUrl ? (
@@ -176,7 +179,7 @@ export function SiteHeader({
           </Link>
 
           {/* Nav */}
-          <nav className="hidden flex-1 items-center justify-center gap-2 md:flex lg:gap-4">
+          <nav className="hidden items-center justify-center gap-2 min-[1280px]:flex lg:gap-4">
             {navAnchors.map((a) => {
               const isActive = activeId === a.anchorId;
               return (
@@ -184,9 +187,12 @@ export function SiteHeader({
                   key={a.anchorId}
                   href={`#${a.anchorId}`}
                   aria-current={isActive ? "true" : undefined}
-                  className="relative inline-flex h-full items-center justify-center overflow-hidden rounded-[8px] px-2 py-3 text-center text-[13px] leading-[14px] font-medium whitespace-nowrap transition-colors lg:text-[14px]"
+                  className={cn(
+                    "relative inline-flex h-full items-center justify-center overflow-hidden rounded-[8px] px-2 py-3 text-center text-[13px] leading-[14px] font-medium whitespace-nowrap transition-colors duration-200 lg:text-[14px]",
+                    isActive ? "" : "text-white hover:text-[#77EDED]",
+                  )}
                   style={{
-                    color: isActive ? activeColor : "#FFFFFF",
+                    color: isActive ? activeColor : undefined,
                     fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
                   }}
                 >
@@ -206,14 +212,12 @@ export function SiteHeader({
           </nav>
 
           {/* CTA + Fullscreen + Mobile menu */}
-          <div className="flex shrink-0 items-center gap-2 lg:gap-[10px]">
+          <div className="flex flex-1 items-center justify-end gap-2 lg:gap-[10px]">
             {ctaButton?.enabled !== false && ctaButton?.label ? (
               <Link
                 href={ctaButton.href}
-                className="font-display hidden h-8 items-center justify-center rounded-[4px] px-6 py-2 text-[14px] leading-[20px] font-semibold whitespace-nowrap text-white transition-opacity hover:opacity-90 sm:inline-flex lg:px-[32px]"
+                className="font-display inline-flex h-8 items-center justify-center rounded-[4px] border border-[#00ACFF] bg-[#00ACFF] px-6 py-2 text-[14px] leading-[20px] font-semibold whitespace-nowrap text-white transition-colors duration-300 hover:border-[#2862FF] hover:bg-[#2862FF] lg:px-[32px]"
                 style={{
-                  backgroundColor: "#00ACFF",
-                  border: "1px solid #00ACFF",
                   fontFamily: "var(--font-montserrat), system-ui",
                 }}
               >
@@ -221,14 +225,14 @@ export function SiteHeader({
               </Link>
             ) : null}
             {showFullscreenToggle ? (
-              <span className="hidden md:inline-flex">
+              <span className="hidden min-[1280px]:inline-flex">
                 <FullscreenToggle tone="dark" />
               </span>
             ) : null}
             <button
               ref={mobileToggleRef}
               type="button"
-              className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-white transition-colors hover:bg-white/10 md:hidden"
+              className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-white transition-colors hover:bg-white/10 min-[1280px]:hidden"
               aria-label="Abrir menú"
               aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
@@ -376,32 +380,18 @@ export function SiteHeader({
               </Link>
             );
           })}
-          {/* CTA solo en Ditu — Caracol Next lo mueve al header junto al hamburger */}
-          {isDitu && ctaButton?.enabled !== false && ctaButton?.label ? (
-            isDitu ? (
-              <Link
-                href={ctaButton.href}
-                className="font-display mt-2 inline-flex h-10 w-full items-center justify-center rounded-[4px] px-6 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-opacity hover:opacity-90"
-                style={{
-                  backgroundColor: "#00ACFF",
-                  fontFamily: "var(--font-montserrat), system-ui",
-                }}
-                onClick={() => setOpen(false)}
-              >
+          {/* CTA solo en Caracol Next — Ditu no lo muestra en el submenu mobile */}
+          {!isDitu && ctaButton?.enabled !== false && ctaButton?.label ? (
+            <Button
+              size="sm"
+              variant={ctaButton.variant ?? "default"}
+              asChild
+              className="mt-2 w-full"
+            >
+              <Link href={ctaButton.href} onClick={() => setOpen(false)}>
                 {ctaButton.label}
               </Link>
-            ) : (
-              <Button
-                size="sm"
-                variant={ctaButton.variant ?? "default"}
-                asChild
-                className="mt-2 w-full"
-              >
-                <Link href={ctaButton.href} onClick={() => setOpen(false)}>
-                  {ctaButton.label}
-                </Link>
-              </Button>
-            )
+            </Button>
           ) : null}
         </div>
       </div>

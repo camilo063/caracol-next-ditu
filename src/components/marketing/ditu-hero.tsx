@@ -54,9 +54,21 @@ export function DituHero({
     <>
       {/* Espacio reservado (transparente) para que el sticker se posicione encima
           en la línea 1, alineado con donde diría "TU MARCA". */}
-      <span className="leading-[1] text-transparent">Tu marca </span>
-      <span className="leading-[1]">en todas las pantallas, </span>
-      <span className="leading-[1]" style={{ color: "#77EDED" }}>
+      <span
+        className="font-display m-2 inline-block rounded-[8px] px-2 pt-1.5 font-bold uppercase lg:m-4"
+        style={{
+          backgroundColor: "#77EDED",
+          color: "#12082D",
+          fontSize: "clamp(2.75rem, 1.5rem + 5vw, 6rem)",
+          lineHeight: 1,
+          transform: "rotate(-3deg)",
+        }}
+      >
+        {stickerText}
+      </span>
+      <span className="leading-none">en todas las </span> <br />
+      <span className="leading-none">pantallas, </span>
+      <span className="leading-none" style={{ color: "#77EDED" }}>
         en todo momento
       </span>
     </>
@@ -92,24 +104,28 @@ export function DituHero({
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: reduceMotion ? 0 : 0.15,
-        delayChildren: reduceMotion ? 0 : 0.1,
+        staggerChildren: reduceMotion ? 0 : 0.18,
+        delayChildren: reduceMotion ? 0 : 0.15,
       },
     },
   };
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 36, scale: 0.97 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: reduceMotion ? 0 : 0.5, ease: "easeOut" as const },
+      scale: 1,
+      transition: {
+        duration: reduceMotion ? 0 : 0.75,
+        ease: [0.25, 0.46, 0.45, 0.94] as const,
+      },
     },
   };
 
   return (
     <section
       id="inicio"
-      className="relative flex flex-col items-center justify-center gap-6 overflow-hidden px-6 pt-32 pb-24 text-center sm:px-12 sm:pt-40 sm:pb-28 lg:gap-[24px] lg:px-[120px] lg:pt-[180px] lg:pb-[120px]"
+      className="relative flex h-[100vh] max-h-[1080px] flex-col items-center justify-center gap-6 overflow-hidden px-6 text-center sm:px-12 lg:gap-6 lg:px-30"
     >
       {/* Background con parallax — Framer Motion, speed 0.4 (spec).
           Mobile y reduced-motion: desactivado automáticamente. */}
@@ -126,9 +142,8 @@ export function DituHero({
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage:
-                "linear-gradient(129.43deg, rgb(18, 8, 45) 6.03%, rgb(59, 26, 147) 97.81%)",
-              opacity: 0.92,
+              backgroundImage: "linear-gradient(129.43deg, #12082D 2%, #3B1A93 100%)",
+              opacity: 1,
             }}
           />
         </div>
@@ -146,7 +161,7 @@ export function DituHero({
         {/* Heading hero + sticker overlay — Figma 649:4298 */}
         <motion.div className="relative w-full" variants={itemVariants}>
           <h1
-            className="font-display pt-[clamp(2.75rem,1.5rem+5vw,6rem)] text-center font-bold tracking-tight text-white uppercase lg:pt-0"
+            className="font-display text-center font-bold tracking-tight text-white uppercase"
             style={{
               wordBreak: "break-word",
               // Fluid: 44px (mobile) → 96px (1440+). lineHeight 1 = font-size (Figma usa 96/96).
@@ -164,7 +179,7 @@ export function DituHero({
             className="pointer-events-none absolute top-[-4%] left-[10%] sm:top-[-7%] sm:left-[12%] lg:top-[-25px] lg:left-[140px]"
             style={{ transform: "rotate(-2.42deg)" }}
           >
-            <span
+            {/* <span
               className="font-display inline-block rounded-[8px] px-[8px] pt-[6px] font-bold uppercase"
               style={{
                 backgroundColor: "#77EDED",
@@ -174,7 +189,7 @@ export function DituHero({
               }}
             >
               {stickerText}
-            </span>
+            </span> */}
           </div>
         </motion.div>
 
@@ -203,29 +218,47 @@ export function DituHero({
             Desktop: flex-row con gap-24. */}
         <motion.div
           className="flex flex-row flex-wrap items-center justify-center gap-3 pt-4 sm:gap-6 lg:gap-[24px] lg:pt-[32px]"
-          variants={itemVariants}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: reduceMotion ? 0 : 0.12,
+                delayChildren: reduceMotion ? 0 : 0.55,
+              },
+            },
+          }}
         >
           {finalButtons.map((btn) => (
-            <Link
+            <motion.div
               key={btn.icon}
-              href={btn.href}
-              className="font-display inline-flex cursor-pointer items-center justify-center gap-[10px] rounded-[8px] p-[16px] text-[14px] leading-[20px] font-bold whitespace-nowrap uppercase transition-all duration-200 hover:bg-[#77EDED]/10 hover:shadow-md hover:shadow-[#77EDED]/20 active:scale-[0.98] sm:text-[16px] lg:text-[20px]"
-              style={{
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "#77EDED",
-                color: "#77EDED",
+              variants={{
+                hidden: { opacity: 0, scale: 0.82, y: 12 },
+                visible: {
+                  opacity: 1,
+                  scale: 1,
+                  y: 0,
+                  transition: {
+                    duration: reduceMotion ? 0 : 0.5,
+                    ease: [0.34, 1.56, 0.64, 1] as const,
+                  },
+                },
               }}
             >
-              <Image
-                src={ICON_PATHS[btn.icon] ?? ICON_PATHS.tv!}
-                alt=""
-                width={24}
-                height={24}
-                className="h-5 w-5 sm:h-6 sm:w-6"
-              />
-              {btn.label}
-            </Link>
+              <Link
+                href={btn.href}
+                className="font-display inline-flex cursor-pointer items-center justify-center gap-[10px] rounded-[8px] border border-[#77EDED] p-[16px] text-[14px] leading-[20px] font-bold whitespace-nowrap text-[#77EDED] uppercase transition-all duration-300 ease-in-out hover:bg-[#77EDED] hover:text-[#12082D] hover:shadow-md hover:shadow-[#77EDED]/30 active:scale-[0.98] sm:text-[16px] lg:text-[20px] [&>img]:transition-all [&>img]:duration-300 hover:[&>img]:brightness-0"
+                style={{ fontFamily: "var(--font-ditu-display), system-ui, sans-serif" }}
+              >
+                <Image
+                  src={ICON_PATHS[btn.icon] ?? ICON_PATHS.tv!}
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="h-5 w-5 sm:h-6 sm:w-6"
+                />
+                {btn.label}
+              </Link>
+            </motion.div>
           ))}
         </motion.div>
       </motion.div>
