@@ -229,7 +229,7 @@ function FormatPill({
       }}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: false, amount: 0.3 }}
+      viewport={{ once: true, amount: 0.3 }}
       whileHover={{
         backgroundColor: "rgba(255,255,255,0.08)",
         borderColor: AZUL_CLARO,

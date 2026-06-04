@@ -165,7 +165,7 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
       }}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: false, amount: 0.15 }}
+      viewport={{ once: true, amount: 0.15 }}
       whileHover={{ y: -2, borderColor: `${badgeColor}80` }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(

@@ -113,7 +113,7 @@
     --color-accent-neon-yellow: #feff00;
 
     /* ===== Tokens semánticos (light por defecto) ===== */
-    --color-background: var(--color-neutral-50);
+    --color-background: var(--color-neutral-100);
     --color-foreground: var(--color-neutral-900);
     --color-card: var(--color-neutral-0);
     --color-card-foreground: var(--color-neutral-900);

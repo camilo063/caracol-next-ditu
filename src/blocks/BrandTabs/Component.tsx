@@ -4,7 +4,6 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useInView } from "framer-motion";
-
 import { CountUp } from "@/components/animations";
 import { NetworkIcon } from "@/components/marketing";
 import { brandMeta } from "@/lib/brand";
@@ -47,7 +46,7 @@ export function BrandTabsBlockComponent({
   // la primera parte se renderiza Regular y la segunda Bold (patrón Figma).
   const [headingRegular, headingBoldPart] = (heading ?? "")
     .split("|")
-    .map((s) => s.trim());
+    .map((s: string) => s.trim());
 
   return (
     <section id={anchorId ?? "marcas"} className="py-6 sm:py-8 lg:py-10">
@@ -84,19 +83,16 @@ export function BrandTabsBlockComponent({
             <p className="text-muted-foreground text-fluid-body mt-2">{description}</p>
           ) : null}
 
-          {/* Tabs pill row — Figma: 1 línea siempre (1280px wide).
-              Mobile (<lg): scroll horizontal. Desktop (lg+): visible sin scroll. */}
+          {/* Tabs pill row */}
           <div
-            className="-mx-4 mt-8 scrollbar-none overflow-x-auto px-4 [-ms-overflow-style:none] lg:px-0 xl:overflow-x-visible [&::-webkit-scrollbar]:hidden"
+            className="-mx-4 mt-8 [scrollbar-width:none] overflow-x-auto px-4 [-ms-overflow-style:none] min-[1300px]:overflow-x-visible lg:px-0 [&::-webkit-scrollbar]:hidden"
             role="tablist"
             aria-label="Marcas del ecosistema"
           >
             <div className="flex w-max items-center gap-2 lg:w-full lg:justify-between">
-              {tabs.map((tab, i) => {
+              {tabs.map((tab: Tab, i: number) => {
                 const meta = brandMeta(tab.brand);
                 const isActive = i === safeIndex;
-                // Figma 402:5117: tabs uniformes en Azul Medio #015BC4.
-                // Active = filled, Inactive = outline.
                 const AZUL_MEDIO = "#015BC4";
                 return (
                   <button
@@ -113,7 +109,6 @@ export function BrandTabsBlockComponent({
                       });
                     }}
                     className={cn(
-                      // Figma 402:5002: Large size px-48 py-12 todos los tabs.
                       "font-display cursor-pointer rounded-[4px] border px-[20px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-all duration-200 hover:opacity-90 sm:px-[36px] lg:px-[48px]",
                       "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
                     )}
@@ -138,7 +133,7 @@ export function BrandTabsBlockComponent({
             </div>
           </div>
 
-          {/* Tab content — fade 300ms ease entre tabs */}
+          {/* Tab content */}
           <div className="mt-6">
             <AnimatePresence mode="wait">
               <motion.div
@@ -157,7 +152,6 @@ export function BrandTabsBlockComponent({
     </section>
   );
 }
-
 /**
  * TabPanel — implementación 1:1 del frame Figma 402:5117 (Caracol TV variant).
  *
@@ -388,40 +382,42 @@ function TabPanel({ tab }: { tab: Tab }) {
                 <div className="flex w-full flex-col gap-4 py-2">
                   {/* 3 rows × 2 cols layout. */}
                   <ul className="grid grid-cols-1 gap-x-4.5 gap-y-4 md:grid-cols-2">
-                    {tab.networks.slice(0, 6).map((net, i) => (
-                      <li
-                        key={net.id ?? net.network}
-                        className="flex min-w-0 items-start gap-3"
-                      >
-                        <BrandNetworkIcon
-                          network={net.network}
-                          color={BRAND_ICON_COLOR[tab.brand] ?? brandPanelBg}
-                          className="h-8 w-8 shrink-0"
-                        />
-                        <div className="flex min-w-0 flex-col items-start justify-center whitespace-nowrap">
-                          <p
-                            className={cn(
-                              "font-display text-[20px] leading-[28px]",
-                              i === 0 ? "font-bold" : "font-semibold",
-                            )}
-                            style={{ color: NEUTRO_NEGRO }}
-                          >
-                            <CountUp
-                              value={net.followers}
-                              format={(v) => formatNumber(Math.round(v))}
-                              shouldStart={containerInView}
-                              reserveWidth
-                            />
-                          </p>
-                          <p
-                            className="font-display text-[16px] leading-[20px] font-normal"
-                            style={{ color: NEUTRO_NEGRO }}
-                          >
-                            Seguidores
-                          </p>
-                        </div>
-                      </li>
-                    ))}
+                    {tab.networks
+                      .slice(0, 6)
+                      .map((net: NonNullable<Tab["networks"]>[number], i: number) => (
+                        <li
+                          key={net.id ?? net.network}
+                          className="flex min-w-0 items-start gap-3"
+                        >
+                          <BrandNetworkIcon
+                            network={net.network}
+                            color={BRAND_ICON_COLOR[tab.brand] ?? brandPanelBg}
+                            className="h-8 w-8 shrink-0"
+                          />
+                          <div className="flex min-w-0 flex-col items-start justify-center whitespace-nowrap">
+                            <p
+                              className={cn(
+                                "font-display text-[20px] leading-[28px]",
+                                i === 0 ? "font-bold" : "font-semibold",
+                              )}
+                              style={{ color: NEUTRO_NEGRO }}
+                            >
+                              <CountUp
+                                value={net.followers}
+                                format={(v) => formatNumber(Math.round(v))}
+                                shouldStart={containerInView}
+                                reserveWidth
+                              />
+                            </p>
+                            <p
+                              className="font-display text-[16px] leading-[20px] font-normal"
+                              style={{ color: NEUTRO_NEGRO }}
+                            >
+                              Seguidores
+                            </p>
+                          </div>
+                        </li>
+                      ))}
                   </ul>
                 </div>
               </div>
@@ -433,19 +429,19 @@ function TabPanel({ tab }: { tab: Tab }) {
         {tab.audience?.genderSplit?.femalePercent !== undefined &&
         tab.audience?.genderSplit?.femalePercent !== null ? (
           <div
-            className="m-auto flex flex-col items-start gap-2 rounded-[8px] bg-white p-5"
+            className="m-auto flex flex-col items-start gap-2 rounded-[8px] bg-white p-4"
             style={{ border: `1px solid ${CARD_BORDER}` }}
           >
             <Pill>AUDIENCIA</Pill>
 
-            <div className="m-auto flex flex-col gap-4 px-3 min-[920px]:flex-row sm:gap-4 sm:px-5 lg:items-start">
+            <div className="m-auto flex flex-col gap-4 min-[920px]:flex-row sm:gap-4 sm:px-5 lg:items-start">
               {/* Género — text + pie chart side by side.
                   Mobile: flex-col o flex-row compacto. El w-[184px] fijo causa
                   overflow en mobile — se usa min-w-0 flex-1 en su lugar. */}
-              <div className="flex items-center justify-between gap-3 sm:justify-center sm:gap-[10px]">
-                <div className="flex min-w-0 flex-1 flex-col items-start sm:w-[184px] sm:flex-none">
+              <div className="flex items-center justify-between gap-3 sm:justify-center sm:gap-2.5">
+                <div className="flex min-w-0 flex-1 flex-col items-start sm:w-46 sm:flex-none">
                   <p
-                    className="font-display text-[22px] leading-[30px] font-bold sm:text-[24px] sm:leading-[32px]"
+                    className="font-display text-[22px] leading-7.5 font-bold sm:text-[24px] sm:leading-8"
                     style={{ color: NEUTRO_NEGRO }}
                   >
                     Género
@@ -522,11 +518,17 @@ function TabPanel({ tab }: { tab: Tab }) {
                     }}
                   >
                     <AgePeakBarChart
-                      data={tab.audience.agePicks.map((a) => ({
-                        range: a.range,
-                        value: a.value,
-                        isPeak: a.isPeak,
-                      }))}
+                      data={tab.audience.agePicks.map(
+                        (
+                          a: NonNullable<
+                            NonNullable<Tab["audience"]>["agePicks"]
+                          >[number],
+                        ) => ({
+                          range: a.range,
+                          value: a.value,
+                          isPeak: a.isPeak,
+                        }),
+                      )}
                       peakColor={brandChartPeak}
                       baseColor="#D9D9D9"
                     />
