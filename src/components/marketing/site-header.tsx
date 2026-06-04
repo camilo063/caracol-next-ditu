@@ -76,9 +76,9 @@ export function SiteHeader({
       setHidden(false);
       return;
     }
-    if (latest > previous + 20)
-      setHidden(true); // scroll down — delta mayor = menos sensible
-    else if (latest < previous - 24) setHidden(false); // scroll up — delta mayor = menos sensible
+    if (latest > previous + 12)
+      setHidden(true); // esconde: 12px down
+    else if (latest < previous - 4) setHidden(false); // muestra: 4px up — reacciona inmediato
   });
 
   // --- Click outside / ESC: cierra menú mobile (spec usuario) ---

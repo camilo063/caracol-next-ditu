@@ -289,9 +289,7 @@ function CtaSimpleLayout({
             </p>
           ) : null}
         </div>
-        {/* CTA: bg #015BC4 → hover #003381 (navy oscuro), 306x48 SemiBold 18px.
-            Color sin-hover #015BC4 según Figma (bug: "color del botón sin
-            hover no corresponde al diseño" — antes era #015BC4 sin transición). */}
+        {/* CTA: bg #015BC4 → hover #003381 (navy oscuro), 306x48 SemiBold 18px. */}
         <Link
           href={ctaHref}
           className={cn(

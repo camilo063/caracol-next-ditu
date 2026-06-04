@@ -49,11 +49,24 @@ export function FloatingContact({
   tone,
 }: FloatingContactProps) {
   const [open, setOpen] = React.useState(false);
+  const [hovered, setHovered] = React.useState(false);
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
 
   const positionClasses =
     position === "bottom-left" ? "bottom-6 left-6" : "bottom-6 right-6";
 
   if (!enabled || representatives.length === 0) return null;
+
+  const getModalPosition = () => {
+    if (!wrapperRef.current) return undefined;
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const modalWidth = Math.max(rect.width, 280);
+    return {
+      bottom: window.innerHeight - rect.top + 8,
+      left: rect.right - modalWidth,
+      width: modalWidth,
+    };
+  };
 
   // Normalize al shape de HomeContactModal.
   const reps: ContactRepresentative[] = representatives.map((r) => ({
@@ -67,7 +80,11 @@ export function FloatingContact({
   return (
     <>
       {/* Wrapper relative para el mini PatoDitu absoluto (solo Ditu tone) */}
-      <div className={`fixed z-40 ${positionClasses}`} style={{ position: "fixed" }}>
+      <div
+        ref={wrapperRef}
+        className={`fixed z-40 ${positionClasses}`}
+        style={{ position: "fixed" }}
+      >
         {/* Mini PatoDitu — Figma 775:4636: composite c+g+i+j, canvas 52×47px.
             Posición: absolute left-[130px] top-[-6px].
             Transform: scaleY(-1) rotate(-177.48deg). Solo tone="ditu". */}
@@ -120,12 +137,12 @@ export function FloatingContact({
         <button
           type="button"
           onClick={() => setOpen(true)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
           aria-label={buttonLabel}
           aria-expanded={open}
           className={`inline-flex cursor-pointer items-center justify-center overflow-clip border border-solid shadow-md transition-all duration-200 active:scale-95 ${
-            isDitu
-              ? "rounded-[12px] hover:opacity-90"
-              : "rounded-[4px] text-white hover:bg-[#1a4ee5] hover:shadow-lg hover:shadow-[#2862FF]/40"
+            isDitu ? "rounded-[12px] hover:opacity-90" : "rounded-[4px] text-white"
           }`}
           style={
             isDitu
@@ -140,8 +157,8 @@ export function FloatingContact({
                   fontFamily: "var(--font-ditu-display), system-ui, sans-serif",
                 }
               : {
-                  backgroundColor: "#2862FF",
-                  borderColor: "#2862FF",
+                  backgroundColor: open || hovered ? "#003CCA" : "#2862FF",
+                  borderColor: open || hovered ? "#003CCA" : "#2862FF",
                   padding: "12px 48px",
                   fontSize: "16px",
                   fontWeight: 600,
@@ -159,6 +176,7 @@ export function FloatingContact({
         open={open}
         onClose={() => setOpen(false)}
         representatives={reps}
+        position={open ? getModalPosition() : undefined}
       />
     </>
   );

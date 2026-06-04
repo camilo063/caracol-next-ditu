@@ -123,14 +123,14 @@ export function MediaPreview({ data, className }: MediaPreviewProps) {
       ) : null}
 
       {/* Caption tag inferior */}
-      {data.captionTag ? (
+      {/* {data.captionTag ? (
         <span
           className="absolute bottom-3 left-3 z-10 rounded-md px-2 py-1 text-[10px] font-bold tracking-wide text-white uppercase shadow"
           style={{ backgroundColor: "#2862FF" }}
         >
           {data.captionTag}
         </span>
-      ) : null}
+      ) : null} */}
 
       {/* Título overlay (centrado) */}
       {data.titleOverlay && !playing ? (

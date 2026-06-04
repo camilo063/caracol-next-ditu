@@ -135,7 +135,7 @@ export function AudienceNetworksBlockComponent({
                     variants={cardVariants}
                     initial="hidden"
                     whileInView="visible"
-                    viewport={{ once: false, amount: 0.3 }}
+                    viewport={{ once: true, amount: 0.3 }}
                   >
                     <StatCard item={item} />
                   </motion.div>
@@ -150,7 +150,7 @@ export function AudienceNetworksBlockComponent({
                     variants={cardVariants}
                     initial="hidden"
                     whileInView="visible"
-                    viewport={{ once: false, amount: 0.3 }}
+                    viewport={{ once: true, amount: 0.3 }}
                   >
                     <StatCard item={item} />
                   </motion.div>
@@ -183,7 +183,7 @@ export function AudienceNetworksBlockComponent({
               }}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.5 }}
+              viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               +{formatMillionsLong(totalFollowers)} de seguidores
@@ -274,7 +274,7 @@ function NetworksLogoBar({
           className="flex shrink-0 items-center gap-3"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.5 }}
+          viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay: idx * 0.1 }}
         >
           <div className="h-11.75 w-12 shrink-0">
