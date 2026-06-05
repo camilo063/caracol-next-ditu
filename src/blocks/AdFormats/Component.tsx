@@ -81,7 +81,7 @@ function AdFormatsDefault({
     <>
       <section id={anchorId ?? "pauta"}>
         <div
-          className="relative w-full overflow-hidden px-6 py-12 text-white sm:p-12 lg:p-[120px]"
+          className="relative w-full overflow-hidden px-6 py-12 text-white sm:p-12 lg:p-30"
           style={{
             backgroundColor: NAVY_DARK,
             // Reducido a 100px para consistencia con Calendario (spec usuario).
