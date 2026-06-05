@@ -32,9 +32,7 @@ export default function DituPage() {
         {/* Spec animaciones (Camilo): fade-in slide-up 400ms en todas las
             secciones excepto Hero. RevealSection respeta reduced-motion. */}
         <DituVideoBlock />
-        <RevealSection>
-          <DituAudienciaBlock />
-        </RevealSection>
+        <DituAudienciaBlock />
         <RevealSection>
           <DituAdnBlock />
         </RevealSection>

@@ -126,10 +126,11 @@ export function DituHero({
     <section
       id="inicio"
       className="relative flex h-[100vh] max-h-[1080px] flex-col items-center justify-center gap-6 overflow-hidden px-6 text-center sm:px-12 lg:gap-6 lg:px-30"
+      style={{ background: "linear-gradient(129.43deg, #12082D 2%, #3B1A93 100%)" }}
     >
       {/* Background con parallax — Framer Motion, speed 0.4 (spec).
           Mobile y reduced-motion: desactivado automáticamente. */}
-      <ParallaxBackground speed={0.4} className="pointer-events-none absolute inset-0">
+      {/* <ParallaxBackground speed={0.4} className="pointer-events-none absolute inset-0 ">
         <div aria-hidden="true" className="absolute inset-0">
           <Image
             src="/ditu/hero-bg.png"
@@ -139,15 +140,8 @@ export function DituHero({
             sizes="100vw"
             className="object-cover"
           />
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: "linear-gradient(129.43deg, #12082D 2%, #3B1A93 100%)",
-              opacity: 1,
-            }}
-          />
         </div>
-      </ParallaxBackground>
+      </ParallaxBackground> */}
 
       {/* Content wrapper — Figma 512:3281 + Framer Motion stagger (spec Camilo).
           Cada hijo entra con delay 0.15s en cascada. No max-w: padding-x del
