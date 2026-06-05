@@ -72,12 +72,12 @@ export function KeyMomentsCalendarComponent({
   return (
     <section id={anchorId ?? "momentos"}>
       <div
-        className="relative w-full overflow-hidden px-6 py-12 text-white sm:p-12 lg:p-30"
+        className="relative w-full overflow-hidden px-6 py-12 pb-16 text-white sm:p-12 lg:p-30"
         style={{
           backgroundColor: NAVY_DARK,
           // Border radius asimétrico Figma — reducido de 180px a 100px
           // (spec usuario: "Reducir la redondez a aproximadamente 100px").
-          borderBottomLeftRadius: "100px",
+          borderBottomLeftRadius: "clamp(40px, 6.9vw, 100px)",
         }}
       >
         <Container size="xl" className="!p-0">

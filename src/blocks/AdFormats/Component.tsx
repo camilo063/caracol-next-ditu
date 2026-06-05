@@ -85,7 +85,7 @@ function AdFormatsDefault({
           style={{
             backgroundColor: NAVY_DARK,
             // Reducido a 100px para consistencia con Calendario (spec usuario).
-            borderTopRightRadius: "100px",
+            borderTopRightRadius: "clamp(40px, 6.9vw, 100px)",
           }}
         >
           <div className="mx-auto flex max-w-300 flex-col gap-12 lg:gap-16">
