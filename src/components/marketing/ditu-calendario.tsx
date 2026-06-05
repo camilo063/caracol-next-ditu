@@ -220,6 +220,13 @@ export interface DituCalendarioProps {
   referenceDate?: Date;
 }
 
+const SLIDE_UP = {
+  initial: { opacity: 0, y: 48 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "0px 0px -5% 0px" } as const,
+};
+const ease = [0.25, 0.46, 0.45, 0.94] as const;
+
 export function DituCalendarioBlock({
   anchorId = "momentos",
   events = DEMO_EVENTS,
@@ -243,6 +250,8 @@ export function DituCalendarioBlock({
     setActiveIndex(Math.max(0, Math.min(visibleEvents.length - 1, idx)));
   };
 
+  const motionProps = reduceMotion ? {} : SLIDE_UP;
+
   return (
     <section
       id={anchorId}
@@ -255,7 +264,11 @@ export function DituCalendarioBlock({
     >
       <div className="mx-auto flex max-w-[1440px] flex-col items-start gap-12 px-6 py-24 sm:px-12 sm:py-32 lg:gap-[48px] lg:px-[120px] lg:py-[180px]">
         {/* Header — Figma 760:9890 */}
-        <div className="flex flex-col items-start gap-[11px]">
+        <motion.div
+          {...motionProps}
+          transition={{ duration: 0.6, ease }}
+          className="flex flex-col items-start gap-[11px]"
+        >
           <div className="relative flex w-full max-w-[449px] flex-col items-start gap-[4px]">
             {/* Sticker "ESTO SE VIENE" */}
             <div
@@ -310,18 +323,28 @@ export function DituCalendarioBlock({
           >
             Los momentos que no te puedes perder.
           </p>
-        </div>
+        </motion.div>
 
         {/* Slider — Figma 829:6573: gap-[32px] w-[1200px] */}
-        <CalendarSlider
-          events={visibleEvents}
-          activeIndex={activeIndex}
-          onGoTo={goTo}
-          reduceMotion={!!reduceMotion}
-        />
+        <motion.div
+          {...motionProps}
+          transition={{ duration: 0.6, ease, delay: 0.12 }}
+          className="w-full"
+        >
+          <CalendarSlider
+            events={visibleEvents}
+            activeIndex={activeIndex}
+            onGoTo={goTo}
+            reduceMotion={!!reduceMotion}
+          />
+        </motion.div>
 
         {/* CTA — Figma 829:4787: w-1200 gap-24 items-center */}
-        <div className="flex w-full flex-col items-center gap-[24px] lg:w-[1200px]">
+        <motion.div
+          {...motionProps}
+          transition={{ duration: 0.6, ease, delay: 0.22 }}
+          className="flex w-full flex-col items-center gap-[24px] lg:w-[1200px]"
+        >
           <p
             className="text-center text-[18px] text-white sm:text-[20px] lg:text-[24px]"
             style={{
@@ -346,7 +369,7 @@ export function DituCalendarioBlock({
           >
             Contáctanos
           </Link>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

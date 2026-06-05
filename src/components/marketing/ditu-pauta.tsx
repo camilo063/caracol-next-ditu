@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 /**
  * DituPautaBlock — Figma 892:6463.
@@ -178,9 +178,18 @@ export interface DituPautaProps {
   anchorId?: string;
 }
 
+const SLIDE_UP = {
+  initial: { opacity: 0, y: 48 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "0px 0px -5% 0px" } as const,
+};
+const ease = [0.25, 0.46, 0.45, 0.94] as const;
+
 export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
   const [activeKey, setActiveKey] = useState<CategoryKey>("ads");
   const active = CATEGORIES.find((c) => c.key === activeKey) ?? CATEGORIES[0]!;
+  const reduceMotion = useReducedMotion();
+  const motionProps = reduceMotion ? {} : SLIDE_UP;
 
   return (
     <section
@@ -193,7 +202,11 @@ export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
     >
       <div className="mx-auto flex max-w-[1440px] flex-col items-start gap-12 px-6 py-24 sm:px-12 sm:py-32 lg:gap-[48px] lg:p-[120px]">
         {/* Header — Figma 760:9671 */}
-        <div className="flex flex-col items-start gap-[16px]">
+        <motion.div
+          {...motionProps}
+          transition={{ duration: 0.6, ease }}
+          className="flex flex-col items-start gap-[16px]"
+        >
           {/* Sticker "Impulsa tu marca" */}
           <div
             className="inline-flex items-center rounded-[8px] px-[8px] py-[6px]"
@@ -231,10 +244,14 @@ export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
             Diseñados para capturar atención en nuestro ecosistema digital — de display a
             video, audio y patrocinios.
           </p>
-        </div>
+        </motion.div>
 
         {/* Content layout: sidebar + content area */}
-        <div className="flex w-full flex-col items-start gap-8 py-6 lg:flex-row lg:gap-[48px] lg:py-[48px]">
+        <motion.div
+          {...motionProps}
+          transition={{ duration: 0.6, ease, delay: 0.12 }}
+          className="flex w-full flex-col items-start gap-8 py-6 lg:flex-row lg:gap-[48px] lg:py-[48px]"
+        >
           {/* Sidebar — desktop sticky / mobile horizontal scroll */}
           <PautaSidebar
             categories={CATEGORIES}
@@ -263,10 +280,14 @@ export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
               </motion.div>
             </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
 
         {/* CTA bottom */}
-        <div className="flex w-full flex-col items-center gap-[24px]">
+        <motion.div
+          {...motionProps}
+          transition={{ duration: 0.6, ease, delay: 0.22 }}
+          className="flex w-full flex-col items-center gap-[24px]"
+        >
           <p
             className="max-w-[1200px] text-center text-[18px] text-white sm:text-[20px] lg:text-[24px]"
             style={{
@@ -291,7 +312,7 @@ export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
           >
             Descargar Especificaciones
           </Link>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

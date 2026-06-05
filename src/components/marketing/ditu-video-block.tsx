@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 
 /**
@@ -39,15 +39,20 @@ export function DituVideoBlock({
   const containerRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
 
-  // Scroll progress: 0 cuando el top de la section entra desde el bottom del
-  // viewport; 1 cuando el centro de la section alcanza el centro del viewport.
+  // Mobile: sin animación de scroll (< 768px).
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "center center"],
   });
 
-  // Scale: 0.6 (reduced) → 1.0 (full). `clamp: true` (default) mantiene 1.0
-  // después de que el progress excede 1 — "queda fijo, no regresa al reducido".
   const scale = useTransform(scrollYProgress, [0, 1], [0.6, 1]);
 
   return (
@@ -55,18 +60,14 @@ export function DituVideoBlock({
       ref={containerRef}
       id={anchorId}
       className="relative flex w-full flex-col items-center justify-center overflow-hidden"
-      style={{
-        // Figma 512:2244: gradient-to-b con stops exactos.
-        background:
-          "linear-gradient(180deg, #291763 0%, #32197B 25.483%, #3B1A93 100.01%)",
-      }}
+      style={{ background: "linear-gradient(90deg, #1E0E4C 0%, #3A1A92 100%)" }}
     >
       {/* Video wrapper — scale animado vía Framer Motion useScroll/useTransform.
           En reduced-motion: scale fijo a 1. */}
       <motion.div
         className="relative aspect-[507/285] w-full shrink-0 rounded-[12px]"
         style={{
-          scale: reduceMotion ? 1 : scale,
+          scale: reduceMotion || isMobile ? 1 : scale,
           transformOrigin: "center center",
         }}
       >

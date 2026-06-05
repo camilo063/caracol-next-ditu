@@ -384,40 +384,58 @@ function TabPanel({ tab }: { tab: Tab }) {
                   <ul className="grid grid-cols-1 gap-x-4.5 gap-y-4 md:grid-cols-2">
                     {tab.networks
                       .slice(0, 6)
-                      .map((net: NonNullable<Tab["networks"]>[number], i: number) => (
-                        <li
-                          key={net.id ?? net.network}
-                          className="flex min-w-0 items-start gap-3"
-                        >
+                      .map((net: NonNullable<Tab["networks"]>[number], i: number) => {
+                        const netHref = (net.url ??
+                          (net as Record<string, unknown>).href) as string | undefined;
+                        const icon = (
                           <BrandNetworkIcon
                             network={net.network}
                             color={BRAND_ICON_COLOR[tab.brand] ?? brandPanelBg}
                             className="h-8 w-8 shrink-0"
                           />
-                          <div className="flex min-w-0 flex-col items-start justify-center whitespace-nowrap">
-                            <p
-                              className={cn(
-                                "font-display text-[20px] leading-[28px]",
-                                i === 0 ? "font-bold" : "font-semibold",
-                              )}
-                              style={{ color: NEUTRO_NEGRO }}
-                            >
-                              <CountUp
-                                value={net.followers}
-                                format={(v) => formatNumber(Math.round(v))}
-                                shouldStart={containerInView}
-                                reserveWidth
-                              />
-                            </p>
-                            <p
-                              className="font-display text-[16px] leading-[20px] font-normal"
-                              style={{ color: NEUTRO_NEGRO }}
-                            >
-                              Seguidores
-                            </p>
-                          </div>
-                        </li>
-                      ))}
+                        );
+                        return (
+                          <li
+                            key={net.id ?? net.network}
+                            className="flex min-w-0 items-start gap-3"
+                          >
+                            {netHref ? (
+                              <a
+                                href={netHref}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="shrink-0 transition-transform duration-200 ease-out hover:scale-110"
+                              >
+                                {icon}
+                              </a>
+                            ) : (
+                              <span className="shrink-0">{icon}</span>
+                            )}
+                            <div className="flex min-w-0 flex-col items-start justify-center whitespace-nowrap">
+                              <p
+                                className={cn(
+                                  "font-display text-[20px] leading-[28px]",
+                                  i === 0 ? "font-bold" : "font-semibold",
+                                )}
+                                style={{ color: NEUTRO_NEGRO }}
+                              >
+                                <CountUp
+                                  value={net.followers}
+                                  format={(v) => formatNumber(Math.round(v))}
+                                  shouldStart={containerInView}
+                                  reserveWidth
+                                />
+                              </p>
+                              <p
+                                className="font-display text-[16px] leading-[20px] font-normal"
+                                style={{ color: NEUTRO_NEGRO }}
+                              >
+                                Seguidores
+                              </p>
+                            </div>
+                          </li>
+                        );
+                      })}
                   </ul>
                 </div>
               </div>

@@ -74,7 +74,7 @@ export function AudienceNetworksBlockComponent({
         style={{
           borderTopLeftRadius: "50px",
           borderTopRightRadius: "50px",
-          borderBottomRightRadius: "180px",
+          borderBottomRightRadius: "clamp(80px, 12.5vw, 180px)",
           boxShadow: "0px -34px 20px 0px rgba(0,51,129,0.55)",
         }}
       >

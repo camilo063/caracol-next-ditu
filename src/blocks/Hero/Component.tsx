@@ -129,7 +129,8 @@ export function HeroBlockComponent({
               <span>{heading}</span>
               {headingBold ? (
                 <>
-                  <br />
+                  <br className="hidden lg:block" />
+                  <span className="font-bold lg:hidden"> </span>
                   <span className="font-bold">{headingBold}</span>
                 </>
               ) : null}
