@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui";
@@ -54,8 +54,6 @@ export function SiteHeader({
   showFullscreenToggle = true,
 }: SiteHeaderProps) {
   const [open, setOpen] = React.useState(false);
-  const [hidden, setHidden] = React.useState(false);
-  const [scrolled, setScrolled] = React.useState(false);
   const [headerHovered, setHeaderHovered] = React.useState(false);
   // Default active = primer item del nav (spec Camilo: en Caracol Next debe
   // ser "marcas" por defecto). Se actualiza vía IntersectionObserver al scroll.
@@ -64,24 +62,6 @@ export function SiteHeader({
   );
   const mobileMenuRef = React.useRef<HTMLDivElement>(null);
   const mobileToggleRef = React.useRef<HTMLButtonElement>(null);
-
-  // --- Hide on scroll down, show on scroll up ---
-  // Transición más suave: thresholds más altos para evitar flicker en scroll
-  // up corto. Bug: "El estilo del header cambia drásticamente al hacer scroll
-  // hacia arriba". 8→12px de delta + 80→120 threshold de top.
-  const { scrollY } = useScroll();
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() ?? 0;
-    setScrolled(latest > 24);
-    // Ditu: siempre visible, sin hide-on-scroll.
-    if (landing === "ditu") return;
-    if (latest <= 120) {
-      setHidden(false);
-      return;
-    }
-    if (latest > previous + 12) setHidden(true);
-    else if (latest < previous - 4) setHidden(false);
-  });
 
   // --- Click outside / ESC: cierra menú mobile (spec usuario) ---
   React.useEffect(() => {
@@ -142,9 +122,6 @@ export function SiteHeader({
 
   return (
     <motion.header
-      initial={{ y: 0 }}
-      animate={{ y: hidden ? "-100%" : "0%" }}
-      transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
       onMouseEnter={() => isDitu && setHeaderHovered(true)}
       onMouseLeave={() => isDitu && setHeaderHovered(false)}
       className={cn(
