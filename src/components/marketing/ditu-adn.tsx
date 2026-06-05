@@ -99,7 +99,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
   return (
     <section
       id={anchorId}
-      className="relative w-full overflow-hidden"
+      className="relative w-full"
       style={{
         background:
           "linear-gradient(175.32deg, #12082D 9.84%, #291266 47.99%, #12082D 85.01%)",
@@ -108,35 +108,16 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
       {/* Wave — Figma 738:3033 (Frame 14504): transición visual entre la sección
           Audiencia stats y el bloque ADN. Silhoueta RGBA 1440×233 px. Solo desktop
           (en mobile las secciones hacen transición directa sin ola). */}
+
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/ditu/wave-adn.png"
+        src="/bg/bg-up.svg"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 hidden w-full object-fill lg:block"
-        style={{ height: "233px" }}
+        className="pointer-events-none absolute top-0 left-0 z-10 w-full -translate-y-full object-contain"
       />
 
-      {/* Ditu custom icons — Figma 512:2823: decorativo RGBA 181×204 px.
-          x=1327.72 px del borde izq. del frame 1440 → desborda 68 px por la dcha.
-          (intencional en el Figma — overflow-hidden del section lo recorta).
-          Audit 2026-06-01: posición verificada vs metadata Figma (x=1327.72 en Frame 14510).
-          top=1023px = 233 (wave h) + 790 (y en Frame 14510). CORRECTO — no mover. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/ditu/adn-custom-icon.png"
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute hidden lg:block"
-        style={{
-          top: "1023px" /* 233 (wave h) + 790 (y en Frame 14510, Figma 512:2823) */,
-          left: "1327px" /* Figma x=1327.72 en frame 1440 px — verificado correcto */,
-          width: "181px",
-          height: "204px",
-        }}
-      />
-
-      <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-12 px-6 pt-16 pb-24 sm:gap-16 sm:px-12 sm:pb-32 lg:gap-[64px] lg:px-[120px] lg:pt-[233px] lg:pb-[180px]">
+      <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-12 px-6 py-16 sm:gap-16 sm:px-12 sm:py-20 lg:gap-[64px] lg:px-[120px] lg:py-[80px]">
         {/* Heading */}
         <div className="flex flex-col items-center gap-3">
           <div
@@ -151,7 +132,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
               ADN DITU
             </p>
           </div>
-          <h2 className="font-display text-center text-[36px] leading-[1] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
+          <h2 className="font-display text-center text-[46px] leading-[1] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
             <span style={{ color: CYAN }}>Sabemos</span> a quién le hablas.
           </h2>
         </div>
@@ -282,7 +263,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                 desde 0 hasta valor final al entrar viewport (isAnimationActive),
                 duración ~1.2s. La barra peak (55-64) destacada en violet.
                 Render condicional (chartsInView) → forzar animación al ver. */}
-            <div className="mt-4 w-full">
+            <div className="mt-4 w-full xl:mt-2">
               <div className="h-[180px] w-full">
                 {chartsInView ? (
                   <ResponsiveContainer width="100%" height="100%" key="bar-in">
@@ -307,7 +288,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                 ) : null}
               </div>
               {/* Labels debajo de cada bar — Figma 747:2630+: Spline Sans 14px white center */}
-              <div className="flex w-full items-start gap-3 lg:gap-[12px]">
+              <div className="flex w-full items-start gap-3 lg:gap-3">
                 {AGE_BARS.map((bar) => (
                   <p
                     key={bar.label}
@@ -329,14 +310,14 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
             Línea 1: "y dónde " blanco · Línea 2: "encontrarlo" cyan #77EDED.
             SIN whitespace-nowrap para que hagan break natural. */}
         <div className="flex w-full flex-col gap-3">
-          <h3 className="font-display text-[36px] leading-[1] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
+          <h3 className="font-display text-[46px] leading-none font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
             <span className="block">y dónde</span>
             <span className="block" style={{ color: CYAN }}>
               encontrarlo
             </span>
           </h3>
           <p
-            className="max-w-[687px] text-[18px] leading-snug text-white sm:text-[22px]"
+            className="max-w-171.75 text-[18px] leading-snug text-white sm:text-[22px]"
             style={{
               fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
             }}
@@ -349,13 +330,14 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
         {/* NSE cards — Figma 748:2609. Spec Camilo: estrato con % MAYOR se
             destaca automáticamente (no hardcoded). En esta data Estrato 3
             (37.8%) es el highlight, pero si cambia el dataset, se recalcula. */}
-        <div className="flex w-full flex-wrap items-end justify-between gap-4 sm:gap-6">
-          {NSE_CARDS.map((card) => {
+        <div className="mt-15 grid w-full flex-wrap justify-center gap-4 sm:grid-cols-2 sm:items-end sm:gap-6 xl:grid-cols-4">
+          {NSE_CARDS.map((card, idx) => {
             const isMax = card.value === maxNseValue;
+            const isLast = idx === NSE_CARDS.length - 1;
             return (
               <div
                 key={card.label}
-                className="flex w-full max-w-[272px] flex-col items-start gap-2 rounded-[16px] border p-5"
+                className="tems-start relative flex w-full flex-col gap-1 rounded-2xl border p-5 text-center"
                 style={
                   isMax
                     ? {
@@ -370,11 +352,31 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                       }
                 }
               >
-                <p className="font-display text-[24px] leading-[1] font-bold whitespace-nowrap text-white sm:text-[28px] lg:text-[32px]">
+                {/* Desktop: cámara sobre la última tarjeta */}
+                {isLast && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src="/ditu/icons/camera-ditu.svg"
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -top-42.5 -right-5 hidden w-43.5 xl:block"
+                  />
+                )}
+                {/* Mobile: cámara sobre la primera tarjeta */}
+                {idx === 0 && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src="/ditu/icons/camera-ditu.svg"
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -top-25 right-2 w-25 xl:hidden"
+                  />
+                )}
+                <p className="font-display text-[24px] leading-none font-bold whitespace-nowrap text-white sm:text-[28px] lg:text-[32px]">
                   {card.label}
                 </p>
                 <p
-                  className={`font-display leading-[1] font-medium whitespace-nowrap text-white uppercase ${isMax ? "text-[64px] sm:text-[80px] lg:text-[96px]" : "text-[44px] sm:text-[56px] lg:text-[64px]"}`}
+                  className={`font-display leading-none font-medium whitespace-nowrap text-white uppercase ${isMax ? "text-[64px] sm:text-[80px] lg:text-[96px]" : "text-[44px] sm:text-[56px] lg:text-[64px]"}`}
                 >
                   <CountUp value={card.value} format={(v) => `${v.toFixed(1)}%`} />
                 </p>

@@ -201,11 +201,12 @@ export function DituAudienciaBlock({
   return (
     <section
       id={anchorId}
-      className="relative w-full overflow-hidden pb-[233px]"
+      className="relative w-full overflow-hidden"
       style={{
         // Figma 512:2243: 145.23deg rgb(66,18,131) → rgb(89,33,215) → rgb(82,37,194) → rgb(31,22,71)
         background:
           "linear-gradient(145.23deg, #421283 0%, #5921D7 37.027%, #5225C2 74.432%, #1F1647 102.7%)",
+        paddingBottom: "calc(205 / 1440 * 100vw + 40px)",
       }}
     >
       {/* TOP block: Sticker + heading + stat cards */}
@@ -429,7 +430,7 @@ export function DituAudienciaBlock({
       {/* BOTTOM block: +1.7M + scrolling networks */}
       <motion.div
         ref={bottomRef}
-        className="mx-auto flex max-w-[1440px] flex-col gap-10 px-6 pt-4 pb-16 sm:px-12 lg:gap-[48px] lg:px-[120px] lg:pb-[80px]"
+        className="mx-auto flex max-w-[1440px] flex-col gap-10 px-[20px] pt-4 pb-16 sm:px-12 lg:gap-[48px] lg:px-[120px] lg:pb-[80px]"
         variants={containerVariants}
         initial="hidden"
         animate={bottomInView ? "visible" : "hidden"}

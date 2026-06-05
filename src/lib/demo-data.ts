@@ -1752,7 +1752,7 @@ export const dituHeaderDemo = {
   ctaButton: {
     enabled: true,
     label: "Ir a Caracol Next",
-    href: "/",
+    href: "/caracol-next",
     variant: "brand-caracolnext" as const,
   },
   sticky: true,
