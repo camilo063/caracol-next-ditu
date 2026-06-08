@@ -56,8 +56,11 @@ export function DituTipoContenidoBlock({
 }: DituTipoContenidoProps & { autoplayInterval?: number }) {
   const [activeTab, setActiveTab] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
   const tab = TABS[activeTab]!;
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
 
   // --- Autoplay (spec Camilo): avanza automáticamente entre los 3 tabs.
   //     Pausa al hover en desktop (vía isPaused state, set por onMouseEnter/Leave). ---
@@ -69,21 +72,28 @@ export function DituTipoContenidoBlock({
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isPaused, autoplayInterval]);
+  }, [isPaused, autoplayInterval, resetKey]);
+
+  // Scroll activo centrado en el contenedor de tabs (mobile).
+  useEffect(() => {
+    const container = tabsContainerRef.current;
+    const btn = tabRefs.current[activeTab];
+    if (!container || !btn) return;
+    const containerCenter = container.offsetWidth / 2;
+    const btnCenter = btn.offsetLeft + btn.offsetWidth / 2;
+    container.scrollTo({ left: btnCenter - containerCenter, behavior: "smooth" });
+  }, [activeTab]);
 
   // Manual click reinicia el ciclo de autoplay para evitar saltos confusos.
   const handleTabClick = (idx: number) => {
     setActiveTab(idx);
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      // El useEffect re-arma el interval en el siguiente render.
-    }
+    setResetKey((k) => k + 1);
   };
 
   return (
     <section
       id={anchorId}
-      className="relative w-full overflow-hidden"
+      className="relative w-full overflow-hidden lg:flex lg:h-screen lg:max-h-[1080px] lg:items-center lg:justify-center"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       style={{
@@ -92,33 +102,25 @@ export function DituTipoContenidoBlock({
           "linear-gradient(115.78deg, #7129D4 11.561%, #5F20DF 63.291%, #1E1446 101.84%)",
       }}
     >
-      {/* Wave de transición — Figma 803:3486: misma silueta cityscape que el
-          wave del ADN, posicionada arriba del bloque (top≈-362px en Figma).
-          scaleY(-1) voltea el PNG para que las shapes apunten HACIA ABAJO
-          (desde el ADN oscuro hacia el fondo violeta de TipoContenido).
-          mix-blend-mode:multiply hace el fondo blanco del PNG transparente. */}
+      {/* bg-up estático en la parte superior — mismas características que ADN
+          pero en posición static (flujo normal), empuja el contenido hacia abajo. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/ditu/wave-hablamos-bottom.png"
+        src="/ditu/icons/picos-down.svg"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 hidden w-full object-fill lg:block"
-        style={{ height: "131px", transform: "scaleY(-1)", mixBlendMode: "multiply" }}
+        className="pointer-events-none w-full object-contain lg:absolute lg:top-0 lg:left-0"
       />
 
-      {/* Personaje "ojo Ditu" — Figma I750:3361;650:7349.
-          Dimensiones: 131×148px. Posición corregida: top:131px (justo debajo del wave,
-          encima del sticker/heading). left:658px según Figma. Solo desktop. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/ditu/tipoc-icon.png"
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute hidden lg:block"
-        style={{ top: "131px", left: "658px", width: "131px", height: "148px" }}
-      />
-
-      <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-[9px] px-6 py-24 sm:px-12 sm:py-32 lg:px-[120px] lg:py-[180px]">
+      <div className="mx-auto flex max-w-360 flex-col items-center gap-2.25 py-24 sm:px-12 sm:pb-32 lg:px-[120px] lg:pt-[220px] lg:pb-[180px]">
+        {/* Micro icon encima del sticker */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/ditu/icons/micro-icon.svg"
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none -mb-2 w-[110px] w-[120px] lg:w-[151px]"
+        />
         {/* Sticker — Figma 750:2722. Texto literal: "tipo de contenido"
             (Figma sin uppercase explícito en p, pero usa `uppercase` class
             así que el render es UPPERCASE; mismo aquí). */}
@@ -140,39 +142,48 @@ export function DituTipoContenidoBlock({
 
         {/* Heading — Figma 650:7351: 84/lh-84, blanco, 2 lines como <p> */}
         <h2
-          className="font-display text-center text-[36px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
+          className="font-display mb-2 text-center text-[42px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
           style={{ lineHeight: 1 }}
         >
           <span className="block">Tres formas de</span>
-          <span className="block">habitar la pantalla.</span>
+          <span className="block">habitar la pantalla</span>
         </h2>
 
         {/* Tabs row — Figma 750:2738: gap-[32px], items-center.
             Font lh-96 (2× font-size) da espacio vertical extra. */}
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-6 lg:gap-x-[32px]">
+        <div
+          ref={tabsContainerRef}
+          className="flex w-full scrollbar-none items-center overflow-x-auto scroll-smooth px-4 sm:justify-center lg:w-auto lg:flex-wrap lg:justify-center lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden"
+          style={{ gap: "1rem" }}
+        >
           {TABS.map((t, idx) => (
             <div key={t.label} className="flex items-center gap-4 lg:gap-[32px]">
               {idx > 0 ? (
                 // Separator dot — Figma 750:2743/2741: size-[20px] cyan circle
                 <span
                   className="inline-block h-3 w-3 rounded-full lg:h-[20px] lg:w-[20px]"
-                  style={{ backgroundColor: CYAN }}
+                  style={{ backgroundColor: `${NAVY_DARK}99` }}
                   aria-hidden="true"
                 />
               ) : null}
-              <button
+              <motion.button
+                ref={(el) => {
+                  tabRefs.current[idx] = el;
+                }}
                 type="button"
                 onClick={() => handleTabClick(idx)}
-                className="font-display text-[24px] font-bold whitespace-nowrap uppercase transition-colors sm:text-[36px] lg:text-[48px]"
+                whileHover={idx !== activeTab ? { scale: 1.06 } : {}}
+                whileTap={idx !== activeTab ? { scale: 0.97 } : {}}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                className="font-display cursor-pointer text-[24px] font-bold whitespace-nowrap uppercase transition-colors sm:text-[36px] lg:text-[48px]"
                 style={{
-                  color: idx === activeTab ? "#FFFFFF" : CYAN,
-                  // Figma usa lh-96 (= 2× font-size) para crear vertical space
-                  // entre tabs row y description.
+                  color: idx === activeTab ? "#FFFFFF" : "#77EDED",
                   lineHeight: "2",
+                  transformOrigin: "center",
                 }}
               >
                 {t.label}
-              </button>
+              </motion.button>
             </div>
           ))}
         </div>
@@ -180,14 +191,14 @@ export function DituTipoContenidoBlock({
         {/* Description — Figma 750:2719: Spline Sans 22px lh normal center white,
             max-w-[840px] (= 1440 - 2×300px).
             Wrapped en AnimatePresence para fade-in 300ms al cambiar tab. */}
-        <div className="flex min-h-[100px] w-full max-w-[840px] items-center justify-center">
+        <div className="flex min-h-[100px] w-full max-w-[840px] items-center justify-center px-[24px]">
           <AnimatePresence mode="wait" initial={false}>
             <motion.p
               key={activeTab}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+              initial={{ opacity: 0, x: 40, filter: "blur(4px)" }}
+              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, x: -40, filter: "blur(4px)" }}
+              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="w-full text-center text-[16px] text-white sm:text-[20px] lg:text-[22px]"
               style={{
                 fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
@@ -210,8 +221,8 @@ export function DituTipoContenidoBlock({
               aria-label={`Tab ${idx + 1}`}
               className="h-3 w-3 rounded-full transition-all lg:h-[16px] lg:w-[16px]"
               style={{
-                backgroundColor: idx === activeTab ? CYAN : "transparent",
-                border: `1.5px solid ${CYAN}`,
+                backgroundColor: idx === activeTab ? "#FFFFFF" : `${CYAN}99`,
+                border: "none",
               }}
             />
           ))}
