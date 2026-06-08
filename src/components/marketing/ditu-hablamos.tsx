@@ -63,20 +63,25 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
               </p>
               <Link
                 href="#contacto"
-                className="inline-flex items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold whitespace-nowrap transition-opacity hover:opacity-90"
+                className="group relative inline-flex items-center justify-center overflow-hidden rounded-[10px] border border-white bg-white px-12.5 py-3 text-[16px] font-bold whitespace-nowrap text-[#561BDB] transition-opacity duration-300 hover:text-white"
                 style={{
-                  borderColor: "#FFFFFF",
-                  color: VIOLET_MED,
                   fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
                   lineHeight: 1.5,
                 }}
               >
-                Contáctanos
+                <span
+                  className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{
+                    background: "linear-gradient(90deg, #8232F0 0%, #561BDB 100%)",
+                  }}
+                  aria-hidden="true"
+                />
+                <span className="relative z-10">Contáctanos</span>
               </Link>
             </div>
           </div>
         </div>
-        <div className="absolute -right-[60px] -bottom-[22px] z-1 w-[180px] rotate-[-15deg] sm:-bottom-[22px] sm:w-[270px] md:-bottom-[42px] md:w-[350px] lg:-right-[160px] lg:-bottom-[80px] lg:w-[450px] xl:-right-[60px] xl:-bottom-[92px] xl:w-[477px]">
+        <div className="absolute -right-[60px] -bottom-[22px] z-1 w-[180px] rotate-[-15deg] sm:-bottom-[22px] sm:w-[270px] md:-bottom-[42px] md:w-[350px] lg:-right-[160px] lg:-bottom-[80px] lg:w-[450px] xl:-right-[60px] xl:-bottom-[105px] xl:w-[477px]">
           <img
             src="/ditu/mascot/pato-ditu.svg"
             alt=""
