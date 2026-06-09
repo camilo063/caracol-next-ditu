@@ -3,7 +3,7 @@
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/lib/hooks/use-media-query";
@@ -291,7 +291,7 @@ function MobileSlider({
               >
                 <div
                   className={cn(
-                    "relative flex h-full flex-col items-center gap-[64px] overflow-hidden rounded-[12px] rounded-t-none border p-6 pt-8 text-center transition-all duration-300",
+                    "relative flex h-full flex-col items-center gap-4 overflow-hidden rounded-[12px] rounded-t-none border p-6 pt-8 text-center transition-all duration-300",
                     isActive ? "scale-100 opacity-100" : "scale-90 opacity-60",
                   )}
                   style={{
@@ -299,19 +299,27 @@ function MobileSlider({
                     borderColor: "rgba(207,206,204,0.6)",
                   }}
                 >
-                  <div className="grid h-full gap-5">
+                  <div className="flex h-full flex-col items-center gap-4">
                     <span
-                      className="m-auto w-fit rounded-[4px] px-3 py-1 text-[12px] font-bold tracking-wide text-white uppercase"
+                      className="w-fit rounded-[4px] px-3 py-1 text-[12px] font-bold tracking-wide text-white uppercase"
                       style={{ backgroundColor: PILL_BG }}
                     >
                       {cat.label.toUpperCase()}
                     </span>
                     <h3
-                      className="font-display text-[32px] font-bold"
+                      className="font-display text-[28px] font-bold"
                       style={{ color: HEADING_NAVY, lineHeight: 1.2 }}
                     >
                       {(cat.heading ?? cat.label).replace("|", " ")}
                     </h3>
+                    {cat.description ? (
+                      <p
+                        className="font-display text-[14px] leading-[1.3] font-medium"
+                        style={{ color: TEXT_GRIS_OSCURO }}
+                      >
+                        {cat.description}
+                      </p>
+                    ) : null}
                   </div>
                   <button
                     type="button"

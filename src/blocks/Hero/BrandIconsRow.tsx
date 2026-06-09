@@ -95,22 +95,27 @@ function StaggeredIcons({ items, className }: BrandIconsRowProps) {
 /* ------------------------------ Mobile: marquee ---------------------------- */
 
 function MarqueeIcons({ items, className }: BrandIconsRowProps) {
-  // Duplicamos el set para crear un loop sin saltos.
-  const looped = [...items, ...items];
-  // Velocidad: ~22s para recorrer toda la fila duplicada. Cuanto más íconos, más lento.
+  // gap-4 = 1rem = 16px. El "step" es el ancho exacto de un set completo
+  // (cada ítem + su gap siguiente), lo que garantiza un loop pixel-perfect.
+  const ICON_SIZE = 76;
+  const GAP = 16;
+  const step = items.length * (ICON_SIZE + GAP);
+  // 4 copias aseguran que el track siempre supere el viewport (hasta ~480px)
+  // + el step de scroll, eliminando el hueco blanco al final del loop.
+  const looped = [...items, ...items, ...items, ...items];
   const duration = Math.max(18, items.length * 3);
+
   return (
     <div
       className={cn(
         "relative w-full overflow-hidden",
-        // Fade lateral para que los íconos no aparezcan/desaparezcan abruptos.
         "[mask-image:linear-gradient(90deg,transparent_0,black_8%,black_92%,transparent_100%)]",
         className,
       )}
     >
       <motion.ul
         className="flex w-max items-center gap-4"
-        animate={{ x: ["0%", "-50%"] }}
+        animate={{ x: [0, -step] }}
         transition={{
           duration,
           ease: "linear",
