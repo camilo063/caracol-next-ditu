@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
@@ -194,13 +194,13 @@ export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
   return (
     <section
       id={anchorId}
-      className="relative w-full overflow-hidden"
+      className="relative w-full overflow-x-clip"
       style={{
         // Figma 892:6463: gradient 204.26deg
         background: "linear-gradient(204.26deg, #12082D 37.947%, #3B1A93 106.75%)",
       }}
     >
-      <div className="mx-auto flex max-w-[1440px] flex-col items-start gap-12 px-6 py-24 sm:px-12 sm:py-32 lg:gap-[48px] lg:p-[120px]">
+      <div className="mx-auto flex max-w-[1440px] flex-col items-start gap-12 px-6 py-24 sm:px-[48px] sm:py-[120px] lg:gap-[48px] lg:py-[120px]">
         {/* Header — Figma 760:9671 */}
         <motion.div
           {...motionProps}
@@ -226,7 +226,7 @@ export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
 
           {/* Heading 84/lh-84 — 2 lines */}
           <h2
-            className="font-display text-[36px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
+            className="font-display text-[42px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
             style={{ lineHeight: 1 }}
           >
             <span className="block">con formatos</span>
@@ -275,6 +275,7 @@ export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
                     key={format.id}
                     format={format}
                     isLast={idx === active.formats.length - 1}
+                    index={idx}
                   />
                 ))}
               </motion.div>
@@ -339,7 +340,7 @@ function PautaSidebar({
     <>
       {/* Desktop sidebar — sticky */}
       <aside
-        className="hidden flex-col gap-[16px] rounded-[16px] p-[20px] lg:sticky lg:top-24 lg:flex lg:w-[282.39px] lg:shrink-0"
+        className="hidden flex-col gap-[16px] rounded-[16px] p-[20px] lg:sticky lg:top-20 lg:flex lg:w-[282.39px] lg:shrink-0 lg:self-start"
         style={{
           backgroundColor: "rgba(255,255,255,0.1)",
           backdropFilter: "blur(12.5px)",
@@ -407,38 +408,75 @@ function PautaSidebar({
         })}
       </aside>
 
-      {/* Mobile: horizontal scroll tabs */}
-      <div className="-mx-6 w-screen overflow-x-auto px-6 lg:hidden">
-        <div className="flex gap-2 pb-2">
-          {categories.map((cat) => {
-            const isActive = activeKey === cat.key;
-            return (
-              <button
-                key={cat.key}
-                type="button"
-                onClick={() => onSelect(cat.key)}
-                className="font-display inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 text-[14px] font-semibold whitespace-nowrap transition-colors"
-                style={{
-                  backgroundColor: isActive ? CYAN : "transparent",
-                  borderColor: CYAN,
-                  color: isActive ? NAVY_DARK : "#FFFFFF",
-                  fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
-                }}
-              >
-                {isActive ? (
-                  <span
-                    className="inline-block size-[6px] shrink-0 rounded-full"
-                    style={{ backgroundColor: NAVY_DARK }}
-                    aria-hidden="true"
-                  />
-                ) : null}
-                {cat.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      {/* Mobile: horizontal scroll tabs con tab activa centrada */}
+      <MobileTabsScroll
+        categories={categories}
+        activeKey={activeKey}
+        onSelect={onSelect}
+      />
     </>
+  );
+}
+
+function MobileTabsScroll({
+  categories,
+  activeKey,
+  onSelect,
+}: {
+  categories: Category[];
+  activeKey: CategoryKey;
+  onSelect: (k: CategoryKey) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const activeIdx = categories.findIndex((c) => c.key === activeKey);
+    const btn = btnRefs.current[activeIdx];
+    if (!container || !btn) return;
+    const containerCenter = container.offsetWidth / 2;
+    const btnCenter = btn.offsetLeft + btn.offsetWidth / 2;
+    container.scrollTo({ left: btnCenter - containerCenter, behavior: "smooth" });
+  }, [activeKey, categories]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="-mx-6 w-screen scrollbar-none overflow-x-auto px-6 lg:hidden"
+    >
+      <div className="flex gap-2 pb-2">
+        {categories.map((cat, idx) => {
+          const isActive = activeKey === cat.key;
+          return (
+            <button
+              key={cat.key}
+              ref={(el) => {
+                btnRefs.current[idx] = el;
+              }}
+              type="button"
+              onClick={() => onSelect(cat.key)}
+              className="font-display inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 text-[14px] font-semibold whitespace-nowrap transition-colors"
+              style={{
+                backgroundColor: isActive ? CYAN : "transparent",
+                borderColor: CYAN,
+                color: isActive ? NAVY_DARK : "#FFFFFF",
+                fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+              }}
+            >
+              {isActive ? (
+                <span
+                  className="inline-block size-1.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: NAVY_DARK }}
+                  aria-hidden="true"
+                />
+              ) : null}
+              {cat.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -453,9 +491,21 @@ function PautaSidebar({
  *    · Description 18px Spline Sans white
  * ============================================================================ */
 
-function FormatRow({ format, isLast }: { format: AdFormat; isLast: boolean }) {
+function FormatRow({
+  format,
+  isLast,
+  index,
+}: {
+  format: AdFormat;
+  isLast: boolean;
+  index: number;
+}) {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94], delay: index * 0.08 }}
       className={`flex w-full items-start justify-between gap-6 pb-10 lg:gap-12 ${
         isLast ? "" : "border-b"
       }`}
@@ -481,7 +531,7 @@ function FormatRow({ format, isLast }: { format: AdFormat; isLast: boolean }) {
       </div>
 
       {/* Content right */}
-      <div className="flex flex-1 flex-col items-start gap-[16px] lg:w-[565px]">
+      <div className="flex flex-1 flex-col items-start gap-[16px]">
         {/* Mini sticker tag */}
         <div
           className="inline-flex w-fit items-center rounded-[8px] px-[8px] py-[6px]"
@@ -518,7 +568,7 @@ function FormatRow({ format, isLast }: { format: AdFormat; isLast: boolean }) {
           {format.description}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

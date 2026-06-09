@@ -101,8 +101,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
       id={anchorId}
       className="relative w-full"
       style={{
-        background:
-          "linear-gradient(175.32deg, #12082D 9.84%, #291266 47.99%, #12082D 85.01%)",
+        background: "linear-gradient(175.32deg, #12082D 5%, #291266 51%, #12082D 90%)",
       }}
     >
       {/* Wave — Figma 738:3033 (Frame 14504): transición visual entre la sección
@@ -114,7 +113,8 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
         src="/bg/bg-up.svg"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 z-10 w-full -translate-y-full object-contain"
+        className="pointer-events-none absolute top-0 left-0 z-10 w-full object-contain"
+        style={{ transform: "translateY(calc(-100% + 2px))" }}
       />
 
       <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-12 px-6 py-16 sm:gap-16 sm:px-12 sm:py-20 lg:gap-[64px] lg:px-[120px] lg:py-[80px]">

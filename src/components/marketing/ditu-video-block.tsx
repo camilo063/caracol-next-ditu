@@ -29,12 +29,15 @@ export interface DituVideoBlockProps {
   alt?: string;
   /** Anchor ID opcional para navegación. */
   anchorId?: string;
+  /** Override del fondo CSS. */
+  background?: string;
 }
 
 export function DituVideoBlock({
   src = "/ditu/video-block.png",
   alt = "",
   anchorId,
+  background = "linear-gradient(90deg, #1E0E4C 0%, #3A1A92 100%)",
 }: DituVideoBlockProps) {
   const containerRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
@@ -59,8 +62,8 @@ export function DituVideoBlock({
     <section
       ref={containerRef}
       id={anchorId}
-      className="relative flex w-full flex-col items-center justify-center overflow-hidden"
-      style={{ background: "linear-gradient(90deg, #1E0E4C 0%, #3A1A92 100%)" }}
+      className="relative -mt-1 flex w-full flex-col items-center justify-center overflow-hidden"
+      style={{ background }}
     >
       {/* Video wrapper — scale animado vía Framer Motion useScroll/useTransform.
           En reduced-motion: scale fijo a 1. */}

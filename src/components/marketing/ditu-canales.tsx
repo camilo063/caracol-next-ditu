@@ -81,32 +81,13 @@ export function DituCanalesBlock({ anchorId = "canales" }: DituCanalesProps) {
   return (
     <section
       id={anchorId}
-      className="relative w-full overflow-hidden"
+      className="relative w-full overflow-hidden py-[84px]"
       style={{
         // Figma 756:6921: 199.26deg, stops 15.056% / 45.857% / 79.425%
         background:
           "linear-gradient(199.26deg, #12082D 15.056%, #3B1A93 45.857%, #12082D 79.425%)",
       }}
     >
-      {/* Personaje cámara-robot — Figma 756:6732 (ditu custom icons).
-          173×197px. Posición Figma: left:1086px top:192.75px dentro del section.
-          mix-blend-mode: multiply elimina el fondo sólido #12082D del PNG,
-          dejando solo el personaje visible sobre el gradient de la sección. Solo desktop. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/ditu/canales-icon.png"
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute hidden lg:block"
-        style={{
-          top: "192.75px",
-          left: "1086px",
-          width: "173px",
-          height: "197px",
-          mixBlendMode: "multiply",
-        }}
-      />
-
       <div className="mx-auto flex max-w-[1440px] flex-col items-start gap-[10px] px-6 py-12 sm:px-12 sm:py-16 lg:px-[120px] lg:py-[64px]">
         {/* Sticker — Figma 756:6665 */}
         <div
@@ -127,11 +108,12 @@ export function DituCanalesBlock({ anchorId = "canales" }: DituCanalesProps) {
 
         {/* Heading — Figma 756:6667: 2 lines, line 2 cyan */}
         <h2
-          className="font-display text-[36px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
+          className="font-display w-full max-w-[720px] text-[42px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
           style={{ lineHeight: 1 }}
         >
-          <span className="block">Cada audiencia tiene</span>
-          <span className="block" style={{ color: CYAN }}>
+          <span className="inline">Cada audiencia tiene</span>
+          <span className="inline" style={{ color: CYAN }}>
+            {" "}
             su espacio.
           </span>
         </h2>
@@ -147,10 +129,15 @@ export function DituCanalesBlock({ anchorId = "canales" }: DituCanalesProps) {
           La tuya está esperando por verte.
         </p>
 
-        {/* Tabs row — Figma 756:6669: justify-end */}
-        <div className="mt-4 flex w-full justify-end">
-          {/* Pill container — Figma 756:6670: bg-white/20 border-white
-              gap-[10px] p-[8px] rounded-[54px] */}
+        {/* Tabs — centrado en mobile, alineado a la derecha en desktop */}
+        <div className="relative mt-4 flex w-full flex-col items-center sm:items-end">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/ditu/icons/action-icon.svg"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none -top-[169px] -mr-[18px] -mb-[18px] w-[100px] sm:-mr-[20px] sm:-mb-[20px] sm:w-[120px] lg:absolute lg:mr-0 lg:mb-2 lg:h-[197px] lg:w-[100px] lg:w-[173px]"
+          />
           <div
             className="inline-flex items-start gap-[10px] overflow-clip rounded-[54px] border border-white p-[8px]"
             style={{ backgroundColor: "rgba(255,255,255,0.2)" }}
@@ -162,46 +149,51 @@ export function DituCanalesBlock({ anchorId = "canales" }: DituCanalesProps) {
                   key={t.key}
                   type="button"
                   onClick={() => setActiveTab(t.key)}
-                  className="font-display inline-flex cursor-pointer items-center justify-center rounded-[64px] px-[16px] py-[4px] text-[14px] whitespace-nowrap uppercase transition-all duration-200 hover:opacity-90 sm:text-[20px] lg:text-[24px]"
+                  className="font-display lg:min-w-none relative inline-flex min-w-[80px] cursor-pointer items-center justify-center rounded-[64px] px-[16px] py-[4px] text-[14px] whitespace-nowrap uppercase hover:opacity-90 sm:min-w-[100px] sm:text-[20px] lg:text-[24px]"
                   style={{
-                    backgroundColor: isActive ? CYAN : "transparent",
                     color: isActive ? NAVY_DARK : "#FFFFFF",
-                    // Active = Bold, inactive = Medium
                     fontWeight: isActive ? 700 : 500,
                     lineHeight: "24px",
                   }}
                 >
-                  {t.label}
+                  {isActive && (
+                    <motion.span
+                      layoutId="tab-active-pill"
+                      className="absolute inset-0 rounded-[64px]"
+                      style={{ backgroundColor: CYAN }}
+                      transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                    />
+                  )}
+                  <span className="relative z-10">{t.label}</span>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Cards grid — Figma 756:6675: grid-cols-3 gap-[16px] py-[48px]
-            Mobile (spec Camilo): 2 cols.
-            Wrapped in AnimatePresence + motion.div para fade-in 300ms entre tabs.
-
-            min-h calculado para el tab con MÁS contenido (envivo: 7 cards):
-            - desktop (3 cols): 3 filas × 84px + 2 gaps × 16px = 284px
-            - mobile (2 cols): 4 filas × 84px + 3 gaps × 16px = 384px
-            Fix bug usuario: "tabs deben tener la misma altura basada en el
-            contenido más alto para evitar saltos bruscos al cambiar de tab". */}
-        <div className="min-h-[384px] w-full py-8 sm:min-h-[300px] lg:min-h-[284px] lg:py-[48px]">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="grid grid-cols-2 gap-[16px] lg:grid-cols-3"
-            >
-              {channels.map((ch) => (
-                <ChannelCardComponent key={ch.id} channel={ch} />
-              ))}
-            </motion.div>
-          </AnimatePresence>
+        {/* Cards grid: 1 col mobile → 2 cols sm → 3 cols desktop.
+            min-h separado del py para que el alto no varíe entre tabs.
+            Calculado por el tab más largo (envivo: 7 cards):
+            - 1 col: 7×84 + 6×16 = 684px
+            - 2 cols: 4×84 + 3×16 = 384px
+            - 3 cols: 3×84 + 2×16 = 284px */}
+        <div className="w-full py-8 lg:py-[48px]">
+          <div className="min-h-[684px] sm:min-h-[384px] lg:min-h-[284px]">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, x: 48 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -48 }}
+                transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-3"
+              >
+                {channels.map((ch) => (
+                  <ChannelCardComponent key={ch.id} channel={ch} />
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </section>
@@ -244,7 +236,7 @@ function ChannelCardComponent({ channel }: { channel: ChannelCard }) {
         {/* Name cell — Ditu Display Medium 20/28 uppercase white */}
         <div className="flex flex-1 flex-col items-start justify-center px-[8px]">
           <p
-            className="font-display w-full text-[14px] text-white uppercase sm:text-[16px] lg:text-[20px]"
+            className="font-display ms:text-[20px] w-full text-[18px] text-white uppercase"
             style={{
               fontWeight: 500,
               lineHeight: "28px",
@@ -258,30 +250,22 @@ function ChannelCardComponent({ channel }: { channel: ChannelCard }) {
   );
 }
 
-/**
- * Placeholder visual del logo de canal — texto compacto sobre fondo oscuro.
- * Se reemplazará por SVGs reales cuando Caracol los entregue.
- */
+const BRAND_LOGO: Record<string, string> = {
+  caracoltv: "/logos/logo - Caracol.svg",
+  ditu: "/logos/logo - Caracol.svg",
+  bluradio: "/logos/logo - Caracol.svg",
+  lakalle: "/logos/logo - Caracol.svg",
+  caracolsports: "/logos/logo - Caracol.svg",
+  caracolmedios: "/logos/logo - Caracol.svg",
+};
+
 function BrandLogoPlaceholder({ name, brand }: { name: string; brand?: string }) {
-  // Genera iniciales para placeholder
-  const initials = brand
-    ? brand
-        .replace(/[^a-z]/gi, "")
-        .slice(0, 3)
-        .toUpperCase()
-    : name
-        .split(" ")
-        .slice(0, 2)
-        .map((w) => w[0]?.toUpperCase() ?? "")
-        .join("");
+  const logoSrc = brand
+    ? (BRAND_LOGO[brand] ?? "/logos/logo - Caracol.svg")
+    : "/logos/logo - Caracol.svg";
 
   return (
-    <span
-      className="font-display text-[12px] font-bold tracking-wide sm:text-[14px]"
-      style={{ color: CYAN, lineHeight: 1 }}
-      aria-hidden="true"
-    >
-      {initials}
-    </span>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={logoSrc} alt={name} className="h-[40px] w-[52px] object-contain" />
   );
 }

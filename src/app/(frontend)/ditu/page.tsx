@@ -44,7 +44,7 @@ export default function DituPage() {
         </RevealSection>
         <DituCalendarioBlock />
         {/* Video 2 — Figma 857:3974 */}
-        <DituVideoBlock />
+        <DituVideoBlock background="linear-gradient(90deg, #6C27D8 0%, #6020DF 47%, #471BA7 68%, #371881 82%, #251557 99%)" />
         <DituPautaBlock />
         <RevealSection>
           <DituHablamosBlock />

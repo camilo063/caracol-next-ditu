@@ -1,7 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import Image from "next/image";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -289,28 +288,23 @@ export function DituCalendarioBlock({
             </div>
 
             {/* Heading "Calendario" — 84/lh-84 */}
+            {/* Patito — mismo que floating contact (/ditu/mascot/pato-ditu.svg) */}
+            { }
+
             <h2
-              className="font-display text-[36px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
+              className="font-display relative text-[46px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
               style={{ lineHeight: 1 }}
             >
+              <span className="absolute -top-[62px] -right-2 sm:-top-[68px] sm:-right-4 lg:-top-[94px]">
+                <img
+                  src="/ditu/mascot/pato-ditu.svg"
+                  alt=""
+                  aria-hidden="true"
+                  className="pointer-events-none h-[64px] sm:-right-4 sm:h-[72px] lg:h-[100px]"
+                />
+              </span>
               Calendario
             </h2>
-
-            {/* Decoración (image 14) — Figma 756:6515: absolute h-[92px]
-                left-[317px] top-[-10px] w-[103px] relativo al heading container.
-                En mobile se oculta (el container no tiene 449px de ancho). */}
-            <div
-              className="pointer-events-none absolute hidden lg:block"
-              style={{ top: "-10px", left: "317px", width: "103px", height: "92px" }}
-            >
-              <Image
-                src="/ditu/calendar-decoration.png"
-                alt=""
-                width={103}
-                height={92}
-                className="h-full w-full object-contain"
-              />
-            </div>
           </div>
 
           {/* Subtitle */}
@@ -385,6 +379,10 @@ export function DituCalendarioBlock({
  * Autoplay: DESACTIVADO. Navegación manual via dots o swipe.
  * ============================================================================ */
 
+const CARD_W_MOBILE = 260;
+const CARD_W_DESKTOP = 288;
+const CARD_GAP = 16;
+
 function CalendarSlider({
   events,
   activeIndex,
@@ -396,94 +394,168 @@ function CalendarSlider({
   onGoTo: (idx: number) => void;
   reduceMotion: boolean;
 }) {
-  // Distancia activa para usar en mobile scale (1, 0.667, 0.4)
-  const getMobileScale = (idx: number) => {
-    const d = Math.abs(idx - activeIndex);
-    if (d === 0) return 1;
-    if (d === 1) return 1 / 1.5; // ≈ 0.667
-    return 1 / 2.5; // 0.4
-  };
+  const N = events.length;
+  // Triple array for infinite loop: [copy0, copy1(main), copy2]
+  const tripled = useMemo(() => [...events, ...events, ...events], [events]);
+
+  // Internal position in tripled coords. Start in middle copy (offset N).
+  const [pos, setPos] = useState(N + activeIndex);
+  const [skipTransition, setSkipTransition] = useState(false);
+
+  // Real index for dots (always 0..N-1)
+  const realIdx = ((pos % N) + N) % N;
+
+  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+  const cardW = isDesktop ? CARD_W_DESKTOP : CARD_W_MOBILE;
+  const step = cardW + CARD_GAP;
+
+  // After animation settles, if we drifted into buffer zone, silently jump
+  // back to the equivalent position in the middle copy.
+  useEffect(() => {
+    if (pos < N || pos >= 2 * N) {
+      const real = ((pos % N) + N) % N;
+      const timer = setTimeout(() => {
+        setSkipTransition(true);
+        setPos(N + real);
+        // Re-enable transitions next frame
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => setSkipTransition(false)),
+        );
+      }, 380);
+      return () => clearTimeout(timer);
+    }
+  }, [pos, N]);
+
+  const navigate = useCallback(
+    (delta: number) => {
+      setSkipTransition(false);
+      setPos((prev) => {
+        const next = prev + delta;
+        onGoTo(((next % N) + N) % N);
+        return next;
+      });
+    },
+    [N, onGoTo],
+  );
+
+  const goToReal = useCallback(
+    (idx: number) => {
+      setSkipTransition(false);
+      const currentCopy = Math.floor(pos / N);
+      setPos(currentCopy * N + idx);
+      onGoTo(idx);
+    },
+    [pos, N, onGoTo],
+  );
+
+  // Desktop: clamp al último índice que muestra 4 cards completas
+  const maxDesktopIdx = Math.max(0, N - 4);
+  const desktopX = -(Math.min(activeIndex, maxDesktopIdx) * (CARD_W_DESKTOP + CARD_GAP));
+  const mobileX = -(pos * step);
 
   return (
     <div className="flex w-full flex-col items-start gap-[32px] lg:w-[1200px]">
-      {/* Cards container */}
-      <div className="relative w-full overflow-hidden">
-        {/* Desktop: row de cards visible 4 a la vez con páginas de 1.
-            Mobile: drag horizontal con scale effect. */}
+      {/* Cards container — mobile bleed right rompiendo el padding del padre */}
+      <div className="relative -mr-6 w-[calc(100%+24px)] overflow-hidden sm:-mr-12 sm:w-[calc(100%+48px)] lg:mr-0 lg:w-full">
+        {/* Mobile: loop infinito con triple array */}
         <motion.div
           drag={reduceMotion ? false : "x"}
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.2}
           onDragEnd={(_, info) => {
-            if (info.offset.x < -50) onGoTo(activeIndex + 1);
-            else if (info.offset.x > 50) onGoTo(activeIndex - 1);
+            if (info.offset.x < -50) navigate(1);
+            else if (info.offset.x > 50) navigate(-1);
           }}
-          className="flex h-[232px] cursor-grab gap-[16px] active:cursor-grabbing lg:cursor-default"
-          animate={{
-            // Trasladamos el track según activeIndex.
-            // Mobile: cada card ~75vw, gap 16. Desktop: 4 cards visibles, paginación 1.
-            x:
-              typeof window !== "undefined" && window.innerWidth < 1024
-                ? -(activeIndex * 75) // vw scrolls
-                : -(activeIndex * (288 + 16)), // 288px card + 16 gap
-          }}
+          className="flex h-[232px] cursor-grab gap-[16px] active:cursor-grabbing lg:hidden"
+          animate={{ x: mobileX }}
+          transition={
+            skipTransition
+              ? { duration: 0 }
+              : {
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 30,
+                  duration: reduceMotion ? 0 : undefined,
+                }
+          }
+          style={{ width: `${tripled.length * (CARD_W_MOBILE + CARD_GAP)}px` }}
+        >
+          {tripled.map((event, i) => (
+            <div
+              key={`${event.id}-${Math.floor(i / N)}`}
+              className="h-full shrink-0"
+              style={{ width: `${CARD_W_MOBILE}px` }}
+            >
+              <CalendarCard event={event} />
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Desktop: track normal sin loop, paginado de a 4 */}
+        <motion.div
+          className="hidden h-[232px] gap-[16px] lg:flex"
+          animate={{ x: desktopX }}
           transition={{
             type: "spring",
             stiffness: 200,
             damping: 30,
             duration: reduceMotion ? 0 : undefined,
           }}
-          style={{
-            // Track ancho calculado: cards × (width + gap)
-            width: `${events.length * (288 + 16)}px`,
-          }}
+          style={{ width: `${N * (CARD_W_DESKTOP + CARD_GAP)}px` }}
         >
-          {events.map((event, idx) => (
-            <motion.div
+          {events.map((event) => (
+            <div
               key={event.id}
-              className="h-full shrink-0 lg:w-[288px]"
-              animate={{
-                // Mobile scale effect — solo aplica si viewport < lg.
-                scale:
-                  typeof window !== "undefined" && window.innerWidth < 1024
-                    ? getMobileScale(idx)
-                    : 1,
-              }}
-              transition={{ duration: reduceMotion ? 0 : 0.3, ease: "easeOut" }}
-              style={{
-                width: "min(75vw, 288px)",
-                transformOrigin: "center center",
-              }}
+              className="h-full shrink-0"
+              style={{ width: `${CARD_W_DESKTOP}px` }}
             >
               <CalendarCard event={event} />
-            </motion.div>
+            </div>
           ))}
         </motion.div>
       </div>
 
-      {/* Dots — paginación de a 4 elementos (spec usuario: "dots pasen de
-          4 en 4 elementos"). En desktop visiblees 4 cards a la vez, así que
-          tener un dot por página tiene sentido visual.
-          Número de páginas = ceil(events.length / 4). */}
-      <div className="flex h-[16px] w-full items-center justify-center">
-        <div className="flex items-center gap-[8px] sm:gap-[12px] lg:gap-[16px]">
-          {Array.from({ length: Math.ceil(events.length / 4) }).map((_, pageIdx) => {
-            // Cada página corresponde a un grupo de 4 elementos.
-            const pageStart = pageIdx * 4;
-            // Página activa si activeIndex está en el rango [pageStart, pageStart+4).
-            const isActive = activeIndex >= pageStart && activeIndex < pageStart + 4;
+      {/* Dots mobile — 1 por card */}
+      <div className="flex h-[16px] w-full items-center justify-center lg:hidden">
+        <div className="flex items-center gap-[8px] sm:gap-[12px]">
+          {events.map((_, idx) => (
+            <button
+              key={`m-${idx}`}
+              type="button"
+              onClick={() => goToReal(idx)}
+              aria-label={`Ir al evento ${idx + 1}`}
+              aria-current={idx === realIdx ? "true" : undefined}
+              className="h-3 w-3 cursor-pointer rounded-full transition-all"
+              style={{
+                backgroundColor: idx === realIdx ? "#FFFFFF" : `${CYAN}99`,
+                border: "none",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Dots desktop — 1 por página de 4.
+          El último dot navega a maxDesktopIdx (N-4) para siempre mostrar 4 cards. */}
+      <div className="hidden h-[16px] w-full items-center justify-center lg:flex">
+        <div className="flex items-center gap-[16px]">
+          {Array.from({ length: Math.ceil(N / 4) }).map((_, pageIdx) => {
+            const totalPages = Math.ceil(N / 4);
+            const isLastPage = pageIdx === totalPages - 1;
+            const pageStart = isLastPage ? maxDesktopIdx : pageIdx * 4;
+            const nextPageStart = isLastPage ? N : (pageIdx + 1) * 4;
+            const isActive = activeIndex >= pageStart && activeIndex < nextPageStart;
             return (
               <button
-                key={`page-${pageIdx}`}
+                key={`d-${pageIdx}`}
                 type="button"
                 onClick={() => onGoTo(pageStart)}
-                aria-label={`Ir a la página ${pageIdx + 1} de ${Math.ceil(events.length / 4)}`}
+                aria-label={`Ir a la página ${pageIdx + 1} de ${totalPages}`}
                 aria-current={isActive ? "true" : undefined}
-                className="h-[10px] w-[10px] cursor-pointer rounded-full transition-all hover:opacity-100 lg:h-[16px] lg:w-[16px]"
+                className="h-[16px] w-[16px] cursor-pointer rounded-full transition-all"
                 style={{
-                  backgroundColor: isActive ? "#FFFFFF" : "transparent",
-                  border: `1.5px solid #FFFFFF`,
-                  opacity: isActive ? 1 : 0.6,
+                  backgroundColor: isActive ? "#FFFFFF" : `${CYAN}99`,
+                  border: "none",
                 }}
               />
             );
