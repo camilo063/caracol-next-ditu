@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { useRef } from "react";
+import React, { useRef } from "react";
 
 import { CountUp } from "@/components/animations";
 
