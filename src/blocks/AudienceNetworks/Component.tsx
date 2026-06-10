@@ -68,7 +68,7 @@ export function AudienceNetworksBlockComponent({
   const rightColItems = [items[1], items[3]].filter(Boolean) as BreakdownItem[];
 
   return (
-    <section id={anchorId ?? "audiencia"} className="relative -mt-12 sm:-mt-16">
+    <section id={anchorId ?? "audiencia"} className="relative -mt-10 sm:-mt-16">
       <div
         className="relative bg-white py-12 sm:py-16 lg:py-[64px] lg:pb-[84px]"
         style={{
@@ -164,23 +164,15 @@ export function AudienceNetworksBlockComponent({
         {networks && networks.length > 0 ? (
           <div className="mx-auto mt-12 max-w-[1200px] px-4 sm:px-6 lg:mt-16">
             <h3
-              className="text-[28px] font-bold tracking-[-1px] sm:text-[32px] lg:text-[40px]"
-              style={{
-                color: NEUTRO_NEGRO,
-                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-                lineHeight: "normal",
-              }}
+              className="font-display text-[28px] font-bold tracking-[-1px] sm:text-[32px] lg:text-[40px]"
+              style={{ color: NEUTRO_NEGRO, lineHeight: "normal" }}
             >
               Líderes en redes
             </h3>
             {/* Total seguidores — estático, sin CountUp, fade-up al entrar */}
             <motion.p
-              className="mt-1 text-[24px] font-semibold tracking-[-1px] sm:text-[32px] lg:text-[40px]"
-              style={{
-                color: NEUTRO_GRIS_OSCURO,
-                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-                lineHeight: "normal",
-              }}
+              className="font-display mt-1 text-[24px] font-semibold tracking-[-1px] sm:text-[32px] lg:text-[40px]"
+              style={{ color: NEUTRO_GRIS_OSCURO, lineHeight: "normal" }}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.5 }}
@@ -274,7 +266,7 @@ function NetworksLogoBar({
           className="flex shrink-0 items-center gap-3"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
+          viewport={{ once: true, amount: 0.1 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay: idx * 0.1 }}
         >
           <div className="h-11.75 w-12 shrink-0">
@@ -282,13 +274,8 @@ function NetworksLogoBar({
           </div>
           <div className="flex flex-col items-start">
             <p
-              className="font-semibold whitespace-nowrap"
-              style={{
-                color: "#121212",
-                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-                fontSize: "20px",
-                lineHeight: "28px",
-              }}
+              className="font-display text-[20px] leading-7 font-semibold whitespace-nowrap"
+              style={{ color: "#121212" }}
             >
               <CountUp
                 value={net.followers}
@@ -299,14 +286,8 @@ function NetworksLogoBar({
               />
             </p>
             <p
-              className="whitespace-nowrap"
-              style={{
-                color: "#2D2D2D",
-                fontFamily: "var(--font-montserrat), system-ui, sans-serif",
-                fontSize: "16px",
-                fontWeight: 400,
-                lineHeight: "20px",
-              }}
+              className="font-display text-[16px] leading-5 font-normal whitespace-nowrap"
+              style={{ color: "#2D2D2D" }}
             >
               Seguidores
             </p>

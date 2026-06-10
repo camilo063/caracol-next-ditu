@@ -498,20 +498,18 @@ export function DituAudienciaBlock({
                   className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
                 />
               </a>
-              <div className="flex flex-col items-center sm:items-start">
-                <p
-                  className="font-display text-[14px] leading-[20px] font-semibold text-white sm:text-[16px] sm:leading-[24px] lg:text-[20px] lg:leading-[28px]"
-                  style={{ fontFamily: "var(--font-montserrat), system-ui" }}
-                >
+              <div className="flex flex-col items-center gap-0.5 sm:items-start">
+                <p className="font-display text-[20px] leading-5 font-semibold text-white sm:text-[20px] sm:leading-6 lg:text-[28px] lg:leading-7">
                   <CountUp
                     value={net.followers}
                     format={(v) => Math.round(v).toLocaleString("es-CO")}
                     shouldStart={networksInView}
+                    reserveWidth
                   />
                 </p>
                 <p
-                  className="text-[12px] leading-[16px] text-white sm:text-[14px] sm:leading-[20px] lg:text-[16px]"
-                  style={{ fontFamily: "var(--font-montserrat), system-ui" }}
+                  className="text-[12px] leading-4 text-white sm:text-[14px] sm:leading-[20px] lg:text-[16px]"
+                  style={{ fontFamily: "var(--font-spline-sans), system-ui" }}
                 >
                   Seguidores
                 </p>

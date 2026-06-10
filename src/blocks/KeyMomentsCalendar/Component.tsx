@@ -45,7 +45,6 @@ const CATEGORY_COLORS: Record<string, string> = {
 const NAVY_DARK = "#003381";
 const PILL_GREY_BORDER = "#95999A";
 const TEXT_LIGHT = "rgba(207,206,204,0.81)";
-const AZUL_CLARO = "#00ACFF";
 
 type EventItem = NonNullable<KeyMomentsBlockProps["events"]>[number];
 
@@ -166,8 +165,11 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.15 }}
-      whileHover={{ y: -2, borderColor: `${badgeColor}80` }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      whileHover={{
+        y: -2,
+        borderColor: `${badgeColor}80`,
+        transition: { duration: 0.2, ease: "easeOut" },
+      }}
       className={cn(
         // Mobile carrusel: 1.5 → 2.5 → 3.5 cards visibles según breakpoint.
         "shrink-0 snap-start",
@@ -176,7 +178,7 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
         "md:w-[27%]",
         "lg:w-auto lg:shrink",
         // Visual de la card — glassmorphism Figma.
-        "flex flex-col gap-[18px] rounded-[12px] border px-4 py-5",
+        "flex flex-col gap-4.5 rounded-[12px] border px-4 py-5",
         "backdrop-blur-[10px]",
       )}
       style={{
@@ -186,13 +188,13 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
     >
       <div className="flex flex-col items-start gap-2">
         <span
-          className="font-display inline-flex items-center justify-center rounded-[4px] px-2 py-1 text-[12px] leading-[12px] font-bold text-white uppercase"
+          className="font-display inline-flex items-center justify-center rounded-[4px] px-2 py-1 text-[12px] leading-3 font-bold text-white uppercase"
           style={{ backgroundColor: badgeColor }}
         >
           {categoryLabel}
         </span>
         {dateLabel ? (
-          <p className="font-display text-[14px] leading-[20px] font-semibold text-white">
+          <p className="font-display text-[14px] leading-5 font-semibold text-white">
             {dateLabel}
           </p>
         ) : null}
@@ -203,7 +205,7 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
         </h3>
         {event.description ? (
           <p
-            className="font-display text-[16px] leading-[24px] font-normal"
+            className="font-display text-[16px] leading-6 font-normal"
             style={{ color: TEXT_LIGHT }}
           >
             {event.description}

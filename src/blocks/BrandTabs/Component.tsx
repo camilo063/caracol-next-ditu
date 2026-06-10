@@ -4,11 +4,8 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useInView } from "framer-motion";
-import { CountUp } from "@/components/animations";
-import { NetworkIcon } from "@/components/marketing";
 import { brandMeta } from "@/lib/brand";
 import { formatNumber } from "@/lib/format";
-import { mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import type { BrandTabsBlockProps } from "../types";
 import { AgePeakBarChart } from "./AgePeakBarChart";
@@ -185,33 +182,6 @@ const BRAND_ICON_COLOR: Record<string, string> = {
   lakalle: "#353535",
 };
 
-/**
- * Mappings de assets por brand — Figma 402:5117-5195.
- * Side panel: wordmark logo SVG centrado + avatar PNG 76×76 top-right.
- * La Kalle: no tiene SVG export del logo wordmark, usa el avatar como fallback.
- * BluRadio: el archivo .svg en public es un PNG binario (726KB), se omite aquí
- * para que el right panel muestre el fallback en texto.
- */
-const BRAND_LOGO_PATHS: Record<string, string> = {
-  caracoltv: "/caracol-next/brand-tabs/caracoltv-logo.svg",
-  golcaracol: "/caracol-next/brand-tabs/golcaracol-logo.svg",
-  caracolsports: "/caracol-next/brand-tabs/caracolsports-logo.svg",
-  bumbox: "/caracol-next/brand-tabs/bumbox-logo.svg",
-  volk: "/caracol-next/brand-tabs/volk-logo.svg",
-};
-
-/**
- * Dimensiones intrínsecas reales por brand (extraídas del viewBox de cada SVG).
- * Usadas para que Next/Image y el CSS aspectRatio reflejen el SVG correcto.
- * Fallback: 320×180 (16:9 horizontal genérico).
- */
-const BRAND_LOGO_DIMS: Record<string, [number, number]> = {
-  caracoltv: [173, 93],
-  golcaracol: [293, 77],
-  caracolsports: [152, 80],
-  bumbox: [43, 42],
-  volk: [180, 212],
-};
 const BRAND_AVATAR_PATHS: Record<string, string> = {
   caracoltv: "/caracol-next/brand-tabs/caracoltv-avatar.png",
   golcaracol: "/caracol-next/brand-tabs/golcaracol-avatar.png",
@@ -230,12 +200,7 @@ function TabPanel({ tab }: { tab: Tab }) {
   });
   const meta = brandMeta(tab.brand);
   const displayName = tab.displayName ?? meta.label;
-  // Logo wordmark del Figma (centrado en side panel) + avatar (top-right 76×76)
-  const wordmarkLogoUrl = BRAND_LOGO_PATHS[tab.brand];
   const avatarUrl = BRAND_AVATAR_PATHS[tab.brand];
-  // Fallback al brandLogo del CMS si no hay wordmark hardcoded
-  const cmsLogoUrl = mediaUrl(tab.brandLogo);
-  const logoUrl = wordmarkLogoUrl ?? cmsLogoUrl;
   // Colores por brand (Figma): heading usa brand.color, panel usa brand.colorDark,
   // chart peak usa brand.chartPeak. Cada brand tiene su propia paleta.
   const brandColor = meta.color;
@@ -258,16 +223,10 @@ function TabPanel({ tab }: { tab: Tab }) {
     ? (brandAccent ?? brandColor) // smaller slice = #FEFF00 (amarillo)
     : brandPanelBg;
 
-  // Dimensiones reales SVG viewBox por brand — actualizado 2026-05-31 (viewBox). Volk es vertical (portrait).
-  const isVolk = tab.brand === "volk";
-  const [logoIntrinsicWidth, logoIntrinsicHeight] = BRAND_LOGO_DIMS[tab.brand] ?? [
-    320, 180,
-  ];
-
   return (
     <div
       ref={containerRef}
-      className="grid overflow-hidden rounded-[24px] bg-white xl:grid-cols-[3fr_2fr]"
+      className="grid overflow-hidden rounded-3xl bg-white xl:grid-cols-[3fr_2fr]"
       style={{ border: "1px solid rgba(207,206,204,0.81)" }}
     >
       {/* Columna izquierda — content */}
@@ -322,17 +281,22 @@ function TabPanel({ tab }: { tab: Tab }) {
                 <div className="m-auto flex flex-col gap-4 px-5">
                   {tab.webMetrics.usersPerMonth ? (
                     <div className="flex flex-col items-end justify-center gap-2 whitespace-nowrap">
-                      <p
+                      <motion.p
+                        key={tab.brand + "-users"}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={
+                          containerInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }
+                        }
+                        transition={{
+                          duration: 0.4,
+                          ease: [0.25, 0.46, 0.45, 0.94],
+                          delay: 0.1,
+                        }}
                         className="font-display text-[24px] leading-none font-bold sm:text-[28px] lg:text-[32px]"
                         style={{ color: "#100201" }}
                       >
-                        <CountUp
-                          value={tab.webMetrics.usersPerMonth}
-                          format={(v) => formatNumber(Math.round(v))}
-                          shouldStart={containerInView}
-                          reserveWidth
-                        />
-                      </p>
+                        {formatNumber(tab.webMetrics.usersPerMonth)}
+                      </motion.p>
                       <p
                         className="font-display text-right text-[16px] leading-none font-normal lg:text-[20px]"
                         style={{ color: NEUTRO_NEGRO }}
@@ -349,17 +313,22 @@ function TabPanel({ tab }: { tab: Tab }) {
                   ) : null}
                   {tab.webMetrics.viewsPerMonth ? (
                     <div className="flex flex-col items-end justify-center gap-2 whitespace-nowrap">
-                      <p
+                      <motion.p
+                        key={tab.brand + "-views"}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={
+                          containerInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }
+                        }
+                        transition={{
+                          duration: 0.4,
+                          ease: [0.25, 0.46, 0.45, 0.94],
+                          delay: 0.18,
+                        }}
                         className="font-display text-[24px] leading-none font-bold sm:text-[28px] lg:text-[32px]"
                         style={{ color: "#100201" }}
                       >
-                        <CountUp
-                          value={tab.webMetrics.viewsPerMonth}
-                          format={(v) => formatNumber(Math.round(v))}
-                          shouldStart={containerInView}
-                          reserveWidth
-                        />
-                      </p>
+                        {formatNumber(tab.webMetrics.viewsPerMonth)}
+                      </motion.p>
                       <p
                         className="font-display text-right text-[16px] leading-none font-normal lg:text-[20px]"
                         style={{ color: NEUTRO_NEGRO }}
@@ -412,22 +381,28 @@ function TabPanel({ tab }: { tab: Tab }) {
                               <span className="shrink-0">{icon}</span>
                             )}
                             <div className="flex min-w-0 flex-col items-start justify-center whitespace-nowrap">
-                              <p
+                              <motion.p
+                                key={tab.brand + "-" + net.network}
+                                initial={{ opacity: 0, y: 6 }}
+                                animate={
+                                  containerInView
+                                    ? { opacity: 1, y: 0 }
+                                    : { opacity: 0, y: 6 }
+                                }
+                                transition={{
+                                  duration: 0.35,
+                                  ease: [0.25, 0.46, 0.45, 0.94],
+                                  delay: 0.1 + i * 0.05,
+                                }}
                                 className={cn(
-                                  "font-display text-[20px] leading-[28px]",
-                                  i === 0 ? "font-bold" : "font-semibold",
+                                  "font-display text-[20px] leading-7 font-semibold",
                                 )}
                                 style={{ color: NEUTRO_NEGRO }}
                               >
-                                <CountUp
-                                  value={net.followers}
-                                  format={(v) => formatNumber(Math.round(v))}
-                                  shouldStart={containerInView}
-                                  reserveWidth
-                                />
-                              </p>
+                                {formatNumber(net.followers)}
+                              </motion.p>
                               <p
-                                className="font-display text-[16px] leading-[20px] font-normal"
+                                className="font-display text-[16px] leading-5 font-normal"
                                 style={{ color: NEUTRO_NEGRO }}
                               >
                                 Seguidores
@@ -584,7 +559,7 @@ function TabPanel({ tab }: { tab: Tab }) {
             Excepciones de border: La Kalle yellow, BumBox/Volk white,
             default azul medio #015BC4 (Caracol TV variant). */}
         <div
-          className="absolute top-[30px] right-[30px] flex h-[76px] w-[76px] items-center justify-center overflow-hidden rounded-[16px] border-2"
+          className="absolute top-7.5 right-7.5 flex h-19 w-19 items-center justify-center overflow-hidden rounded-2xl border-2"
           style={{
             backgroundColor: brandPanelBg,
             borderColor:
@@ -601,7 +576,7 @@ function TabPanel({ tab }: { tab: Tab }) {
               alt={`${displayName} avatar`}
               width={72}
               height={72}
-              className="h-[72px] w-[72px] object-cover"
+              className="h-18 w-18 object-cover"
             />
           ) : (
             <span className="text-[10px] font-bold text-white">
@@ -618,7 +593,7 @@ function TabPanel({ tab }: { tab: Tab }) {
 function Pill({ children }: { children: React.ReactNode }) {
   return (
     <span
-      className="font-display inline-flex items-center justify-center rounded-[4px] px-2 py-1 text-[14px] leading-[16px] font-bold text-white uppercase"
+      className="font-display inline-flex items-center justify-center rounded-[4px] px-2 py-1 text-[14px] leading-4 font-bold text-white uppercase"
       style={{ backgroundColor: PILL_BG }}
     >
       {children}

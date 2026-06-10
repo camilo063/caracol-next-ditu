@@ -113,7 +113,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
         src="/bg/bg-up.svg"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 z-10 w-full object-contain"
+        className="pointer-events-none absolute top-0 left-0 z-10 block w-full"
         style={{ transform: "translateY(calc(-100% + 2px))" }}
       />
 
