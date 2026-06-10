@@ -3,6 +3,17 @@
 import * as React from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
+/** Devuelve "#121212" para colores claros y "#ffffff" para oscuros. */
+function contrastColor(hex: string): string {
+  const c = hex.replace("#", "");
+  const r = parseInt(c.slice(0, 2), 16);
+  const g = parseInt(c.slice(2, 4), 16);
+  const b = parseInt(c.slice(4, 6), 16);
+  // Luminancia relativa (fórmula W3C)
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return luminance > 140 ? "#121212" : "#ffffff";
+}
+
 export interface GenderPieChartProps {
   femalePercent: number;
   femaleLabel?: string;
@@ -81,7 +92,7 @@ export function GenderPieChart({
       </ResponsiveContainer>
       {/* Larger slice label — centro-derecha del pie (Figma ml-58, mt-62.77). */}
       <div
-        className="pointer-events-none absolute font-semibold text-white"
+        className="pointer-events-none absolute font-semibold"
         style={{
           left: "58px",
           top: "62.77px",
@@ -89,6 +100,7 @@ export function GenderPieChart({
           textAlign: "center",
           lineHeight: "normal",
           whiteSpace: "nowrap",
+          color: contrastColor(primaryColor),
         }}
       >
         <span className="block">
@@ -98,7 +110,7 @@ export function GenderPieChart({
       </div>
       {/* Smaller slice label — top-izquierda del pie (Figma ml-8.15, mt-26.77). */}
       <div
-        className="pointer-events-none absolute font-medium text-white"
+        className="pointer-events-none absolute font-medium"
         style={{
           left: "8.15px",
           top: "26.77px",
@@ -106,6 +118,7 @@ export function GenderPieChart({
           textAlign: "center",
           lineHeight: "normal",
           whiteSpace: "nowrap",
+          color: contrastColor(secondaryColor),
         }}
       >
         <span className="block">

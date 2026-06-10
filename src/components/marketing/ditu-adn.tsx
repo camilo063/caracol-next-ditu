@@ -128,11 +128,11 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
               transform: "rotate(-1.97deg)",
             }}
           >
-            <p className="font-display text-[24px] leading-[1] font-bold whitespace-nowrap uppercase sm:text-[36px] lg:text-[48px]">
+            <p className="font-display text-[24px] leading-none font-bold whitespace-nowrap uppercase sm:text-[36px] lg:text-[48px]">
               ADN DITU
             </p>
           </div>
-          <h2 className="font-display text-center text-[46px] leading-[1] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
+          <h2 className="font-display text-center text-[46px] leading-none font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
             <span style={{ color: CYAN }}>Sabemos</span> a quién le hablas.
           </h2>
         </div>
@@ -145,7 +145,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
         >
           {/* Card Género */}
           <article className="flex flex-col items-start gap-2 rounded-[16px] border border-white p-6 sm:p-8 lg:p-[40px]">
-            <div className="flex items-center gap-2 self-end">
+            <div className="flex w-full items-start gap-2 self-end">
               <Image
                 src="/ditu/icon-male.svg"
                 alt=""
@@ -154,7 +154,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                 className="h-7 w-7 lg:h-[30px] lg:w-[30px]"
               />
               <span
-                className="font-display inline-flex items-center rounded-[4px] px-3 py-1 text-[14px] leading-[1] font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[18px]"
+                className="font-display inline-flex items-center rounded-[4px] px-3 py-1 text-[14px] leading-none font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[18px]"
                 style={{ backgroundColor: CYAN, color: NAVY_DARK }}
               >
                 Género
@@ -173,22 +173,19 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
             <div className="mt-4 flex w-full items-center justify-center gap-4">
               {/* 52% Hombres */}
               <div className="flex flex-col items-center gap-1">
-                <p className="font-display text-[36px] leading-[1] font-medium text-white sm:text-[47px]">
+                <p className="font-display text-[36px] leading-none font-medium text-white sm:text-[47px]">
                   52%
                 </p>
                 <span
-                  className="font-display inline-flex items-center rounded-[4px] px-2 py-1 text-[14px] leading-[1] font-medium whitespace-nowrap uppercase sm:text-[16px]"
+                  className="font-display inline-flex items-center rounded-[4px] px-2 py-1 text-[14px] leading-none font-medium whitespace-nowrap uppercase sm:text-[16px]"
                   style={{ backgroundColor: CYAN, color: NAVY_DARK }}
                 >
                   Hombres
                 </span>
               </div>
 
-              {/* Donut Recharts — Figma 747:2682: size-186 con animación de
-                  entrada nativa (isAnimationActive). Spec Camilo: 1-1.5s suave.
-                  key={chartsInView} fuerza remount cuando entra al viewport,
-                  reiniciando la animación Recharts (que solo corre al mount). */}
-              <div className="relative h-[140px] w-[140px] shrink-0 sm:h-[186px] sm:w-[186px]">
+              {/* Donut Recharts — Figma 747:2682 */}
+              <div className="relative h-35 w-35 shrink-0 rounded-full shadow-[inset_0_0_0_5px_white] sm:h-46.5 sm:w-46.5">
                 {chartsInView ? (
                   <ResponsiveContainer width="100%" height="100%" key="pie-in">
                     <PieChart>
@@ -219,11 +216,11 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
 
               {/* 48% Mujeres */}
               <div className="flex flex-col items-center gap-1">
-                <p className="font-display text-[36px] leading-[1] font-medium text-white sm:text-[47px]">
+                <p className="font-display text-[36px] leading-none font-medium text-white sm:text-[47px]">
                   48%
                 </p>
                 <span
-                  className="font-display inline-flex items-center rounded-[4px] px-2 py-1 text-[14px] leading-[1] font-medium whitespace-nowrap text-white uppercase sm:text-[16px]"
+                  className="font-display inline-flex items-center rounded-[4px] px-2 py-1 text-[14px] leading-none font-medium whitespace-nowrap text-white uppercase sm:text-[16px]"
                   style={{ backgroundColor: VIOLET_MED }}
                 >
                   Mujeres
@@ -235,7 +232,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
           {/* Card Edad pico */}
           <article className="flex flex-col items-start gap-2 rounded-[16px] border border-white p-6 sm:p-8 lg:p-[40px]">
             {/* Figma 748:2639: header alineado a la DERECHA (justify-end). */}
-            <div className="flex w-full items-center justify-end gap-2">
+            <div className="flex w-full items-center justify-start gap-2">
               <Image
                 src="/ditu/icon-cake.svg"
                 alt=""
@@ -244,7 +241,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                 className="h-5 w-5 lg:h-[25px] lg:w-[21px]"
               />
               <span
-                className="font-display inline-flex items-center rounded-[4px] px-3 py-1 text-[14px] leading-[1] font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[18px]"
+                className="font-display inline-flex items-center rounded-[4px] px-3 py-1 text-[14px] leading-none font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[18px]"
                 style={{ backgroundColor: CYAN, color: NAVY_DARK }}
               >
                 EDAD PICO

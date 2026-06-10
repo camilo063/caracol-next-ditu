@@ -70,7 +70,7 @@ export function AudienceNetworksBlockComponent({
   return (
     <section id={anchorId ?? "audiencia"} className="relative -mt-10 sm:-mt-16">
       <div
-        className="relative bg-white py-12 sm:py-16 lg:py-[64px] lg:pb-[84px]"
+        className="relative bg-white pt-16 pb-12 sm:pt-24 sm:pb-16 lg:py-[64px] lg:pb-[84px]"
         style={{
           borderTopLeftRadius: "50px",
           borderTopRightRadius: "50px",
