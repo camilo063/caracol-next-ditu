@@ -112,7 +112,7 @@ export function DituTipoContenidoBlock({
         src="/ditu/icons/picos-down.svg"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none w-full object-contain lg:absolute lg:top-0 lg:left-0"
+        className="pointer-events-none block w-full lg:absolute lg:top-0 lg:left-0"
       />
 
       <div className="mx-auto flex max-w-360 flex-col items-center gap-2.25 py-24 sm:px-12 sm:pb-32 lg:px-[120px] lg:pt-[220px] lg:pb-[180px]">

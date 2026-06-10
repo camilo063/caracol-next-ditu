@@ -107,19 +107,14 @@ export function FloatingContact({
           onMouseLeave={() => setHovered(false)}
           aria-label={buttonLabel}
           aria-expanded={open}
-          className={`inline-flex cursor-pointer items-center justify-center overflow-clip border border-solid shadow-md transition-all duration-200 active:scale-95 ${
-            isDitu ? "rounded-[12px]" : "rounded-[4px] text-white"
-          }`}
+          className={`inline-flex cursor-pointer items-center justify-center overflow-clip border border-solid px-5 py-2 text-[13px] leading-5 shadow-md transition-all duration-200 active:scale-95 sm:px-12 sm:py-3 sm:text-[16px] sm:leading-6 ${isDitu ? "rounded-[12px]" : "rounded-[4px] text-white"}`}
           style={
             isDitu
               ? {
                   backgroundColor: open || hovered ? "#8232F0" : "#77EDED",
                   borderColor: open || hovered ? "#8232F0" : "#77EDED",
                   color: open || hovered ? "white" : "#12082D",
-                  padding: "12px 48px",
-                  fontSize: "16px",
                   fontWeight: 700,
-                  lineHeight: "24px",
                   fontFamily: "var(--font-ditu-display), system-ui, sans-serif",
                   transition:
                     "background-color 0.25s ease-in-out, border-color 0.25s ease-in-out, color 0.25s ease-in-out",
@@ -127,10 +122,7 @@ export function FloatingContact({
               : {
                   backgroundColor: open || hovered ? "#003CCA" : "#2862FF",
                   borderColor: open || hovered ? "#003CCA" : "#2862FF",
-                  padding: "12px 48px",
-                  fontSize: "16px",
                   fontWeight: 600,
-                  lineHeight: "24px",
                   fontFamily: "var(--font-montserrat), system-ui, sans-serif",
                 }
           }

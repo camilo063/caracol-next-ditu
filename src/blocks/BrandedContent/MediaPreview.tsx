@@ -132,10 +132,16 @@ export function MediaPreview({ data, className }: MediaPreviewProps) {
         </span>
       ) : null} */}
 
-      {/* Título overlay (centrado) */}
+      {/* Barra inferior con gradiente + título */}
       {data.titleOverlay && !playing ? (
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
-          <p className="font-display max-w-[80%] text-center text-2xl font-black text-white drop-shadow-lg sm:text-3xl">
+        <div
+          className="pointer-events-none absolute bottom-0 left-0 z-20 w-full p-3 pt-14"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%)",
+          }}
+        >
+          <p className="font-display text-sm font-semibold text-white drop-shadow sm:text-[18px]">
             {data.titleOverlay}
           </p>
         </div>

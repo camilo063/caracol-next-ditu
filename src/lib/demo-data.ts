@@ -1721,11 +1721,11 @@ export const dituDemoLayout: AnyBlock[] = [
 export const caracolNextHeaderDemo = {
   landing: "caracol-next" as const,
   navAnchors: [
-    { label: "Marcas", anchorId: "marcas" },
-    { label: "Audiencia", anchorId: "audiencia" },
-    { label: "Momentos", anchorId: "momentos" },
-    { label: "Pauta", anchorId: "pauta" },
-    { label: "Contacto", anchorId: "contacto" },
+    { label: "Nuestro Alcance", anchorId: "audiencia" },
+    { label: "Nuestras Marcas", anchorId: "marcas" },
+    { label: "Calendario", anchorId: "momentos" },
+    { label: "Branded Content", anchorId: "branded" },
+    { label: "Pauta Digital", anchorId: "pauta" },
   ],
   // Spec: el CTA del navbar redirige a la landing Ditu.
   ctaButton: {
