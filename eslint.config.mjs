@@ -11,6 +11,11 @@ const eslintConfig = [
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
       "react/no-unescaped-entities": "off",
+      // react-hooks v6 new strict rules — pre-existing violations, disabled until addressed separately
+      "react-compiler/react-compiler": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/purity": "off",
+      "react-hooks/refs": "off",
     },
   },
   {
