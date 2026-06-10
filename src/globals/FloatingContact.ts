@@ -21,7 +21,9 @@ export const FloatingContact: GlobalConfig = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [async () => revalidateTag(globalTag("floating-contact"))],
+    afterChange: [
+      async () => revalidateTag(globalTag("floating-contact"), { expire: 0 }),
+    ],
   },
   fields: [
     {

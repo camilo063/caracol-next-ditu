@@ -17,7 +17,7 @@ export const SiteSettings: GlobalConfig = {
     update: adminsOnly,
   },
   hooks: {
-    afterChange: [async () => revalidateTag(globalTag("site-settings"))],
+    afterChange: [async () => revalidateTag(globalTag("site-settings"), { expire: 0 })],
   },
   fields: [
     {

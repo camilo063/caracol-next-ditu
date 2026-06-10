@@ -17,7 +17,9 @@ export const HeaderCaracolNext: GlobalConfig = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [async () => revalidateTag(globalTag("header-caracol-next"))],
+    afterChange: [
+      async () => revalidateTag(globalTag("header-caracol-next"), { expire: 0 }),
+    ],
   },
   fields: headerSharedFields,
 };

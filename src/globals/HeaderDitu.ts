@@ -17,7 +17,7 @@ export const HeaderDitu: GlobalConfig = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [async () => revalidateTag(globalTag("header-ditu"))],
+    afterChange: [async () => revalidateTag(globalTag("header-ditu"), { expire: 0 })],
   },
   fields: headerSharedFields,
 };
