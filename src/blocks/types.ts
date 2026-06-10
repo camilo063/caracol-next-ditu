@@ -25,5 +25,14 @@ export type OurChannelsBlockProps = BlockOf<"our-channels">;
 export type SportsEventsBlockProps = BlockOf<"sports-events">;
 export type ContactBlockProps = BlockOf<"contact">;
 export type AIRecommendationBlockProps = BlockOf<"ai-recommendation">;
+export type DituHeroBlockProps = BlockOf<"ditu-hero">;
+export type DituVideoBlockProps = BlockOf<"ditu-video">;
+export type DituAudienciaBlockProps = BlockOf<"ditu-audiencia">;
+export type DituAdnBlockProps = BlockOf<"ditu-adn">;
+export type DituTipoContenidoBlockProps = BlockOf<"ditu-tipo-contenido">;
+export type DituCanalesBlockProps = BlockOf<"ditu-canales">;
+export type DituCalendarioBlockProps = BlockOf<"ditu-calendario">;
+export type DituPautaBlockProps = BlockOf<"ditu-pauta">;
+export type DituHablamosBlockProps = BlockOf<"ditu-hablamos">;
 
 export type AnyBlock = LayoutBlocks;

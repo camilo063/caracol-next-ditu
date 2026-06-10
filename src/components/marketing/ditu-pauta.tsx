@@ -176,6 +176,7 @@ const CATEGORIES: Category[] = [
 
 export interface DituPautaProps {
   anchorId?: string;
+  categories?: Category[];
 }
 
 const SLIDE_UP = {
@@ -185,9 +186,14 @@ const SLIDE_UP = {
 };
 const ease = [0.25, 0.46, 0.45, 0.94] as const;
 
-export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
+export function DituPautaBlock({
+  anchorId = "pauta",
+  categories: categoriesProp,
+}: DituPautaProps) {
+  const finalCategories =
+    categoriesProp && categoriesProp.length > 0 ? categoriesProp : CATEGORIES;
   const [activeKey, setActiveKey] = useState<CategoryKey>("ads");
-  const active = CATEGORIES.find((c) => c.key === activeKey) ?? CATEGORIES[0]!;
+  const active = finalCategories.find((c) => c.key === activeKey) ?? finalCategories[0]!;
   const reduceMotion = useReducedMotion();
   const motionProps = reduceMotion ? {} : SLIDE_UP;
 
@@ -254,7 +260,7 @@ export function DituPautaBlock({ anchorId = "pauta" }: DituPautaProps) {
         >
           {/* Sidebar — desktop sticky / mobile horizontal scroll */}
           <PautaSidebar
-            categories={CATEGORIES}
+            categories={finalCategories}
             activeKey={activeKey}
             onSelect={setActiveKey}
           />

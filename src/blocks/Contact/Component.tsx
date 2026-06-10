@@ -48,7 +48,7 @@ export function ContactBlockComponent(props: ContactBlockProps) {
     return (
       <CtaSimpleLayout
         anchorId={anchorId}
-        heading={heading}
+        heading={heading ?? ""}
         headingEmphasis={headingEmphasis ?? undefined}
         description={description ?? undefined}
         ctaButton={ctaButton}

@@ -1,6 +1,8 @@
 import type { GlobalConfig } from "payload";
+import { revalidateTag } from "next/cache";
 
 import { authenticated, publishedOrAuth } from "@/access";
+import { globalTag } from "@/lib/payload/cache-tags";
 import { headerSharedFields } from "./shared-header-fields";
 
 /**
@@ -13,6 +15,9 @@ export const HeaderDitu: GlobalConfig = {
   access: {
     read: publishedOrAuth,
     update: authenticated,
+  },
+  hooks: {
+    afterChange: [async () => revalidateTag(globalTag("header-ditu"))],
   },
   fields: headerSharedFields,
 };

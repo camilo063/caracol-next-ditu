@@ -24,6 +24,8 @@ import { cn } from "@/lib/utils";
  *    border + text #77EDED, gap-10, p-16, rounded-8.
  */
 export interface DituHeroProps {
+  /** Ancla #id de la sección (default "inicio"). */
+  anchorId?: string;
   /** Texto del sticker (default "TU MARCA"). */
   stickerText?: string;
   /** Resto del heading sin el sticker (default split en líneas con cyan). */
@@ -35,6 +37,8 @@ export interface DituHeroProps {
     label: string;
     href: string;
     icon: "googleplay" | "appstore" | "tv";
+    /** URL del ícono desde Payload Media. Prioridad sobre ICON_PATHS[icon]. */
+    iconUrl?: string | null;
   }>;
 }
 
@@ -45,6 +49,7 @@ const ICON_PATHS: Record<string, string> = {
 };
 
 export function DituHero({
+  anchorId,
   stickerText = "TU MARCA",
   headingRest,
   description,
@@ -124,7 +129,7 @@ export function DituHero({
 
   return (
     <section
-      id="inicio"
+      id={anchorId ?? "inicio"}
       className="relative flex h-[100vh] max-h-[1080px] flex-col items-center justify-center gap-6 overflow-hidden px-6 text-center sm:px-12 lg:gap-6 lg:px-30"
       style={{ background: "linear-gradient(129.43deg, #12082D 2%, #3B1A93 100%)" }}
     >
@@ -244,7 +249,7 @@ export function DituHero({
                 style={{ fontFamily: "var(--font-ditu-display), system-ui, sans-serif" }}
               >
                 <Image
-                  src={ICON_PATHS[btn.icon] ?? ICON_PATHS.tv!}
+                  src={btn.iconUrl ?? ICON_PATHS[btn.icon] ?? ICON_PATHS.tv!}
                   alt=""
                   width={24}
                   height={24}

@@ -1,57 +1,88 @@
-import { RevealSection } from "@/components/animations";
+import type { Media } from "@/payload-types";
+import { RenderBlocks } from "@/blocks";
 import {
-  DituAdnBlock,
-  DituAudienciaBlock,
-  DituCalendarioBlock,
-  DituCanalesBlock,
-  DituFooter,
-  DituHablamosBlock,
-  DituHero,
-  DituPautaBlock,
-  DituTipoContenidoBlock,
-  DituVideoBlock,
   DituWordmark,
+  DituFooter,
   FloatingContact,
   SiteHeader,
 } from "@/components/marketing";
-import { dituHeaderDemo, floatingContactDemo } from "@/lib/demo-data";
+import {
+  getDituPage,
+  getFloatingContact,
+  getFooterDitu,
+  getHeaderDitu,
+} from "@/lib/payload/queries";
 
-/**
- * Ditu — `/ditu`.
- * Landing 1:1 con Figma 512:2245.
- * Custom blocks (no RenderBlocks) — el sistema Caracol Next se mantiene en `/`.
- */
-export default function DituPage() {
+function mediaUrl(media: number | Media | null | undefined): string | null {
+  if (!media || typeof media === "number") return null;
+  return media.url ?? null;
+}
+
+export default async function DituPage() {
+  const [header, floating, dituPage, footerData] = await Promise.all([
+    getHeaderDitu(),
+    getFloatingContact(),
+    getDituPage(),
+    getFooterDitu(),
+  ]);
+
+  const headerCta =
+    header.ctaButton?.enabled === true && header.ctaButton.label && header.ctaButton.href
+      ? {
+          enabled: true as const,
+          label: header.ctaButton.label,
+          href: header.ctaButton.href,
+          variant: header.ctaButton.variant ?? null,
+        }
+      : null;
+
+  const socialLinks = (footerData.socialLinks ?? []).map((s) => ({
+    network: s.network as
+      | "facebook"
+      | "instagram"
+      | "x"
+      | "tiktok"
+      | "youtube"
+      | "whatsapp",
+    url: s.url,
+    label: s.network,
+  }));
+
   return (
     <div className="theme-ditu bg-background flex min-h-screen flex-col">
-      <SiteHeader {...dituHeaderDemo} fallbackWordmark={<DituWordmark />} />
-      {/* pt-16 = h-16 del SiteHeader fixed para no quedar oculto. */}
+      <SiteHeader
+        landing="ditu"
+        logoUrl={mediaUrl(header.logo)}
+        fallbackWordmark={<DituWordmark />}
+        navAnchors={header.navAnchors ?? []}
+        ctaButton={headerCta}
+        sticky={header.sticky ?? true}
+      />
+      {/* pt-16 = h-16 del SiteHeader fixed */}
       <main className="flex-1 pt-16">
-        {/* Hero — sin RevealSection: parallax + visible al cargar. */}
-        <DituHero />
-        {/* Spec animaciones (Camilo): fade-in slide-up 400ms en todas las
-            secciones excepto Hero. RevealSection respeta reduced-motion. */}
-        <DituVideoBlock />
-        <DituAudienciaBlock />
-        <RevealSection>
-          <DituAdnBlock />
-        </RevealSection>
-        <RevealSection>
-          <DituTipoContenidoBlock />
-        </RevealSection>
-        <RevealSection>
-          <DituCanalesBlock />
-        </RevealSection>
-        <DituCalendarioBlock />
-        {/* Video 2 — Figma 857:3974 */}
-        <DituVideoBlock background="linear-gradient(90deg, #6C27D8 0%, #6020DF 47%, #471BA7 68%, #371881 82%, #251557 99%)" />
-        <DituPautaBlock />
-        <RevealSection>
-          <DituHablamosBlock />
-        </RevealSection>
+        <RenderBlocks layout={dituPage?.layout} />
       </main>
-      <DituFooter />
-      <FloatingContact {...floatingContactDemo} tone="ditu" />
+      <DituFooter
+        socialLinks={socialLinks.length > 0 ? socialLinks : undefined}
+        encuentranosLabel={footerData.encuentranosLabel ?? undefined}
+        bottomLine={footerData.bottomLine ?? undefined}
+      />
+      <FloatingContact
+        enabled={floating.enabled ?? true}
+        buttonLabel={floating.buttonLabel ?? undefined}
+        buttonIcon={floating.buttonIcon ?? undefined}
+        panelHeading={floating.panelHeading ?? undefined}
+        panelDescription={floating.panelDescription ?? undefined}
+        representatives={(floating.representatives ?? []).map((rep) => ({
+          name: rep.name,
+          role: rep.role,
+          email: rep.email,
+          whatsapp: rep.whatsapp,
+          photo: rep.photo,
+        }))}
+        position={floating.position ?? undefined}
+        tone="ditu"
+      />
     </div>
   );
 }

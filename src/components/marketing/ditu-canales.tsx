@@ -42,6 +42,8 @@ interface ChannelCard {
   name: string;
   /** Slug del brand para mapear al logo (opcional). */
   brand?: string;
+  /** URL del logo desde Payload Media (anula brand). */
+  logoUrl?: string;
 }
 
 const TABS: { key: TabKey; label: string }[] = [
@@ -72,11 +74,16 @@ const CHANNELS_BY_TAB: Record<TabKey, ChannelCard[]> = {
 
 export interface DituCanalesProps {
   anchorId?: string;
+  channelsByTab?: Record<TabKey, ChannelCard[]>;
 }
 
-export function DituCanalesBlock({ anchorId = "canales" }: DituCanalesProps) {
+export function DituCanalesBlock({
+  anchorId = "canales",
+  channelsByTab,
+}: DituCanalesProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("envivo");
-  const channels = CHANNELS_BY_TAB[activeTab];
+  const finalChannels = channelsByTab ?? CHANNELS_BY_TAB;
+  const channels = finalChannels[activeTab];
 
   return (
     <section
@@ -231,7 +238,11 @@ function ChannelCardComponent({ channel }: { channel: ChannelCard }) {
           {/* Placeholder logo — brand label simple en color cyan accent.
               TODO: cuando Caracol entregue los logos finales de cada canal,
               reemplazar por SVGs reales. */}
-          <BrandLogoPlaceholder name={channel.name} brand={channel.brand} />
+          <BrandLogoPlaceholder
+            name={channel.name}
+            brand={channel.brand}
+            logoUrl={channel.logoUrl}
+          />
         </div>
         {/* Name cell — Ditu Display Medium 20/28 uppercase white */}
         <div className="flex flex-1 flex-col items-start justify-center px-[8px]">
@@ -259,10 +270,20 @@ const BRAND_LOGO: Record<string, string> = {
   caracolmedios: "/logos/logo - Caracol.svg",
 };
 
-function BrandLogoPlaceholder({ name, brand }: { name: string; brand?: string }) {
-  const logoSrc = brand
-    ? (BRAND_LOGO[brand] ?? "/logos/logo - Caracol.svg")
-    : "/logos/logo - Caracol.svg";
+function BrandLogoPlaceholder({
+  name,
+  brand,
+  logoUrl,
+}: {
+  name: string;
+  brand?: string;
+  logoUrl?: string;
+}) {
+  const logoSrc =
+    logoUrl ??
+    (brand
+      ? (BRAND_LOGO[brand] ?? "/logos/logo - Caracol.svg")
+      : "/logos/logo - Caracol.svg");
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
