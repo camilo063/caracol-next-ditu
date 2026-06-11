@@ -9,3 +9,13 @@
 
 export const pageTag = (slug: string): string => `page:${slug}`;
 export const globalTag = (slug: string): string => `global:${slug}`;
+
+// Wraps revalidateTag so it's safe outside Next.js request context (scripts, seed).
+import { revalidateTag as _revalidateTag } from "next/cache";
+export function revalidateTag(tag: string, opts?: { expire?: number }): void {
+  try {
+    _revalidateTag(tag, opts as Parameters<typeof _revalidateTag>[1]);
+  } catch {
+    // Outside Next.js server context — no-op
+  }
+}

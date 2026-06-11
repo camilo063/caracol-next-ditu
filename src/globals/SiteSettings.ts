@@ -1,8 +1,7 @@
 import type { GlobalConfig } from "payload";
-import { revalidateTag } from "next/cache";
 
 import { adminsOnly, publishedOrAuth } from "@/access";
-import { globalTag } from "@/lib/payload/cache-tags";
+import { globalTag, revalidateTag } from "@/lib/payload/cache-tags";
 import { richHeadingField } from "@/fields/richHeading";
 
 /**

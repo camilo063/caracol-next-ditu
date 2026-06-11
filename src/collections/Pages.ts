@@ -1,9 +1,8 @@
 import type { CollectionConfig } from "payload";
-import { revalidateTag } from "next/cache";
 
 import { authenticated, publishedOrAuth } from "@/access";
 import { allBlocks } from "@/blocks";
-import { pageTag } from "@/lib/payload/cache-tags";
+import { pageTag, revalidateTag } from "@/lib/payload/cache-tags";
 
 /**
  * Pages — colección base del frontend.

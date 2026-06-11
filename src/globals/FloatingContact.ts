@@ -1,8 +1,7 @@
 import type { GlobalConfig } from "payload";
-import { revalidateTag } from "next/cache";
 
 import { authenticated, publishedOrAuth } from "@/access";
-import { globalTag } from "@/lib/payload/cache-tags";
+import { globalTag, revalidateTag } from "@/lib/payload/cache-tags";
 
 /**
  * FloatingContact — implementa la NOTA TÉCNICA del Figma (node 899:4832).
