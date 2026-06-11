@@ -1698,6 +1698,11 @@ function buildDituLayout(assets: {
       blockType: "ditu-hero" as const,
       anchorId: "inicio",
       stickerText: "TU MARCA",
+      headingLine1: "en todas las",
+      headingLine2: "pantallas,",
+      headingAccent: "en todo momento",
+      description:
+        "Somos ditu la plataforma OTT que integra lo mejor de Caracol Televisión en un ecosistema multiplataforma, desde la pantalla grande hasta el smartphone. Ofrecemos una experiencia gratuita de fácil acceso que se convierte en la vitrina estratégica ideal para que tu marca conecte con una audiencia masiva, fiel y comprometida.",
       buttons: [
         {
           label: "Google Play",
@@ -2117,6 +2122,11 @@ function buildDituLayout(assets: {
     {
       blockType: "ditu-hablamos" as const,
       anchorId: "hablamos",
+      stickerLabel: "¿HABLAMOS?",
+      heading: "Lleva tu marca",
+      headingAccent: "siguiente nivel.",
+      description: "Cuéntanos tus objetivos y armemos juntos la mejor estrategia.",
+      cta: { label: "Contáctanos", href: "#contacto" },
       blockName: "Ditu Hablamos",
     },
   ];

@@ -57,6 +57,12 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || "",
     },
+    // push: false → disables Drizzle auto-schema-push in dev.
+    // Required because two FK constraint names on branded_content tables
+    // both truncate to the same 63-char PostgreSQL identifier, causing
+    // a duplicate_object error on every server start.
+    // All schema changes are applied via payload_migrations instead.
+    push: false,
   }),
   sharp,
   cors: process.env.PAYLOAD_PUBLIC_SERVER_URL

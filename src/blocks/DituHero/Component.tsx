@@ -18,6 +18,10 @@ export function DituHeroBlockComponent(block: DituHeroBlockProps) {
     <DituHero
       anchorId={block.anchorId ?? undefined}
       stickerText={block.stickerText ?? undefined}
+      headingLine1={block.headingLine1 ?? undefined}
+      headingLine2={block.headingLine2 ?? undefined}
+      headingAccent={block.headingAccent ?? undefined}
+      description={block.description ?? undefined}
       buttons={buttons}
     />
   );

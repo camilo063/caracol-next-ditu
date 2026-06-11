@@ -16,7 +16,12 @@ export const SiteSettings: GlobalConfig = {
     update: adminsOnly,
   },
   hooks: {
-    afterChange: [async () => revalidateTag(globalTag("site-settings"))],
+    afterChange: [
+      async ({ context }: { doc: unknown; context: Record<string, unknown> }) => {
+        if (context?.disableRevalidate) return;
+        revalidateTag(globalTag("site-settings"));
+      },
+    ],
   },
   fields: [
     {

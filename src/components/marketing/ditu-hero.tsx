@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 
-import { ParallaxBackground } from "@/components/animations";
 import { cn } from "@/lib/utils";
 
 /**
@@ -28,10 +27,14 @@ export interface DituHeroProps {
   anchorId?: string;
   /** Texto del sticker (default "TU MARCA"). */
   stickerText?: string;
-  /** Resto del heading sin el sticker (default split en líneas con cyan). */
-  headingRest?: React.ReactNode;
-  /** Descripción con marcado rich (puede incluir spans bold cyan). */
-  description?: React.ReactNode;
+  /** Heading línea 1 (default "en todas las"). */
+  headingLine1?: string;
+  /** Heading línea 2 (default "pantallas,"). */
+  headingLine2?: string;
+  /** Heading línea accent en cyan (default "en todo momento"). */
+  headingAccent?: string;
+  /** Párrafo descriptivo bajo el heading. */
+  description?: string;
   /** Botones de acción inferiores. */
   buttons?: Array<{
     label: string;
@@ -51,14 +54,14 @@ const ICON_PATHS: Record<string, string> = {
 export function DituHero({
   anchorId,
   stickerText = "TU MARCA",
-  headingRest,
-  description,
+  headingLine1 = "en todas las",
+  headingLine2 = "pantallas,",
+  headingAccent = "en todo momento",
+  description = "Somos ditu la plataforma OTT que integra lo mejor de Caracol Televisión en un ecosistema multiplataforma, desde la pantalla grande hasta el smartphone. Ofrecemos una experiencia gratuita de fácil acceso que se convierte en la vitrina estratégica ideal para que tu marca conecte con una audiencia masiva, fiel y comprometida.",
   buttons,
 }: DituHeroProps) {
-  const headingFallback = (
+  const headingContent = (
     <>
-      {/* Espacio reservado (transparente) para que el sticker se posicione encima
-          en la línea 1, alineado con donde diría "TU MARCA". */}
       <span
         className="font-display m-2 inline-block rounded-[8px] px-2 pt-1.5 font-bold uppercase lg:m-4"
         style={{
@@ -71,26 +74,11 @@ export function DituHero({
       >
         {stickerText}
       </span>
-      <span className="leading-none">en todas las </span> <br />
-      <span className="leading-none">pantallas, </span>
+      <span className="leading-none">{headingLine1} </span> <br />
+      <span className="leading-none">{headingLine2} </span>
       <span className="leading-none" style={{ color: "#77EDED" }}>
-        en todo momento
+        {headingAccent}
       </span>
-    </>
-  );
-
-  const descriptionFallback = (
-    <>
-      Somos ditu la plataforma OTT que integra lo mejor de Caracol Televisión en un{" "}
-      <span className="font-bold" style={{ color: "#77EDED" }}>
-        ecosistema multiplataforma
-      </span>
-      , desde la pantalla grande hasta el smartphone. Ofrecemos una experiencia gratuita
-      de fácil acceso que se convierte en la{" "}
-      <span className="font-bold" style={{ color: "#77EDED" }}>
-        vitrina estratégica ideal para que tu marca
-      </span>{" "}
-      conecte con una audiencia masiva, fiel y comprometida.
     </>
   );
 
@@ -169,7 +157,7 @@ export function DituHero({
               lineHeight: 1,
             }}
           >
-            {headingRest ?? headingFallback}
+            {headingContent}
           </h1>
           {/* Sticker "TU MARCA" — Figma 725:2507:
               absolute left-[140px] top-[-25px] w-[384.962px] h-[117.973px], rotated -2.42deg.
@@ -207,7 +195,7 @@ export function DituHero({
               lineHeight: "normal",
             }}
           >
-            {description ?? descriptionFallback}
+            {description}
           </p>
         </motion.div>
 
