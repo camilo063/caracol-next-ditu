@@ -12,7 +12,7 @@ export const FooterDitu: GlobalConfig = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [async () => revalidateTag(globalTag("footer-ditu"), { expire: 0 })],
+    afterChange: [async () => revalidateTag(globalTag("footer-ditu"))],
   },
   fields: [
     {

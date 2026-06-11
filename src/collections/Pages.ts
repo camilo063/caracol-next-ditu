@@ -45,15 +45,15 @@ export const Pages: CollectionConfig = {
   hooks: {
     afterChange: [
       async ({ doc, operation, previousDoc }) => {
-        revalidateTag(pageTag(doc.slug), { expire: 0 });
+        revalidateTag(pageTag(doc.slug));
         if (operation === "update" && previousDoc.slug !== doc.slug) {
-          revalidateTag(pageTag(previousDoc.slug), { expire: 0 });
+          revalidateTag(pageTag(previousDoc.slug));
         }
       },
     ],
     afterDelete: [
       async ({ doc }) => {
-        revalidateTag(pageTag(doc.slug), { expire: 0 });
+        revalidateTag(pageTag(doc.slug));
       },
     ],
   },

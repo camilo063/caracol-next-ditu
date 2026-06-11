@@ -12,9 +12,7 @@ export const FooterCaracolNext: GlobalConfig = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [
-      async () => revalidateTag(globalTag("footer-caracol-next"), { expire: 0 }),
-    ],
+    afterChange: [async () => revalidateTag(globalTag("footer-caracol-next"))],
   },
   fields: footerSharedFields,
 };
