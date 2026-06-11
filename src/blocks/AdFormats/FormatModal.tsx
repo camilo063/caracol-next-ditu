@@ -105,12 +105,12 @@ export function FormatModal({ open, format, onClose }: FormatModalProps) {
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
             className={cn(
-              // Mobile: fullscreen.
-              "fixed inset-0 z-[110] flex flex-col overflow-y-auto bg-white p-6",
+              // Mobile: fullscreen con gap entre secciones y padding generoso.
+              "fixed inset-0 z-[110] flex flex-col gap-6 overflow-y-auto bg-white px-6 pt-14 pb-8",
               // Desktop (md+): centered card 840px wide, max-height with internal scroll.
               "md:inset-auto md:top-1/2 md:left-1/2 md:max-h-[90vh] md:w-[min(840px,92vw)]",
               "md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[8px] md:px-[48px] md:py-[64px]",
-              "md:items-end md:gap-[24px]",
+              "md:items-end md:gap-[24px] md:pt-[64px] md:pb-[64px]",
             )}
             style={{ display: "flex", flexDirection: "column" }}
           >

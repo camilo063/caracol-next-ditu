@@ -193,7 +193,7 @@ export function SiteHeader({
             {ctaButton?.enabled !== false && ctaButton?.label ? (
               <Link
                 href={ctaButton.href}
-                className="font-display inline-flex h-8 items-center justify-center rounded-[4px] border border-[#00ACFF] bg-[#00ACFF] px-6 py-2 text-[14px] leading-[20px] font-semibold whitespace-nowrap text-white transition-colors duration-300 hover:border-[#2862FF] hover:bg-[#2862FF] lg:px-[32px]"
+                className="font-display inline-flex h-8 items-center justify-center rounded-[4px] border border-[#00ACFF] bg-[#00ACFF] px-3 py-2 text-[13px] leading-[20px] font-semibold whitespace-nowrap text-white transition-colors duration-300 hover:border-[#2862FF] hover:bg-[#2862FF] lg:text-[14px]"
                 style={{
                   fontFamily: "var(--font-montserrat), system-ui",
                 }}
@@ -250,7 +250,7 @@ export function SiteHeader({
                   href={`#${a.anchorId}`}
                   aria-current={isActive ? "true" : undefined}
                   className={cn(
-                    "relative rounded px-[32px] py-[8px] text-sm font-semibold tracking-wide uppercase [transition:background-color_0.3s_ease-in-out,color_0.3s_ease-in-out]",
+                    "relative rounded px-8 py-2 text-center text-sm font-semibold tracking-wide [transition:background-color_0.3s_ease-in-out,color_0.3s_ease-in-out]",
                     isActive
                       ? "text-[#00ACFF]"
                       : isCaracolNextNavy
