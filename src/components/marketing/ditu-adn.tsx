@@ -79,12 +79,31 @@ const NSE_CARDS = [
 
 export interface DituAdnProps {
   anchorId?: string;
+  genderMalePercent?: number;
+  ageBars?: typeof AGE_BARS;
+  nseCards?: typeof NSE_CARDS;
 }
 
-export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
+export function DituAdnBlock({
+  anchorId = "adn",
+  genderMalePercent,
+  ageBars,
+  nseCards,
+}: DituAdnProps) {
+  const finalGenderMale = genderMalePercent ?? 52;
+  const finalGenderData = [
+    { name: "Hombres", value: finalGenderMale, color: "#77EDED" },
+    { name: "Mujeres", value: 100 - finalGenderMale, color: "#561BDB" },
+  ];
+  const finalAgeBars = ageBars && ageBars.length > 0 ? ageBars : AGE_BARS;
+  const finalNseCards = nseCards && nseCards.length > 0 ? nseCards : NSE_CARDS;
+
   // NSE auto-highlight (spec Camilo): el estrato con mayor % es destacado.
   // Calculado dinámicamente, no hardcoded.
-  const maxNseValue = useMemo(() => Math.max(...NSE_CARDS.map((c) => c.value)), []);
+  const maxNseValue = useMemo(
+    () => Math.max(...finalNseCards.map((c) => c.value)),
+    [finalNseCards],
+  );
 
   // Re-mount de las gráficas Recharts cuando entran al viewport (fix bug
   // usuario "La gráfica de torta no está animada"). Recharts solo dispara su
@@ -190,7 +209,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                   <ResponsiveContainer width="100%" height="100%" key="pie-in">
                     <PieChart>
                       <Pie
-                        data={GENDER_DATA}
+                        data={finalGenderData}
                         dataKey="value"
                         nameKey="name"
                         cx="50%"
@@ -205,7 +224,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                         animationEasing="ease-out"
                         stroke="none"
                       >
-                        {GENDER_DATA.map((entry) => (
+                        {finalGenderData.map((entry) => (
                           <Cell key={entry.name} fill={entry.color} />
                         ))}
                       </Pie>
@@ -265,7 +284,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                 {chartsInView ? (
                   <ResponsiveContainer width="100%" height="100%" key="bar-in">
                     <BarChart
-                      data={AGE_BARS}
+                      data={finalAgeBars}
                       margin={{ top: 4, right: 0, left: 0, bottom: 0 }}
                     >
                       <Bar
@@ -276,7 +295,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
                         animationDuration={1200}
                         animationEasing="ease-out"
                       >
-                        {AGE_BARS.map((bar) => (
+                        {finalAgeBars.map((bar) => (
                           <Cell key={bar.label} fill={bar.peak ? VIOLET : "#D9D9D9"} />
                         ))}
                       </Bar>
@@ -286,7 +305,7 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
               </div>
               {/* Labels debajo de cada bar — Figma 747:2630+: Spline Sans 14px white center */}
               <div className="flex w-full items-start gap-3 lg:gap-3">
-                {AGE_BARS.map((bar) => (
+                {finalAgeBars.map((bar) => (
                   <p
                     key={bar.label}
                     className="flex-1 text-center text-[14px] text-white"
@@ -328,9 +347,9 @@ export function DituAdnBlock({ anchorId = "adn" }: DituAdnProps) {
             destaca automáticamente (no hardcoded). En esta data Estrato 3
             (37.8%) es el highlight, pero si cambia el dataset, se recalcula. */}
         <div className="mt-15 grid w-full flex-wrap justify-center gap-4 sm:grid-cols-2 sm:items-end sm:gap-6 xl:grid-cols-4">
-          {NSE_CARDS.map((card, idx) => {
+          {finalNseCards.map((card, idx) => {
             const isMax = card.value === maxNseValue;
-            const isLast = idx === NSE_CARDS.length - 1;
+            const isLast = idx === finalNseCards.length - 1;
             return (
               <div
                 key={card.label}

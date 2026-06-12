@@ -47,17 +47,20 @@ const TABS: ContentTab[] = [
 
 export interface DituTipoContenidoProps {
   anchorId?: string;
+  tabs?: ContentTab[];
 }
 
 export function DituTipoContenidoBlock({
   anchorId = "tipo-contenido",
+  tabs: tabsProp,
   /** Intervalo de autoplay en ms. Default 5000 (5s). */
   autoplayInterval = 5000,
 }: DituTipoContenidoProps & { autoplayInterval?: number }) {
+  const finalTabs = tabsProp && tabsProp.length > 0 ? tabsProp : TABS;
   const [activeTab, setActiveTab] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [resetKey, setResetKey] = useState(0);
-  const tab = TABS[activeTab]!;
+  const tab = finalTabs[activeTab]!;
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const tabsContainerRef = useRef<HTMLDivElement>(null);
@@ -67,12 +70,12 @@ export function DituTipoContenidoBlock({
   useEffect(() => {
     if (isPaused) return;
     intervalRef.current = setInterval(() => {
-      setActiveTab((prev) => (prev + 1) % TABS.length);
+      setActiveTab((prev) => (prev + 1) % finalTabs.length);
     }, autoplayInterval);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isPaused, autoplayInterval, resetKey]);
+  }, [isPaused, autoplayInterval, resetKey, finalTabs]);
 
   // Scroll activo centrado en el contenedor de tabs (mobile).
   useEffect(() => {
@@ -156,7 +159,7 @@ export function DituTipoContenidoBlock({
           className="flex w-full scrollbar-none items-center overflow-x-auto scroll-smooth px-4 sm:justify-center lg:w-auto lg:flex-wrap lg:justify-center lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden"
           style={{ gap: "1rem" }}
         >
-          {TABS.map((t, idx) => (
+          {finalTabs.map((t, idx) => (
             <div key={t.label} className="flex items-center gap-4 lg:gap-[32px]">
               {idx > 0 ? (
                 // Separator dot — Figma 750:2743/2741: size-[20px] cyan circle
@@ -213,7 +216,7 @@ export function DituTipoContenidoBlock({
         {/* Pagination dots — Figma 750:2859: 3 dots size-[16px], gap-[16px].
             Activa = filled cyan, inactiva = outline cyan. */}
         <div className="mt-8 flex items-center gap-[16px]">
-          {TABS.map((_, idx) => (
+          {finalTabs.map((_, idx) => (
             <button
               key={idx}
               type="button"

@@ -75,6 +75,7 @@ export const footerSharedFields: Field[] = [
     label: "Tono visual",
     defaultValue: "dark",
     options: [
+      { label: "Minimal (solo copyright pill)", value: "minimal" },
       { label: "Oscuro (negro)", value: "dark" },
       { label: "Caracol Next deep", value: "caracolnext-deep" },
       { label: "Ditu deep", value: "ditu-deep" },

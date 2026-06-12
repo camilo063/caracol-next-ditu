@@ -6,9 +6,24 @@ const VIOLET_MED = "#561BDB";
 
 export interface DituHablamosProps {
   anchorId?: string;
+  stickerLabel?: string;
+  heading?: string;
+  headingAccent?: string;
+  description?: string;
+  cta?: { label?: string; href?: string };
 }
 
-export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) {
+export function DituHablamosBlock({
+  anchorId = "hablamos",
+  stickerLabel = "¿HABLAMOS?",
+  heading = "Lleva tu marca",
+  headingAccent = "siguiente nivel.",
+  description = "Cuéntanos tus objetivos y armemos juntos la mejor estrategia.",
+  cta,
+}: DituHablamosProps) {
+  const ctaLabel = cta?.label ?? "Contáctanos";
+  const ctaHref = cta?.href ?? "#contacto";
+
   return (
     <section
       id={anchorId}
@@ -34,7 +49,7 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
                     className="font-display text-[24px] font-bold whitespace-nowrap uppercase sm:text-[36px] lg:text-[48px]"
                     style={{ lineHeight: 1 }}
                   >
-                    ¿HABLAMOS?
+                    {stickerLabel}
                   </p>
                 </div>
                 <div className="flex flex-col items-start lg:w-[1012px]">
@@ -42,13 +57,13 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
                     className="font-display text-[46px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
                     style={{ lineHeight: 1 }}
                   >
-                    Lleva tu marca
+                    {heading}
                   </p>
                   <p
                     className="font-display text-[46px] font-bold text-white uppercase sm:text-[64px] lg:text-[96px]"
                     style={{ lineHeight: 1 }}
                   >
-                    al <span style={{ color: CYAN }}>siguiente nivel.</span>
+                    al <span style={{ color: CYAN }}>{headingAccent}</span>
                   </p>
                 </div>
               </div>
@@ -59,10 +74,10 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
                   lineHeight: 1.2,
                 }}
               >
-                Cuéntanos tus objetivos y armemos juntos la mejor estrategia.
+                {description}
               </p>
               <Link
-                href="#contacto"
+                href={ctaHref}
                 className="group relative inline-flex items-center justify-center overflow-hidden rounded-[10px] border border-white bg-white px-12.5 py-3 text-[16px] font-bold whitespace-nowrap text-[#561BDB] transition-opacity duration-300 hover:text-white"
                 style={{
                   fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
@@ -76,7 +91,7 @@ export function DituHablamosBlock({ anchorId = "hablamos" }: DituHablamosProps) 
                   }}
                   aria-hidden="true"
                 />
-                <span className="relative z-10">Contáctanos</span>
+                <span className="relative z-10">{ctaLabel}</span>
               </Link>
             </div>
           </div>

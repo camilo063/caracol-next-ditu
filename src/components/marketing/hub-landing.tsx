@@ -57,6 +57,10 @@ export interface HubLandingProps {
   contactHref?: string;
   /** Representantes para el modal de contacto (Figma 405:4864). */
   representatives?: ContactRepresentative[];
+  /** URL del logo Caracol Medios desde Payload. Fallback: SVG inline. */
+  logoCaracolMedios?: string | null;
+  /** Texto "DIGITAL" editable desde Payload. Fallback: "DIGITAL". */
+  digitalLabel?: string | null;
   brands: {
     caracolNext: {
       title: React.ReactNode;
@@ -74,6 +78,8 @@ export interface HubLandingProps {
   };
   stats: Array<{
     icon: "users" | "tv" | "zap" | "clock";
+    /** URL del ícono desde Payload Media. Tiene prioridad sobre `ICON_PATHS[icon]`. */
+    iconUrl?: string | null;
     /** Valor numérico para CountUp. */
     numericValue?: number;
     /** Sufijo después del número animado (e.g. "M", "K", "Min"). */
@@ -105,6 +111,8 @@ export function HubLanding({
   contactLabel,
   contactHref,
   representatives,
+  logoCaracolMedios,
+  digitalLabel,
   brands,
   stats,
   copyright,
@@ -183,7 +191,7 @@ export function HubLanding({
         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
         <div className="mx-auto w-full max-w-[1377px] lg:px-[40px]">
-          <CaracolMediosLogo />
+          <CaracolMediosLogo logoSrc={logoCaracolMedios} digitalLabel={digitalLabel} />
         </div>
       </motion.header>
 
@@ -347,7 +355,7 @@ export function HubLanding({
               {stats.slice(0, 2).map((s, i) => (
                 <MetricCard
                   key={i}
-                  icon={ICON_PATHS[s.icon]}
+                  icon={s.iconUrl ?? ICON_PATHS[s.icon]}
                   numericValue={s.numericValue}
                   prefix={s.prefix}
                   suffix={s.suffix}
@@ -363,7 +371,7 @@ export function HubLanding({
               {stats.slice(2, 4).map((s, i) => (
                 <MetricCard
                   key={i}
-                  icon={ICON_PATHS[s.icon]}
+                  icon={s.iconUrl ?? ICON_PATHS[s.icon]}
                   numericValue={s.numericValue}
                   prefix={s.prefix}
                   suffix={s.suffix}
@@ -619,13 +627,21 @@ function MetricCard({
  * Logo CARACOLMEDIOS | DIGITAL — Figma 334:1559 (397:1981).
  * Layout: logo SVG real w-241 h-32 + divider 1px #D9D9D9 + "DIGITAL" 25/lh-25
  */
-function CaracolMediosLogo({ className }: { className?: string }) {
+function CaracolMediosLogo({
+  className,
+  logoSrc,
+  digitalLabel,
+}: {
+  className?: string;
+  logoSrc?: string | null;
+  digitalLabel?: string | null;
+}) {
   return (
     <div className={cn("flex w-full items-center gap-[24px] sm:w-[395px]", className)}>
       {/* Logo Caracol MEDIOS — h fija, w se adapta a la proporción natural del SVG */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/home/logo-caracol-medios.svg"
+        src={logoSrc ?? "/home/logo-caracol-medios.svg"}
         alt="Caracol Medios"
         className="block h-[26px] w-auto flex-shrink-0 sm:h-[32px]"
       />
@@ -645,7 +661,7 @@ function CaracolMediosLogo({ className }: { className?: string }) {
           lineHeight: "25px",
         }}
       >
-        DIGITAL
+        {digitalLabel ?? "DIGITAL"}
       </p>
     </div>
   );

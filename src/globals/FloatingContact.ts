@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 
 import { authenticated, publishedOrAuth } from "@/access";
+import { globalTag, revalidateTag } from "@/lib/payload/cache-tags";
 
 /**
  * FloatingContact — implementa la NOTA TÉCNICA del Figma (node 899:4832).
@@ -17,6 +18,9 @@ export const FloatingContact: GlobalConfig = {
   access: {
     read: publishedOrAuth,
     update: authenticated,
+  },
+  hooks: {
+    afterChange: [async () => revalidateTag(globalTag("floating-contact"))],
   },
   fields: [
     {

@@ -27,7 +27,6 @@ export const sectionHeaderFields: Field[] = [
     name: "heading",
     type: "text",
     label: "Título",
-    required: true,
   },
   {
     name: "description",
@@ -58,8 +57,8 @@ export const ctaField = (overrides?: { name?: string; label?: string }): GroupFi
   type: "group",
   label: overrides?.label ?? "Botón CTA",
   fields: [
-    { name: "label", type: "text", required: true },
-    { name: "href", type: "text", required: true },
+    { name: "label", type: "text" },
+    { name: "href", type: "text" },
     {
       name: "variant",
       type: "select",

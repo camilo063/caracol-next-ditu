@@ -6,6 +6,7 @@ import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { formBuilderPlugin } from "@payloadcms/plugin-form-builder";
 import { seoPlugin } from "@payloadcms/plugin-seo";
 import { nestedDocsPlugin } from "@payloadcms/plugin-nested-docs";
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
@@ -56,6 +57,12 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || "",
     },
+    // push: false → disables Drizzle auto-schema-push in dev.
+    // Required because two FK constraint names on branded_content tables
+    // both truncate to the same 63-char PostgreSQL identifier, causing
+    // a duplicate_object error on every server start.
+    // All schema changes are applied via payload_migrations instead.
+    push: false,
   }),
   sharp,
   cors: process.env.PAYLOAD_PUBLIC_SERVER_URL
@@ -116,6 +123,14 @@ export default buildConfig({
             typeof doc.slug === "string" && doc.slug !== "home" ? `/${doc.slug}` : "";
           return `${url}${slug}`;
         }, ""),
+    }),
+
+    vercelBlobStorage({
+      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      collections: {
+        media: true,
+      },
+      token: process.env.BLOB_READ_WRITE_TOKEN || "",
     }),
   ],
 });

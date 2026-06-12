@@ -54,6 +54,9 @@ export interface DituAudienciaProps {
   anchorId?: string;
   /** Total seguidores grande (default 1700000 = +1.7M). */
   totalFollowersHeadline?: string;
+  stats?: StatCard[];
+  devices?: DeviceCard[];
+  networks?: NetworkCount[];
 }
 
 const DEFAULT_STATS: StatCard[] = [
@@ -164,7 +167,13 @@ const NETWORK_ICON: Record<NetworkCount["network"], string> = {
 export function DituAudienciaBlock({
   anchorId = "cifras",
   totalFollowersHeadline = "+1.7M",
+  stats,
+  devices,
+  networks,
 }: DituAudienciaProps) {
+  const finalStats = stats && stats.length > 0 ? stats : DEFAULT_STATS;
+  const finalDevices = devices && devices.length > 0 ? devices : DEFAULT_DEVICES;
+  const finalNetworks = networks && networks.length > 0 ? networks : DEFAULT_NETWORKS;
   const reduceMotion = useReducedMotion();
 
   // Ref para el bloque superior (stats) y el inferior (followers + redes)
@@ -259,7 +268,7 @@ export function DituAudienciaBlock({
             visible: { transition: { staggerChildren: reduceMotion ? 0 : 0.13 } },
           }}
         >
-          {DEFAULT_STATS.map((stat) => (
+          {finalStats.map((stat) => (
             <motion.article
               key={stat.label}
               className={`relative flex flex-col items-end gap-2 rounded-2xl border p-6 backdrop-blur-[30px] sm:p-8 lg:p-[40px] ${stat.large ? "lg:flex-[1_0_0]" : "lg:shrink-0"}`}
@@ -369,7 +378,7 @@ export function DituAudienciaBlock({
               visible: { transition: { staggerChildren: reduceMotion ? 0 : 0.11 } },
             }}
           >
-            {DEFAULT_DEVICES.map((dev) => (
+            {finalDevices.map((dev) => (
               <motion.div
                 key={dev.label}
                 className="flex flex-col items-center gap-[18px] rounded-[16px] border border-white p-4 lg:p-[20px]"
@@ -478,7 +487,7 @@ export function DituAudienciaBlock({
             visible: { transition: { staggerChildren: reduceMotion ? 0 : 0.1 } },
           }}
         >
-          {DEFAULT_NETWORKS.map((net) => (
+          {finalNetworks.map((net) => (
             <motion.div
               key={net.network}
               className="flex flex-col items-center gap-1 sm:flex-row sm:items-start sm:gap-3"

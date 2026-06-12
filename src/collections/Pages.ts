@@ -2,6 +2,7 @@ import type { CollectionConfig } from "payload";
 
 import { authenticated, publishedOrAuth } from "@/access";
 import { allBlocks } from "@/blocks";
+import { pageTag, revalidateTag } from "@/lib/payload/cache-tags";
 
 /**
  * Pages — colección base del frontend.
@@ -40,6 +41,21 @@ export const Pages: CollectionConfig = {
     read: publishedOrAuth,
     update: authenticated,
     delete: authenticated,
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc, operation, previousDoc }) => {
+        revalidateTag(pageTag(doc.slug));
+        if (operation === "update" && previousDoc.slug !== doc.slug) {
+          revalidateTag(pageTag(previousDoc.slug));
+        }
+      },
+    ],
+    afterDelete: [
+      async ({ doc }) => {
+        revalidateTag(pageTag(doc.slug));
+      },
+    ],
   },
   fields: [
     {

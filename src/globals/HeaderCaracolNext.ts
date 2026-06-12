@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 
 import { authenticated, publishedOrAuth } from "@/access";
+import { globalTag, revalidateTag } from "@/lib/payload/cache-tags";
 import { headerSharedFields } from "./shared-header-fields";
 
 /**
@@ -13,6 +14,9 @@ export const HeaderCaracolNext: GlobalConfig = {
   access: {
     read: publishedOrAuth,
     update: authenticated,
+  },
+  hooks: {
+    afterChange: [async () => revalidateTag(globalTag("header-caracol-next"))],
   },
   fields: headerSharedFields,
 };
