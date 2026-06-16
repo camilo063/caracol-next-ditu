@@ -56,6 +56,7 @@ export function AudienceNetworksBlockComponent({
   anchorId,
   heading,
   audience,
+  networksSection,
   networks,
 }: AudienceNetworksBlockProps) {
   const totalFollowers =
@@ -64,6 +65,11 @@ export function AudienceNetworksBlockComponent({
       0,
     ) ?? 0;
   const items = (audience.breakdown ?? []).slice(0, 4);
+  const networksHeading = networksSection?.heading ?? "Líderes en redes";
+  const networksTotalSuffix = networksSection?.totalSuffix ?? "de seguidores";
+  const networksItemLabel = networksSection?.itemLabel ?? "Seguidores";
+  const audienceSource = audience.source ?? "Fuente: Comscore Feb 2026";
+  const networksSource = networksSection?.source ?? "Fuente: Abril 6 2026";
   const leftColItems = [items[0], items[2]].filter(Boolean) as BreakdownItem[];
   const rightColItems = [items[1], items[3]].filter(Boolean) as BreakdownItem[];
 
@@ -118,7 +124,7 @@ export function AudienceNetworksBlockComponent({
                 className="font-display font-normal whitespace-nowrap text-black"
                 style={{ fontSize: "16px", lineHeight: "24px" }}
               >
-                Fuente: Comscore Feb 2026
+                {audienceSource}
               </p>
             </div>
           </div>
@@ -167,7 +173,7 @@ export function AudienceNetworksBlockComponent({
               className="font-display text-[28px] font-bold tracking-[-1px] sm:text-[32px] lg:text-[40px]"
               style={{ color: NEUTRO_NEGRO, lineHeight: "normal" }}
             >
-              Líderes en redes
+              {networksHeading}
             </h3>
             {/* Total seguidores — estático, sin CountUp, fade-up al entrar */}
             <motion.p
@@ -178,11 +184,14 @@ export function AudienceNetworksBlockComponent({
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
-              +{formatMillionsLong(totalFollowers)} de seguidores
+              +{formatMillionsLong(totalFollowers)} {networksTotalSuffix}
             </motion.p>
 
             {/* Network bar — CountUp con stagger por índice + reserveWidth */}
-            <NetworksLogoBar networks={networks.slice(0, 6)} />
+            <NetworksLogoBar
+              networks={networks.slice(0, 6)}
+              itemLabel={networksItemLabel}
+            />
           </div>
         ) : null}
 
@@ -196,7 +205,7 @@ export function AudienceNetworksBlockComponent({
             className="font-display font-normal whitespace-nowrap text-black"
             style={{ fontSize: "16px", lineHeight: "24px" }}
           >
-            Fuente: Abril 6 2026
+            {networksSource}
           </p>
         </div>
       </div>
@@ -246,8 +255,10 @@ function StatCard({ item }: { item: BreakdownItem }) {
 
 function NetworksLogoBar({
   networks,
+  itemLabel,
 }: {
   networks: Array<{ id?: string | null; network: string; followers: number }>;
+  itemLabel: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const containerInView = useInView(containerRef, {
@@ -289,7 +300,7 @@ function NetworksLogoBar({
               className="font-display text-[16px] leading-5 font-normal whitespace-nowrap"
               style={{ color: "#2D2D2D" }}
             >
-              Seguidores
+              {itemLabel}
             </p>
           </div>
         </motion.div>

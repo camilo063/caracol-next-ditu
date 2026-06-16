@@ -234,6 +234,7 @@ function buildCaracolNextLayout(iconIds: Record<string, number>) {
         reach: 16943700,
         reachLabel: "Usuarios mensuales",
         reachSuffix: null,
+        source: "Fuente: Comscore Feb 2026",
         breakdown: [
           { label: "LIDERAZGO | Unidad digital Colombia", value: 1, suffix: "" },
           {
@@ -244,6 +245,12 @@ function buildCaracolNextLayout(iconIds: Record<string, number>) {
           { label: "TIEMPO | Minutos", value: 248000000, suffix: "" },
           { label: "CONTENIDO | Vistas/mes", value: 84100000, suffix: "" },
         ],
+      },
+      networksSection: {
+        heading: "Líderes en redes",
+        totalSuffix: "de seguidores",
+        itemLabel: "Seguidores",
+        source: "Fuente: Abril 6 2026",
       },
       networks: [
         {
