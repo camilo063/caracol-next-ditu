@@ -1,6 +1,6 @@
 import type { Block } from "payload";
 
-import { anchorIdField, brandOptions, sectionHeaderFields } from "../shared-fields";
+import { anchorIdField, sectionHeaderFields } from "../shared-fields";
 
 /**
  * AdFormatsBlock — Formatos de pauta globales.
@@ -23,10 +23,11 @@ export const AdFormatsBlock: Block = {
         { name: "name", type: "text", required: true },
         {
           name: "brand",
-          type: "select",
+          type: "relationship",
+          relationTo: "brands",
           required: false,
+          label: "Marca",
           admin: { description: "Opcional. Marca asociada al formato." },
-          options: brandOptions as unknown as { label: string; value: string }[],
         },
         {
           name: "category",

@@ -1,6 +1,6 @@
 import type { Block } from "payload";
 
-import { anchorIdField, brandOptions, ctaField } from "../shared-fields";
+import { anchorIdField, ctaField } from "../shared-fields";
 
 /**
  * HeroBlock — sección hero principal de cada landing.
@@ -103,9 +103,10 @@ export const HeroBlock: Block = {
       fields: [
         {
           name: "brand",
-          type: "select",
-          options: brandOptions as unknown as { label: string; value: string }[],
+          type: "relationship",
+          relationTo: "brands",
           required: true,
+          label: "Marca",
         },
         { name: "icon", type: "upload", relationTo: "media" },
       ],

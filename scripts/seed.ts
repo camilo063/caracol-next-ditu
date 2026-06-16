@@ -29,6 +29,8 @@ import { fileURLToPath } from "node:url";
 import configPromise from "@payload-config";
 import { getPayload } from "payload";
 
+import { BRAND_META } from "@/lib/brand";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, "..");
@@ -182,9 +184,50 @@ async function uploadBrandIcons(
 }
 
 // --------------------------------------------------------------------------
+// PASO 1.5 — Upsert colección Brands (marcas editables)
+// Crea/actualiza las 10 marcas desde BRAND_META y devuelve un mapa slug→id
+// para que los bloques las referencien vía relationship.
+// --------------------------------------------------------------------------
+async function seedBrands(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+): Promise<Record<string, number>> {
+  console.log("\n🏷️  Upserting Brands...");
+  const map: Record<string, number> = {};
+  for (const [slug, meta] of Object.entries(BRAND_META)) {
+    const data = {
+      name: meta.label,
+      slug,
+      color: meta.color,
+      colorDark: meta.colorDark ?? null,
+      colorAccent: meta.colorAccent ?? null,
+      chartPeak: meta.chartPeak ?? null,
+    };
+    const existing = await payload.find({
+      collection: "brands",
+      where: { slug: { equals: slug } },
+      limit: 1,
+      depth: 0,
+    });
+    if (existing.docs[0]) {
+      await payload.update({ collection: "brands", id: existing.docs[0].id, data });
+      map[slug] = existing.docs[0].id as number;
+      console.log(`  ↩  ${slug} → Brand #${map[slug]} (actualizado)`);
+    } else {
+      const created = await payload.create({ collection: "brands", data });
+      map[slug] = created.id as number;
+      console.log(`  ✓  ${slug} → Brand #${map[slug]} (creado)`);
+    }
+  }
+  return map;
+}
+
+// --------------------------------------------------------------------------
 // PASO 2 — Construir layout saneado (sin as unknown as never)
 // --------------------------------------------------------------------------
-function buildCaracolNextLayout(iconIds: Record<string, number>) {
+function buildCaracolNextLayout(
+  iconIds: Record<string, number>,
+  brandIds: Record<string, number>,
+) {
   return [
     // ── HERO ─────────────────────────────────────────────────────────────
     {
@@ -196,14 +239,14 @@ function buildCaracolNextLayout(iconIds: Record<string, number>) {
       subheading: "Vamos más allá de la pauta tradicional.",
       keyStats: [],
       brandIcons: [
-        { brand: "caracoltv" as const, icon: iconIds["caracoltv"] ?? null },
-        { brand: "caracoltv" as const, icon: iconIds["noticias-caracol"] ?? null },
-        { brand: "caracolsports" as const, icon: iconIds["caracol-sports"] ?? null },
-        { brand: "bluradio" as const, icon: iconIds["blu-radio"] ?? null },
-        { brand: "golcaracol" as const, icon: iconIds["gol-caracol"] ?? null },
-        { brand: "volk" as const, icon: iconIds["volk"] ?? null },
-        { brand: "bumbox" as const, icon: iconIds["bumbox"] ?? null },
-        { brand: "lakalle" as const, icon: iconIds["la-kalle"] ?? null },
+        { brand: brandIds["caracoltv"]!, icon: iconIds["caracoltv"] ?? null },
+        { brand: brandIds["caracoltv"]!, icon: iconIds["noticias-caracol"] ?? null },
+        { brand: brandIds["caracolsports"]!, icon: iconIds["caracol-sports"] ?? null },
+        { brand: brandIds["bluradio"]!, icon: iconIds["blu-radio"] ?? null },
+        { brand: brandIds["golcaracol"]!, icon: iconIds["gol-caracol"] ?? null },
+        { brand: brandIds["volk"]!, icon: iconIds["volk"] ?? null },
+        { brand: brandIds["bumbox"]!, icon: iconIds["bumbox"] ?? null },
+        { brand: brandIds["lakalle"]!, icon: iconIds["la-kalle"] ?? null },
       ],
       backgroundImage: null,
       backgroundVideo: null,
@@ -309,7 +352,7 @@ function buildCaracolNextLayout(iconIds: Record<string, number>) {
       description: null,
       tabs: [
         {
-          brand: "caracoltv" as const,
+          brand: brandIds["caracoltv"]!,
           displayName: null,
           brandLogo: null,
           brandColor: "#015BC4",
@@ -383,7 +426,7 @@ function buildCaracolNextLayout(iconIds: Record<string, number>) {
           },
         },
         {
-          brand: "golcaracol" as const,
+          brand: brandIds["golcaracol"]!,
           displayName: null,
           brandLogo: null,
           brandColor: "#00C853",
@@ -436,7 +479,7 @@ function buildCaracolNextLayout(iconIds: Record<string, number>) {
           },
         },
         {
-          brand: "caracolsports" as const,
+          brand: brandIds["caracolsports"]!,
           displayName: null,
           brandLogo: null,
           brandColor: "#FF6F00",
@@ -484,7 +527,7 @@ function buildCaracolNextLayout(iconIds: Record<string, number>) {
           },
         },
         {
-          brand: "bluradio" as const,
+          brand: brandIds["bluradio"]!,
           displayName: null,
           brandLogo: null,
           brandColor: "#1976D2",
@@ -537,7 +580,7 @@ function buildCaracolNextLayout(iconIds: Record<string, number>) {
           },
         },
         {
-          brand: "lakalle" as const,
+          brand: brandIds["lakalle"]!,
           displayName: null,
           brandLogo: null,
           brandColor: "#FF1744",
@@ -588,7 +631,7 @@ function buildCaracolNextLayout(iconIds: Record<string, number>) {
           },
         },
         {
-          brand: "bumbox" as const,
+          brand: brandIds["bumbox"]!,
           displayName: null,
           brandLogo: null,
           brandColor: "#FFC200",
@@ -635,7 +678,7 @@ function buildCaracolNextLayout(iconIds: Record<string, number>) {
           },
         },
         {
-          brand: "volk" as const,
+          brand: brandIds["volk"]!,
           displayName: null,
           brandLogo: null,
           brandColor: "#00B8D4",
@@ -1259,9 +1302,10 @@ function buildCaracolNextLayout(iconIds: Record<string, number>) {
 async function upsertCaracolNextPage(
   payload: Awaited<ReturnType<typeof getPayload>>,
   iconIds: Record<string, number>,
+  brandIds: Record<string, number>,
 ) {
   console.log("\n📄 Upserting Page slug='caracol-next'...");
-  const layout = buildCaracolNextLayout(iconIds);
+  const layout = buildCaracolNextLayout(iconIds, brandIds);
 
   const existing = await payload.find({
     collection: "pages",
@@ -2260,8 +2304,9 @@ async function main() {
   console.log("🌱 Iniciando seed Sprint A + B + C1 + C2...\n");
   const payload = await getPayload({ config: configPromise });
 
+  const brandIds = await seedBrands(payload);
   const iconIds = await uploadBrandIcons(payload, report);
-  await upsertCaracolNextPage(payload, iconIds);
+  await upsertCaracolNextPage(payload, iconIds, brandIds);
   await upsertGlobals(payload);
   const homeAssets = await uploadHomeAssets(payload, report);
   await upsertHomeContent(payload, homeAssets);

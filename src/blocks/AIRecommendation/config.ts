@@ -1,6 +1,6 @@
 import type { Block } from "payload";
 
-import { anchorIdField, brandOptions, sectionHeaderFields } from "../shared-fields";
+import { anchorIdField, sectionHeaderFields } from "../shared-fields";
 
 /**
  * AIRecommendationBlock ⭐
@@ -55,11 +55,14 @@ export const AIRecommendationBlock: Block = {
     },
     {
       name: "allowedBrands",
-      type: "select",
-      label: "Marcas habilitadas para recomendar",
+      type: "relationship",
+      relationTo: "brands",
       hasMany: true,
-      defaultValue: brandOptions.map((b) => b.value),
-      options: brandOptions as unknown as { label: string; value: string }[],
+      label: "Marcas habilitadas para recomendar",
+      admin: {
+        description:
+          "Marcas que la IA puede recomendar. Si vacío, se permiten todas las del catálogo.",
+      },
     },
     {
       name: "examples",

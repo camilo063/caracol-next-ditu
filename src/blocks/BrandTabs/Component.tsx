@@ -4,7 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useInView } from "framer-motion";
-import { brandMeta } from "@/lib/brand";
+import { brandFromDoc } from "@/lib/brand";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { BrandTabsBlockProps } from "../types";
@@ -88,12 +88,12 @@ export function BrandTabsBlockComponent({
           >
             <div className="flex w-max items-center gap-2 lg:w-full lg:justify-between">
               {tabs.map((tab: Tab, i: number) => {
-                const meta = brandMeta(tab.brand);
+                const meta = brandFromDoc(tab.brand);
                 const isActive = i === safeIndex;
                 const AZUL_MEDIO = "#015BC4";
                 return (
                   <button
-                    key={tab.brand}
+                    key={meta.slug ?? i}
                     type="button"
                     role="tab"
                     aria-selected={isActive}
@@ -134,7 +134,7 @@ export function BrandTabsBlockComponent({
           <div className="mt-6">
             <AnimatePresence mode="wait">
               <motion.div
-                key={current.brand}
+                key={brandFromDoc(current.brand).slug ?? safeIndex}
                 initial={{ opacity: 0, y: 16, scale: 0.98, filter: "blur(6px)" }}
                 animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, scale: 0.99, filter: "blur(3px)" }}
@@ -198,9 +198,10 @@ function TabPanel({ tab }: { tab: Tab }) {
     once: true,
     margin: "0px 0px -5% 0px",
   });
-  const meta = brandMeta(tab.brand);
+  const meta = brandFromDoc(tab.brand);
+  const brandSlug = meta.slug;
   const displayName = tab.displayName ?? meta.label;
-  const avatarUrl = BRAND_AVATAR_PATHS[tab.brand];
+  const avatarUrl = brandSlug ? BRAND_AVATAR_PATHS[brandSlug] : undefined;
   // Colores por brand (Figma): heading usa brand.color, panel usa brand.colorDark,
   // chart peak usa brand.chartPeak. Cada brand tiene su propia paleta.
   const brandColor = meta.color;
@@ -210,12 +211,12 @@ function TabPanel({ tab }: { tab: Tab }) {
 
   // Figma override: BumBox (402:8734) y Volk (402:8828) NO tienen los bloques
   // WEB ni REDES en su diseño. Solo se renderiza AUDIENCIA + CTA.
-  const showWebAndNetworks = tab.brand !== "bumbox" && tab.brand !== "volk";
+  const showWebAndNetworks = brandSlug !== "bumbox" && brandSlug !== "volk";
 
   // Figma La Kalle (402:8626): pie chart con colores invertidos vs el resto.
   // Mujeres (mayoría 71%) = NEGRO #353535, Hombres (29%) = AMARILLO #FEFF00.
   // En el resto de brands el slice MAYOR usa brandAccent (más claro).
-  const isLaKalle = tab.brand === "lakalle";
+  const isLaKalle = brandSlug === "lakalle";
   const piePrimaryColor = isLaKalle
     ? brandPanelBg // larger slice = #353535 (negro)
     : (brandAccent ?? brandColor);
@@ -282,7 +283,7 @@ function TabPanel({ tab }: { tab: Tab }) {
                   {tab.webMetrics.usersPerMonth ? (
                     <div className="flex flex-col items-end justify-center gap-2 whitespace-nowrap">
                       <motion.p
-                        key={tab.brand + "-users"}
+                        key={(brandSlug ?? "") + "-users"}
                         initial={{ opacity: 0, y: 8 }}
                         animate={
                           containerInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }
@@ -314,7 +315,7 @@ function TabPanel({ tab }: { tab: Tab }) {
                   {tab.webMetrics.viewsPerMonth ? (
                     <div className="flex flex-col items-end justify-center gap-2 whitespace-nowrap">
                       <motion.p
-                        key={tab.brand + "-views"}
+                        key={(brandSlug ?? "") + "-views"}
                         initial={{ opacity: 0, y: 8 }}
                         animate={
                           containerInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }
@@ -359,7 +360,10 @@ function TabPanel({ tab }: { tab: Tab }) {
                         const icon = (
                           <BrandNetworkIcon
                             network={net.network}
-                            color={BRAND_ICON_COLOR[tab.brand] ?? brandPanelBg}
+                            color={
+                              (brandSlug ? BRAND_ICON_COLOR[brandSlug] : undefined) ??
+                              brandPanelBg
+                            }
                             className="h-8 w-8 shrink-0"
                           />
                         );
@@ -382,7 +386,7 @@ function TabPanel({ tab }: { tab: Tab }) {
                             )}
                             <div className="flex min-w-0 flex-col items-start justify-center whitespace-nowrap">
                               <motion.p
-                                key={tab.brand + "-" + net.network}
+                                key={(brandSlug ?? "") + "-" + net.network}
                                 initial={{ opacity: 0, y: 6 }}
                                 animate={
                                   containerInView

@@ -6,6 +6,7 @@ import { Sparkles, Loader2 } from "lucide-react";
 import { Button, Container, Section, SectionHeading, Textarea } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import type { AIRecommendationBlockProps } from "../types";
+import { brandFromDoc } from "@/lib/brand";
 import { recommend, type Recommendation } from "./actions";
 
 /** Item de la lista `examples` derivado del tipo generado por Payload. */
@@ -36,11 +37,26 @@ export function AIRecommendationBlockComponent({
     setError(null);
     setResult(null);
     try {
+      // allowedBrands es una relación poblada (depth ≥ 1) → la resolvemos a
+      // {slug,label,color} para el server action. Si vacío, el action trae todas.
+      const resolvedBrands = Array.isArray(allowedBrands)
+        ? allowedBrands
+            .map((b) => {
+              const meta = brandFromDoc(b as Parameters<typeof brandFromDoc>[0]);
+              return meta.slug
+                ? { slug: meta.slug, label: meta.label, color: meta.color }
+                : null;
+            })
+            .filter(
+              (b): b is { slug: string; label: string; color: string } => b !== null,
+            )
+        : undefined;
+
       const res = await recommend({
         prompt: input,
         model: model ?? undefined,
         systemPrompt: systemPrompt ?? undefined,
-        allowedBrands: (allowedBrands as string[] | null) ?? undefined,
+        allowedBrands: resolvedBrands,
       });
       if (res.ok && res.data) setResult(res.data);
       else setError(res.error ?? "Error desconocido.");

@@ -5,13 +5,14 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 
 import { BrandIconSvg } from "@/components/marketing/brand-icon-svg";
-import { brandMeta } from "@/lib/brand";
+import { brandFromDoc, type BrandDocLike } from "@/lib/brand";
 import { useIsMobile } from "@/lib/hooks/use-media-query";
 import { mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 
 export interface BrandIconItem {
-  brand: string;
+  /** Relación poblada a la colección Brands (doc) o id sin poblar. */
+  brand: BrandDocLike;
   icon?: number | string | { url?: string | null; alt?: string | null } | null;
   id?: string | null;
 }
@@ -135,7 +136,7 @@ function MarqueeIcons({ items, className }: BrandIconsRowProps) {
 /* ----------------------------- shared icon cell --------------------------- */
 
 function BrandIconCell({ item }: { item: BrandIconItem }) {
-  const meta = brandMeta(item.brand);
+  const meta = brandFromDoc(item.brand);
   const iconUrl = mediaUrl(item.icon);
   // Figma 347:2038-2053: size 76x76, border-2 #015BC4, bg #003381, rounded-[16px].
   // Logo brand interno fills 72x72 (76 - border 2px each side).
@@ -157,7 +158,7 @@ function BrandIconCell({ item }: { item: BrandIconItem }) {
         </span>
       ) : (
         // Cuando no hay logo subido al admin, usamos el SVG inline por brand.
-        <BrandIconSvg brand={item.brand} />
+        <BrandIconSvg brand={meta.slug ?? ""} />
       )}
     </span>
   );
