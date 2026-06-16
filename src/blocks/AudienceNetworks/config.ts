@@ -39,6 +39,16 @@ export const AudienceNetworksBlock: Block = {
           label: "Sufijo opcional (ej. 'M', 'K')",
         },
         {
+          name: "source",
+          type: "text",
+          label: "Fuente del alcance",
+          defaultValue: "Fuente: Comscore Feb 2026",
+          admin: {
+            description:
+              "Texto de la fuente que aparece bajo el número grande (con el punto verde).",
+          },
+        },
+        {
           name: "breakdown",
           type: "array",
           label: "Desglose (opcional)",
@@ -51,6 +61,51 @@ export const AudienceNetworksBlock: Block = {
             { name: "value", type: "number", required: true },
             { name: "suffix", type: "text" },
           ],
+        },
+      ],
+    },
+    {
+      name: "networksSection",
+      type: "group",
+      label: "Sección de redes",
+      admin: {
+        description:
+          "Textos de la sección 'Líderes en redes' (debajo de las stat cards).",
+      },
+      fields: [
+        {
+          name: "heading",
+          type: "text",
+          label: "Título de la sección",
+          defaultValue: "Líderes en redes",
+        },
+        {
+          name: "totalSuffix",
+          type: "text",
+          label: "Texto tras el total de seguidores",
+          defaultValue: "de seguidores",
+          admin: {
+            description:
+              "Se muestra como '+{total} {este texto}'. El total se calcula sumando las redes.",
+          },
+        },
+        {
+          name: "itemLabel",
+          type: "text",
+          label: "Etiqueta bajo cada red",
+          defaultValue: "Seguidores",
+          admin: {
+            description: "Texto bajo el número de cada red (ej. 'Seguidores').",
+          },
+        },
+        {
+          name: "source",
+          type: "text",
+          label: "Fuente de redes",
+          defaultValue: "Fuente: Abril 6 2026",
+          admin: {
+            description: "Texto de la fuente al pie de la sección (con el punto verde).",
+          },
         },
       ],
     },
