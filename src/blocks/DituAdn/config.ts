@@ -7,12 +7,79 @@ export const DituAdnBlock: Block = {
   fields: [
     anchorIdField,
     {
+      name: "stickerLabel",
+      type: "text",
+      label: "Sticker (etiqueta rotada)",
+      defaultValue: "ADN DITU",
+    },
+    {
+      name: "heading",
+      type: "group",
+      label: "Titular principal",
+      admin: { description: 'Se renderiza como "{accent en cyan} {resto}".' },
+      fields: [
+        { name: "accent", type: "text", label: "Acento (cyan)", defaultValue: "Sabemos" },
+        {
+          name: "rest",
+          type: "text",
+          label: "Resto (blanco)",
+          defaultValue: "a quién le hablas.",
+        },
+      ],
+    },
+    {
+      name: "gender",
+      type: "group",
+      label: "Card Género (textos)",
+      fields: [
+        { name: "label", type: "text", label: "Etiqueta (pill)", defaultValue: "Género" },
+        {
+          name: "subtitle",
+          type: "text",
+          label: "Subtítulo (tras el %)",
+          defaultValue: "nos prefieren",
+          admin: { description: 'Se muestra como "{% hombres}% {este texto}".' },
+        },
+        {
+          name: "maleLabel",
+          type: "text",
+          label: "Etiqueta Hombres",
+          defaultValue: "Hombres",
+        },
+        {
+          name: "femaleLabel",
+          type: "text",
+          label: "Etiqueta Mujeres",
+          defaultValue: "Mujeres",
+        },
+      ],
+    },
+    {
       name: "genderMalePercent",
       type: "number",
       label: "% Hombres (el % Mujeres se calcula como 100 - este valor)",
       defaultValue: 52,
       min: 0,
       max: 100,
+    },
+    {
+      name: "agePeak",
+      type: "group",
+      label: "Card Edad pico (textos)",
+      fields: [
+        {
+          name: "label",
+          type: "text",
+          label: "Etiqueta (pill)",
+          defaultValue: "EDAD PICO",
+        },
+        {
+          name: "text",
+          type: "text",
+          label: "Texto del pico",
+          defaultValue: "Pico: 55-64 años",
+        },
+      ],
     },
     {
       name: "ageBars",
@@ -36,6 +103,28 @@ export const DituAdnBlock: Block = {
       ],
     },
     {
+      name: "secondHeading",
+      type: "group",
+      label: "Segundo titular (NSE)",
+      admin: { description: 'Se renderiza en 2 líneas: "{pre}" / "{accent en cyan}".' },
+      fields: [
+        { name: "pre", type: "text", label: "Línea 1 (blanco)", defaultValue: "y dónde" },
+        {
+          name: "accent",
+          type: "text",
+          label: "Línea 2 (cyan)",
+          defaultValue: "encontrarlo",
+        },
+      ],
+    },
+    {
+      name: "nseDescription",
+      type: "textarea",
+      label: "Descripción NSE",
+      defaultValue:
+        "El nivel socioeconómico de nuestra audiencia refleja la Colombia real. Diversa, masiva y lista para conectar con tu marca.",
+    },
+    {
       name: "nseCards",
       type: "array",
       label: "Tarjetas NSE (estratos)",
@@ -54,6 +143,12 @@ export const DituAdnBlock: Block = {
           label: "Porcentaje (e.g. 37.8)",
         },
       ],
+    },
+    {
+      name: "source",
+      type: "text",
+      label: "Fuente (pie del bloque)",
+      defaultValue: "Fuente: TGI CO 2025",
     },
   ],
 };

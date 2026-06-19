@@ -79,18 +79,48 @@ const NSE_CARDS = [
 
 export interface DituAdnProps {
   anchorId?: string;
+  stickerLabel?: string;
+  heading?: { accent?: string | null; rest?: string | null };
+  gender?: {
+    label?: string | null;
+    subtitle?: string | null;
+    maleLabel?: string | null;
+    femaleLabel?: string | null;
+  };
   genderMalePercent?: number;
+  agePeak?: { label?: string | null; text?: string | null };
   ageBars?: typeof AGE_BARS;
+  secondHeading?: { pre?: string | null; accent?: string | null };
+  nseDescription?: string;
   nseCards?: typeof NSE_CARDS;
+  source?: string;
 }
 
 export function DituAdnBlock({
   anchorId = "adn",
+  stickerLabel = "ADN DITU",
+  heading,
+  gender,
   genderMalePercent,
+  agePeak,
   ageBars,
+  secondHeading,
+  nseDescription = "El nivel socioeconómico de nuestra audiencia refleja la Colombia real. Diversa, masiva y lista para conectar con tu marca.",
   nseCards,
+  source = "Fuente: TGI CO 2025",
 }: DituAdnProps) {
   const finalGenderMale = genderMalePercent ?? 52;
+  const finalGenderFemale = 100 - finalGenderMale;
+  const headingAccent = heading?.accent ?? "Sabemos";
+  const headingRest = heading?.rest ?? "a quién le hablas.";
+  const genderLabel = gender?.label ?? "Género";
+  const genderSubtitle = gender?.subtitle ?? "nos prefieren";
+  const genderMaleLabel = gender?.maleLabel ?? "Hombres";
+  const genderFemaleLabel = gender?.femaleLabel ?? "Mujeres";
+  const agePeakLabel = agePeak?.label ?? "EDAD PICO";
+  const agePeakText = agePeak?.text ?? "Pico: 55-64 años";
+  const secondHeadingPre = secondHeading?.pre ?? "y dónde";
+  const secondHeadingAccent = secondHeading?.accent ?? "encontrarlo";
   const finalGenderData = [
     { name: "Hombres", value: finalGenderMale, color: "#77EDED" },
     { name: "Mujeres", value: 100 - finalGenderMale, color: "#561BDB" },
@@ -148,11 +178,11 @@ export function DituAdnBlock({
             }}
           >
             <p className="font-display text-[24px] leading-none font-bold whitespace-nowrap uppercase sm:text-[36px] lg:text-[48px]">
-              ADN DITU
+              {stickerLabel}
             </p>
           </div>
           <h2 className="font-display text-center text-[46px] leading-none font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
-            <span style={{ color: CYAN }}>Sabemos</span> a quién le hablas.
+            <span style={{ color: CYAN }}>{headingAccent}</span> {headingRest}
           </h2>
         </div>
 
@@ -176,7 +206,7 @@ export function DituAdnBlock({
                 className="font-display inline-flex items-center rounded-[4px] px-3 py-1 text-[14px] leading-none font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[18px]"
                 style={{ backgroundColor: CYAN, color: NAVY_DARK }}
               >
-                Género
+                {genderLabel}
               </span>
             </div>
             <p
@@ -185,21 +215,21 @@ export function DituAdnBlock({
                 fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
               }}
             >
-              52% nos prefieren
+              {finalGenderMale}% {genderSubtitle}
             </p>
 
             {/* Donut visual con porcentajes */}
             <div className="mt-4 flex w-full items-center justify-center gap-4">
-              {/* 52% Hombres */}
+              {/* % Hombres */}
               <div className="flex flex-col items-center gap-1">
                 <p className="font-display text-[36px] leading-none font-medium text-white sm:text-[47px]">
-                  52%
+                  {finalGenderMale}%
                 </p>
                 <span
                   className="font-display inline-flex items-center rounded-[4px] px-2 py-1 text-[14px] leading-none font-medium whitespace-nowrap uppercase sm:text-[16px]"
                   style={{ backgroundColor: CYAN, color: NAVY_DARK }}
                 >
-                  Hombres
+                  {genderMaleLabel}
                 </span>
               </div>
 
@@ -233,16 +263,16 @@ export function DituAdnBlock({
                 ) : null}
               </div>
 
-              {/* 48% Mujeres */}
+              {/* % Mujeres */}
               <div className="flex flex-col items-center gap-1">
                 <p className="font-display text-[36px] leading-none font-medium text-white sm:text-[47px]">
-                  48%
+                  {finalGenderFemale}%
                 </p>
                 <span
                   className="font-display inline-flex items-center rounded-[4px] px-2 py-1 text-[14px] leading-none font-medium whitespace-nowrap text-white uppercase sm:text-[16px]"
                   style={{ backgroundColor: VIOLET_MED }}
                 >
-                  Mujeres
+                  {genderFemaleLabel}
                 </span>
               </div>
             </div>
@@ -263,7 +293,7 @@ export function DituAdnBlock({
                 className="font-display inline-flex items-center rounded-[4px] px-3 py-1 text-[14px] leading-none font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[18px]"
                 style={{ backgroundColor: CYAN, color: NAVY_DARK }}
               >
-                EDAD PICO
+                {agePeakLabel}
               </span>
             </div>
             <p
@@ -272,7 +302,7 @@ export function DituAdnBlock({
                 fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
               }}
             >
-              Pico: 55-64 años
+              {agePeakText}
             </p>
 
             {/* Bar chart Recharts — Figma 747:2627 + spec Camilo: barras crecen
@@ -327,9 +357,9 @@ export function DituAdnBlock({
             SIN whitespace-nowrap para que hagan break natural. */}
         <div className="flex w-full flex-col gap-3">
           <h3 className="font-display text-[46px] leading-none font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
-            <span className="block">y dónde</span>
+            <span className="block">{secondHeadingPre}</span>
             <span className="block" style={{ color: CYAN }}>
-              encontrarlo
+              {secondHeadingAccent}
             </span>
           </h3>
           <p
@@ -338,8 +368,7 @@ export function DituAdnBlock({
               fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
             }}
           >
-            El nivel socioeconómico de nuestra audiencia refleja la Colombia real.
-            Diversa, masiva y lista para conectar con tu marca.
+            {nseDescription}
           </p>
         </div>
 
@@ -411,7 +440,7 @@ export function DituAdnBlock({
             className="font-display text-[12px] leading-[18px] text-white"
             style={{ fontWeight: 500 }}
           >
-            Fuente: TGI CO 2025
+            {source}
           </p>
         </div>
       </div>
