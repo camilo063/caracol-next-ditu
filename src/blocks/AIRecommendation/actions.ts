@@ -1,24 +1,13 @@
 "use server";
 
 import { generateObject } from "ai";
+import config from "@payload-config";
+import { getPayload } from "payload";
 import { z } from "zod";
-
-import { brandMeta, type BrandKey } from "@/lib/brand";
 
 /** Forma estricta de salida del LLM — usamos generateObject + Zod. */
 const recommendationSchema = z.object({
-  brand: z.enum([
-    "ditu",
-    "caracoltv",
-    "golcaracol",
-    "caracolsports",
-    "bluradio",
-    "lakalle",
-    "volk",
-    "bumbox",
-    "caracoldigital",
-    "caracolmedios",
-  ]),
+  brand: z.string().describe("slug de la marca recomendada (de la lista permitida)"),
   format: z.string().describe("Nombre del formato de pauta recomendado"),
   reasoning: z.string().describe("Justificación breve, máx 2 frases"),
   alternativeBrands: z.array(z.string()).max(2).describe("Marcas alternativas posibles"),
@@ -35,11 +24,30 @@ export interface RecommendationResult {
   error?: string;
 }
 
+/** Marca resuelta que el componente pasa al action (desde la relación poblada). */
+export interface AllowedBrand {
+  slug: string;
+  label: string;
+  color: string;
+}
+
 interface RecommendArgs {
   prompt: string;
   model?: string;
   systemPrompt?: string;
-  allowedBrands?: string[];
+  /** Marcas permitidas (resueltas). Si vacío, se traen todas del catálogo. */
+  allowedBrands?: AllowedBrand[];
+}
+
+/** Trae todas las marcas del catálogo (fallback cuando el bloque no restringe). */
+async function fetchAllBrands(): Promise<AllowedBrand[]> {
+  const payload = await getPayload({ config });
+  const res = await payload.find({ collection: "brands", limit: 100, depth: 0 });
+  return res.docs.map((b) => ({
+    slug: String(b.slug),
+    label: String(b.name),
+    color: String(b.color ?? "#015BC4"),
+  }));
 }
 
 /**
@@ -59,12 +67,8 @@ export async function recommend({
 
   try {
     const allowed =
-      allowedBrands && allowedBrands.length > 0
-        ? allowedBrands
-        : Object.keys(brandMeta("ditu") ? brandMeta : {});
-    const allowedList = (allowed as string[])
-      .map((b) => `${b} (${brandMeta(b).label})`)
-      .join(", ");
+      allowedBrands && allowedBrands.length > 0 ? allowedBrands : await fetchAllBrands();
+    const allowedList = allowed.map((b) => `${b.slug} (${b.label})`).join(", ");
 
     const { object } = await generateObject({
       model,
@@ -80,13 +84,15 @@ export async function recommend({
       ].join("\n"),
     });
 
-    const meta = brandMeta(object.brand as BrandKey);
+    // Cruzamos el slug devuelto por el LLM contra las marcas permitidas para
+    // sacar label + color. Fallback neutral si devuelve un slug fuera de lista.
+    const match = allowed.find((b) => b.slug === object.brand);
     return {
       ok: true,
       data: {
         ...object,
-        brandLabel: meta.label,
-        brandColor: meta.color,
+        brandLabel: match?.label ?? object.brand,
+        brandColor: match?.color ?? "#015BC4",
       },
     };
   } catch (err) {

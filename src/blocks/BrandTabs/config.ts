@@ -2,7 +2,6 @@ import type { Block } from "payload";
 
 import {
   anchorIdField,
-  brandOptions,
   ctaField,
   networkOptions,
   sectionHeaderFields,
@@ -29,9 +28,14 @@ export const BrandTabsBlock: Block = {
       fields: [
         {
           name: "brand",
-          type: "select",
+          type: "relationship",
+          relationTo: "brands",
           required: true,
-          options: brandOptions as unknown as { label: string; value: string }[],
+          label: "Marca",
+          admin: {
+            description:
+              "Elegí una marca del catálogo. Para agregar nuevas: colección Marcas.",
+          },
         },
         {
           name: "displayName",

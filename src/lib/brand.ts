@@ -121,3 +121,48 @@ export function brandStyle(key: string | null | undefined): React.CSSProperties 
     ...(meta.colorDark ? { "--color-accent": meta.colorDark } : {}),
   } as React.CSSProperties;
 }
+
+/**
+ * Forma mínima de un doc de la colección `Brands` (relationship poblada).
+ * Acepta también un id/number sin poblar (depth insuficiente) → fallback neutral.
+ */
+export type BrandDocLike =
+  | {
+      slug?: string | null;
+      name?: string | null;
+      color?: string | null;
+      colorDark?: string | null;
+      colorAccent?: string | null;
+      chartPeak?: string | null;
+    }
+  | number
+  | string
+  | null
+  | undefined;
+
+/** Metadata derivada incluyendo el slug (para reglas de layout por marca). */
+export interface BrandResolved extends BrandMeta {
+  slug: string | null;
+}
+
+/**
+ * Resuelve la metadata de una marca desde un doc de la colección `Brands`.
+ * Prioridad: campos del doc → BRAND_META[slug] (back-compat) → neutral.
+ * Si llega un id/string sin poblar, devuelve el fallback neutral.
+ */
+export function brandFromDoc(doc: BrandDocLike): BrandResolved {
+  if (doc == null || typeof doc === "number" || typeof doc === "string") {
+    const fallback = brandMeta(typeof doc === "string" ? doc : undefined);
+    return { ...fallback, slug: typeof doc === "string" ? doc : null };
+  }
+  const slug = doc.slug ?? null;
+  const base = slug ? BRAND_META[slug as BrandKey] : undefined;
+  return {
+    slug,
+    label: doc.name ?? base?.label ?? "Marca",
+    color: doc.color ?? base?.color ?? "#015BC4",
+    colorDark: doc.colorDark ?? base?.colorDark,
+    colorAccent: doc.colorAccent ?? base?.colorAccent,
+    chartPeak: doc.chartPeak ?? base?.chartPeak,
+  };
+}

@@ -52,8 +52,28 @@ interface NetworkCount {
 
 export interface DituAudienciaProps {
   anchorId?: string;
+  /** Sticker rotado superior. */
+  stickerLabel?: string;
+  /** Titular: "{pre} {accent en cyan} {post}". */
+  heading?: { pre?: string | null; accent?: string | null; post?: string | null };
+  /** Card watch time. */
+  watchTime?: {
+    label?: string | null;
+    value?: string | null;
+    description?: string | null;
+  };
+  /** Fuente bajo el bloque superior. */
+  topSource?: string;
   /** Total seguidores grande (default 1700000 = +1.7M). */
   totalFollowersHeadline?: string;
+  /** Texto junto al titular grande (e.g. "DE SEGUIDORES"). */
+  followersSuffix?: string;
+  /** Subtítulo bajo el titular (e.g. "QUE ESPERAN VER TU MARCA"). */
+  followersSubtext?: string;
+  /** Etiqueta bajo cada red (e.g. "Seguidores"). */
+  networkItemLabel?: string;
+  /** Fuente bajo el bloque inferior. */
+  bottomSource?: string;
   stats?: StatCard[];
   devices?: DeviceCard[];
   networks?: NetworkCount[];
@@ -166,7 +186,15 @@ const NETWORK_ICON: Record<NetworkCount["network"], string> = {
 
 export function DituAudienciaBlock({
   anchorId = "cifras",
+  stickerLabel = "Las cifras que mueven a Ditu",
+  heading,
+  watchTime,
+  topSource = "Fuente: Ditu AVS Accenture · Abril 2026",
   totalFollowersHeadline = "+1.7M",
+  followersSuffix = "DE SEGUIDORES",
+  followersSubtext = "QUE ESPERAN VER TU MARCA",
+  networkItemLabel = "Seguidores",
+  bottomSource = "Fuente: TGI CO 2025",
   stats,
   devices,
   networks,
@@ -174,6 +202,12 @@ export function DituAudienciaBlock({
   const finalStats = stats && stats.length > 0 ? stats : DEFAULT_STATS;
   const finalDevices = devices && devices.length > 0 ? devices : DEFAULT_DEVICES;
   const finalNetworks = networks && networks.length > 0 ? networks : DEFAULT_NETWORKS;
+  const headingPre = heading?.pre ?? "Cada mes,";
+  const headingAccent = heading?.accent ?? "millones de pantallas";
+  const headingPost = heading?.post ?? "prendidas.";
+  const watchTimeLabel = watchTime?.label ?? "Watch time promedio";
+  const watchTimeValue = watchTime?.value ?? "60 MIN";
+  const watchTimeDescription = watchTime?.description ?? "Por sesión, sin interrupciones";
   const reduceMotion = useReducedMotion();
 
   // Ref para el bloque superior (stats) y el inferior (followers + redes)
@@ -238,16 +272,13 @@ export function DituAudienciaBlock({
               }}
             >
               <p className="font-display text-[24px] leading-none font-bold whitespace-nowrap uppercase sm:text-[36px] lg:text-[48px]">
-                Las cifras que mueven a Ditu
+                {stickerLabel}
               </p>
             </div>
           </div>
           <h2 className="font-display text-[48px] leading-none font-bold text-white uppercase sm:text-[60px] lg:text-[84px]">
-            Cada mes,{" "}
-            <span style={{ color: CYAN }}>
-              millones <br /> de pantallas
-            </span>{" "}
-            prendidas.
+            {headingPre} <span style={{ color: CYAN }}>{headingAccent}</span>{" "}
+            {headingPost}
           </h2>
         </motion.div>
 
@@ -331,7 +362,7 @@ export function DituAudienciaBlock({
                 className="font-display inline-flex items-center rounded-[4px] px-[12px] py-[4px] text-[14px] font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[20px]"
                 style={{ backgroundColor: CYAN, color: NAVY_DARK, lineHeight: "14px" }}
               >
-                Watch time promedio
+                {watchTimeLabel}
               </span>
             </div>
             {/* "60 MIN" — Figma 892:6260 / 656:4869: 64/lh-80 Ditu Display Bold */}
@@ -339,7 +370,7 @@ export function DituAudienciaBlock({
               className="font-display text-[44px] font-bold whitespace-nowrap text-white sm:text-[56px] lg:text-[64px]"
               style={{ lineHeight: "80px" }}
             >
-              60 MIN
+              {watchTimeValue}
             </p>
             <p
               className="text-[14px] leading-snug sm:text-[16px]"
@@ -348,7 +379,7 @@ export function DituAudienciaBlock({
                 fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
               }}
             >
-              Por sesión, sin interrupciones
+              {watchTimeDescription}
             </p>
           </div>
 
@@ -431,7 +462,7 @@ export function DituAudienciaBlock({
             className="font-display text-[12px] leading-[18px] text-white"
             style={{ fontWeight: 500 }}
           >
-            Fuente: Ditu AVS Accenture · Abril 2026
+            {topSource}
           </p>
         </motion.div>
       </motion.div>
@@ -461,7 +492,7 @@ export function DituAudienciaBlock({
             {/* Mascot hand — posicionada sobre "MARCA" (esquina superior derecha del bloque de texto) */}
             <span className="relative flex w-fit items-end gap-6">
               <p className="font-display text-[36px] leading-none font-bold text-white uppercase sm:text-[44px] lg:text-[64px]">
-                DE SEGUIDORES
+                {followersSuffix}
               </p>
               <Image
                 src="/ditu/mascot-hand.svg"
@@ -473,7 +504,7 @@ export function DituAudienciaBlock({
             </span>
 
             <p className="font-display text-[36px] leading-[1.1] font-medium text-white uppercase sm:text-[44px] lg:text-[64px]">
-              QUE ESPERAN VER TU MARCA
+              {followersSubtext}
             </p>
           </div>
         </motion.div>
@@ -520,7 +551,7 @@ export function DituAudienciaBlock({
                   className="text-[12px] leading-4 text-white sm:text-[14px] sm:leading-[20px] lg:text-[16px]"
                   style={{ fontFamily: "var(--font-spline-sans), system-ui" }}
                 >
-                  Seguidores
+                  {networkItemLabel}
                 </p>
               </div>
             </motion.div>
@@ -540,7 +571,7 @@ export function DituAudienciaBlock({
             className="font-display text-[12px] leading-[18px] text-white"
             style={{ fontWeight: 500 }}
           >
-            Fuente: TGI CO 2025
+            {bottomSource}
           </p>
         </motion.div>
       </motion.div>

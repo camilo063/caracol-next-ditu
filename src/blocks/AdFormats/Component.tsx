@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { ChevronRight, Play } from "lucide-react";
 
 import { Container, Section } from "@/components/ui";
-import { brandMeta } from "@/lib/brand";
+import { brandFromDoc } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import type { AdFormatsBlockProps } from "../types";
 import { FormatModal } from "./FormatModal";
@@ -337,7 +337,7 @@ function AdFormatsVerticalTabs({
             <div className="p-6">
               <h3 className="font-display text-2xl font-bold">{current.name}</h3>
               <p className="mt-2 text-sm text-white/80">
-                {current.brand ? brandMeta(current.brand).label + " · " : ""}
+                {current.brand ? brandFromDoc(current.brand).label + " · " : ""}
                 Asegura la presencia de tu marca en los contenidos más importantes del
                 país.
               </p>

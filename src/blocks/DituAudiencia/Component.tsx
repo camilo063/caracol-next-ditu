@@ -45,7 +45,15 @@ export function DituAudienciaBlockComponent(block: DituAudienciaBlockProps) {
   return (
     <DituAudienciaBlock
       anchorId={block.anchorId ?? undefined}
+      stickerLabel={block.stickerLabel ?? undefined}
+      heading={block.heading ?? undefined}
+      watchTime={block.watchTime ?? undefined}
+      topSource={block.topSource ?? undefined}
       totalFollowersHeadline={block.totalFollowersHeadline ?? undefined}
+      followersSuffix={block.followersSuffix ?? undefined}
+      followersSubtext={block.followersSubtext ?? undefined}
+      networkItemLabel={block.networkItemLabel ?? undefined}
+      bottomSource={block.bottomSource ?? undefined}
       stats={stats}
       devices={devices}
       networks={networks}
