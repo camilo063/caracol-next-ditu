@@ -35,6 +35,44 @@ export function BrandTabsBlockComponent({
   defaultTab,
 }: BrandTabsBlockProps) {
   const [active, setActive] = React.useState(defaultTab ?? 0);
+
+  // overflow-x-auto nativo no soporta click+arrastre con mouse — lo agregamos a mano.
+  const tabsScrollRef = React.useRef<HTMLDivElement>(null);
+  const dragState = React.useRef({
+    isDown: false,
+    startX: 0,
+    startScrollLeft: 0,
+    moved: false,
+  });
+
+  const onTabsMouseDown = (e: React.MouseEvent) => {
+    const el = tabsScrollRef.current;
+    if (!el) return;
+    dragState.current = {
+      isDown: true,
+      startX: e.pageX,
+      startScrollLeft: el.scrollLeft,
+      moved: false,
+    };
+  };
+  const onTabsMouseMove = (e: React.MouseEvent) => {
+    const el = tabsScrollRef.current;
+    if (!el || !dragState.current.isDown) return;
+    const delta = e.pageX - dragState.current.startX;
+    if (Math.abs(delta) > 3) dragState.current.moved = true;
+    el.scrollLeft = dragState.current.startScrollLeft - delta;
+  };
+  const endTabsDrag = () => {
+    dragState.current.isDown = false;
+  };
+  // Si hubo arrastre, cancela el click para no seleccionar tab por error.
+  const onTabsClickCapture = (e: React.MouseEvent) => {
+    if (dragState.current.moved) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
   if (!tabs || tabs.length === 0) return null;
   const safeIndex = Math.min(Math.max(active, 0), tabs.length - 1);
   const current = tabs[safeIndex]!;
@@ -80,13 +118,20 @@ export function BrandTabsBlockComponent({
             <p className="text-muted-foreground text-fluid-body mt-2">{description}</p>
           ) : null}
 
-          {/* Tabs pill row */}
+          {/* Negative margin cancela el padding del wrapper por breakpoint,
+              así el scroll llega hasta el borde sin espacio blanco. */}
           <div
-            className="-mx-4 mt-8 [scrollbar-width:none] overflow-x-auto px-4 [-ms-overflow-style:none] min-[1300px]:overflow-x-visible lg:px-0 [&::-webkit-scrollbar]:hidden"
+            ref={tabsScrollRef}
+            className="-mx-4 mt-8 cursor-grab scrollbar-none overflow-x-auto select-none active:cursor-grabbing sm:-mx-8 lg:-mx-20"
             role="tablist"
             aria-label="Marcas del ecosistema"
+            onMouseDown={onTabsMouseDown}
+            onMouseMove={onTabsMouseMove}
+            onMouseUp={endTabsDrag}
+            onMouseLeave={endTabsDrag}
+            onClickCapture={onTabsClickCapture}
           >
-            <div className="flex w-max items-center gap-2 lg:w-full lg:justify-between">
+            <div className="flex w-max items-center gap-2 px-4 sm:px-8 lg:px-20">
               {tabs.map((tab: Tab, i: number) => {
                 const meta = brandFromDoc(tab.brand);
                 const isActive = i === safeIndex;
