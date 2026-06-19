@@ -20,5 +20,14 @@ export function DituCalendarioBlockComponent(block: DituCalendarioBlockProps) {
         }))
       : undefined;
 
-  return <DituCalendarioBlock anchorId={block.anchorId ?? undefined} events={events} />;
+  return (
+    <DituCalendarioBlock
+      anchorId={block.anchorId ?? undefined}
+      stickerLabel={block.stickerLabel ?? undefined}
+      heading={block.heading ?? undefined}
+      subtitle={block.subtitle ?? undefined}
+      cta={block.cta ?? undefined}
+      events={events}
+    />
+  );
 }
