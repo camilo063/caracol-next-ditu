@@ -1863,7 +1863,20 @@ function buildDituLayout(assets: {
     {
       blockType: "ditu-adn" as const,
       anchorId: "adn",
+      stickerLabel: "ADN DITU",
+      heading: { accent: "Sabemos", rest: "a quién le hablas." },
+      gender: {
+        label: "Género",
+        subtitle: "nos prefieren",
+        maleLabel: "Hombres",
+        femaleLabel: "Mujeres",
+      },
       genderMalePercent: 52,
+      agePeak: { label: "EDAD PICO", text: "Pico: 55-64 años" },
+      secondHeading: { pre: "y dónde", accent: "encontrarlo" },
+      nseDescription:
+        "El nivel socioeconómico de nuestra audiencia refleja la Colombia real. Diversa, masiva y lista para conectar con tu marca.",
+      source: "Fuente: TGI CO 2025",
       ageBars: [
         { label: "18-24", value: 58, peak: false },
         { label: "25-34", value: 80, peak: false },

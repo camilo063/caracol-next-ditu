@@ -19,9 +19,16 @@ export function DituAdnBlockComponent(block: DituAdnBlockProps) {
   return (
     <DituAdnBlock
       anchorId={block.anchorId ?? undefined}
+      stickerLabel={block.stickerLabel ?? undefined}
+      heading={block.heading ?? undefined}
+      gender={block.gender ?? undefined}
       genderMalePercent={block.genderMalePercent ?? undefined}
+      agePeak={block.agePeak ?? undefined}
       ageBars={ageBars}
+      secondHeading={block.secondHeading ?? undefined}
+      nseDescription={block.nseDescription ?? undefined}
       nseCards={nseCards}
+      source={block.source ?? undefined}
     />
   );
 }
