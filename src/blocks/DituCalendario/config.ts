@@ -7,6 +7,24 @@ export const DituCalendarioBlock: Block = {
   fields: [
     anchorIdField,
     {
+      name: "stickerLabel",
+      type: "text",
+      label: "Sticker (etiqueta rotada)",
+      defaultValue: "ESTO SE VIENE",
+    },
+    {
+      name: "heading",
+      type: "text",
+      label: "Titular",
+      defaultValue: "Calendario",
+    },
+    {
+      name: "subtitle",
+      type: "text",
+      label: "Subtítulo",
+      defaultValue: "Los momentos que no te puedes perder.",
+    },
+    {
       name: "events",
       type: "array",
       label: "Eventos del calendario",
@@ -45,6 +63,38 @@ export const DituCalendarioBlock: Block = {
             { label: "Navy", value: "navy" },
             { label: "White", value: "white" },
           ],
+        },
+      ],
+    },
+    {
+      name: "cta",
+      type: "group",
+      label: "CTA (pie del bloque)",
+      fields: [
+        {
+          name: "boldText",
+          type: "text",
+          label: "Texto en negrita",
+          defaultValue:
+            "¡Asegura la presencia de tu marca en los eventos más importantes del país!",
+        },
+        {
+          name: "text",
+          type: "text",
+          label: "Texto normal (tras la negrita)",
+          defaultValue: "Contáctanos ahora y diseñemos juntos tu participación.",
+        },
+        {
+          name: "buttonLabel",
+          type: "text",
+          label: "Etiqueta del botón",
+          defaultValue: "Contáctanos",
+        },
+        {
+          name: "buttonHref",
+          type: "text",
+          label: "Link del botón",
+          defaultValue: "#contacto",
         },
       ],
     },

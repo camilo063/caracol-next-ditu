@@ -213,6 +213,15 @@ const DEMO_EVENTS: CalendarEvent[] = [
 
 export interface DituCalendarioProps {
   anchorId?: string;
+  stickerLabel?: string;
+  heading?: string;
+  subtitle?: string;
+  cta?: {
+    boldText?: string | null;
+    text?: string | null;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+  };
   /** Override de eventos (Payload). Si no, usa demo. */
   events?: CalendarEvent[];
   /** "Now" para filtrar (default: Date.now). Útil para tests. */
@@ -228,9 +237,19 @@ const ease = [0.25, 0.46, 0.45, 0.94] as const;
 
 export function DituCalendarioBlock({
   anchorId = "momentos",
+  stickerLabel = "ESTO SE VIENE",
+  heading = "Calendario",
+  subtitle = "Los momentos que no te puedes perder.",
+  cta,
   events = DEMO_EVENTS,
   referenceDate,
 }: DituCalendarioProps) {
+  const ctaBoldText =
+    cta?.boldText ??
+    "¡Asegura la presencia de tu marca en los eventos más importantes del país!";
+  const ctaText = cta?.text ?? "Contáctanos ahora y diseñemos juntos tu participación.";
+  const ctaButtonLabel = cta?.buttonLabel ?? "Contáctanos";
+  const ctaButtonHref = cta?.buttonHref ?? "#contacto";
   const now = referenceDate ?? new Date();
   const todayTs = new Date(now.toISOString().slice(0, 10)).getTime();
 
@@ -283,13 +302,13 @@ export function DituCalendarioBlock({
                 style={{ lineHeight: 1 }}
               >
                 {" "}
-                ESTO SE VIENE
+                {stickerLabel}
               </p>
             </div>
 
             {/* Heading "Calendario" — 84/lh-84 */}
             {/* Patito — mismo que floating contact (/ditu/mascot/pato-ditu.svg) */}
-            { }
+            {}
 
             <h2
               className="font-display relative text-[46px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
@@ -303,7 +322,7 @@ export function DituCalendarioBlock({
                   className="pointer-events-none h-[64px] sm:-right-4 sm:h-[72px] lg:h-[100px]"
                 />
               </span>
-              Calendario
+              {heading}
             </h2>
           </div>
 
@@ -315,7 +334,7 @@ export function DituCalendarioBlock({
               lineHeight: "normal",
             }}
           >
-            Los momentos que no te puedes perder.
+            {subtitle}
           </p>
         </motion.div>
 
@@ -346,13 +365,10 @@ export function DituCalendarioBlock({
               lineHeight: "normal",
             }}
           >
-            <span className="font-bold">
-              ¡Asegura la presencia de tu marca en los eventos más importantes del país!
-            </span>{" "}
-            Contáctanos ahora y diseñemos juntos tu participación.
+            <span className="font-bold">{ctaBoldText}</span> {ctaText}
           </p>
           <Link
-            href="#contacto"
+            href={ctaButtonHref}
             className="inline-flex cursor-pointer items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold transition-all duration-200 hover:bg-[#F3F3F3] hover:shadow-lg hover:shadow-white/30 active:scale-[0.98]"
             style={{
               borderColor: "#FFFFFF",
@@ -361,7 +377,7 @@ export function DituCalendarioBlock({
               lineHeight: 1.5,
             }}
           >
-            Contáctanos
+            {ctaButtonLabel}
           </Link>
         </motion.div>
       </div>

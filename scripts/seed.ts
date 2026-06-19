@@ -1943,6 +1943,16 @@ function buildDituLayout(assets: {
     {
       blockType: "ditu-calendario" as const,
       anchorId: "momentos",
+      stickerLabel: "ESTO SE VIENE",
+      heading: "Calendario",
+      subtitle: "Los momentos que no te puedes perder.",
+      cta: {
+        boldText:
+          "¡Asegura la presencia de tu marca en los eventos más importantes del país!",
+        text: "Contáctanos ahora y diseñemos juntos tu participación.",
+        buttonLabel: "Contáctanos",
+        buttonHref: "#contacto",
+      },
       events: [
         {
           dateLabel: "DEL 06 DE MARZO AL 04 DE MAYO",

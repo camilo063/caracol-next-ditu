@@ -12,6 +12,7 @@ import * as migration_20260612_audience_networks_cms_fields from "./20260612_aud
 import * as migration_20260612_brands_collection from "./20260612_brands_collection";
 import * as migration_20260619_ditu_audiencia_cms_fields from "./20260619_ditu_audiencia_cms_fields";
 import * as migration_20260619_ditu_adn_cms_fields from "./20260619_ditu_adn_cms_fields";
+import * as migration_20260619_ditu_calendario_cms_fields from "./20260619_ditu_calendario_cms_fields";
 
 export const migrations = [
   {
@@ -83,5 +84,10 @@ export const migrations = [
     up: migration_20260619_ditu_adn_cms_fields.up,
     down: migration_20260619_ditu_adn_cms_fields.down,
     name: "20260619_ditu_adn_cms_fields",
+  },
+  {
+    up: migration_20260619_ditu_calendario_cms_fields.up,
+    down: migration_20260619_ditu_calendario_cms_fields.down,
+    name: "20260619_ditu_calendario_cms_fields",
   },
 ];
