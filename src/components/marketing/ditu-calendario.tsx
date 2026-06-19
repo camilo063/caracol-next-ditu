@@ -224,8 +224,6 @@ export interface DituCalendarioProps {
   };
   /** Override de eventos (Payload). Si no, usa demo. */
   events?: CalendarEvent[];
-  /** "Now" para filtrar (default: Date.now). Útil para tests. */
-  referenceDate?: Date;
 }
 
 const SLIDE_UP = {
@@ -242,7 +240,6 @@ export function DituCalendarioBlock({
   subtitle = "Los momentos que no te puedes perder.",
   cta,
   events = DEMO_EVENTS,
-  referenceDate,
 }: DituCalendarioProps) {
   const ctaBoldText =
     cta?.boldText ??
@@ -250,16 +247,11 @@ export function DituCalendarioBlock({
   const ctaText = cta?.text ?? "Contáctanos ahora y diseñemos juntos tu participación.";
   const ctaButtonLabel = cta?.buttonLabel ?? "Contáctanos";
   const ctaButtonHref = cta?.buttonHref ?? "#contacto";
-  const now = referenceDate ?? new Date();
-  const todayTs = new Date(now.toISOString().slice(0, 10)).getTime();
 
-  // Filtro: eventos no expirados (endDate >= today), sort ascendente, top 12.
-  const visibleEvents = useMemo(() => {
-    return events
-      .filter((e) => new Date(e.endDate).getTime() >= todayTs)
-      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
-      .slice(0, 12);
-  }, [events, todayTs]);
+  // Se muestran TODOS los eventos cargados, en el orden del admin.
+  // (Antes se filtraban los de fecha pasada y se ordenaba por start — spec
+  // cambiada: el cliente controla qué eventos y en qué orden desde Payload.)
+  const visibleEvents = events;
 
   const [activeIndex, setActiveIndex] = useState(0);
   const reduceMotion = useReducedMotion();
