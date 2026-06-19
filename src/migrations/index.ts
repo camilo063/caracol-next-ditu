@@ -10,6 +10,7 @@ import * as migration_20260611_120000 from "./20260611_120000";
 import * as migration_20260611_ditu_hero_cms_fields from "./20260611_ditu_hero_cms_fields";
 import * as migration_20260612_audience_networks_cms_fields from "./20260612_audience_networks_cms_fields";
 import * as migration_20260612_brands_collection from "./20260612_brands_collection";
+import * as migration_20260619_ditu_audiencia_cms_fields from "./20260619_ditu_audiencia_cms_fields";
 
 export const migrations = [
   {
@@ -71,5 +72,10 @@ export const migrations = [
     up: migration_20260612_brands_collection.up,
     down: migration_20260612_brands_collection.down,
     name: "20260612_brands_collection",
+  },
+  {
+    up: migration_20260619_ditu_audiencia_cms_fields.up,
+    down: migration_20260619_ditu_audiencia_cms_fields.down,
+    name: "20260619_ditu_audiencia_cms_fields",
   },
 ];

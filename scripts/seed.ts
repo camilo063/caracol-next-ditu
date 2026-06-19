@@ -1783,7 +1783,23 @@ function buildDituLayout(assets: {
     {
       blockType: "ditu-audiencia" as const,
       anchorId: "cifras",
+      stickerLabel: "Las cifras que mueven a Ditu",
+      heading: {
+        pre: "Cada mes,",
+        accent: "millones de pantallas",
+        post: "prendidas.",
+      },
+      watchTime: {
+        label: "Watch time promedio",
+        value: "60 MIN",
+        description: "Por sesión, sin interrupciones",
+      },
+      topSource: "Fuente: Ditu AVS Accenture · Abril 2026",
       totalFollowersHeadline: "+1.7M",
+      followersSuffix: "DE SEGUIDORES",
+      followersSubtext: "QUE ESPERAN VER TU MARCA",
+      networkItemLabel: "Seguidores",
+      bottomSource: "Fuente: TGI CO 2025",
       stats: [
         {
           label: "Descargas acumuladas",
