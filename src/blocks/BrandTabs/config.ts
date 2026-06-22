@@ -211,6 +211,16 @@ export const BrandTabsBlock: Block = {
             },
           ],
         },
+        {
+          name: "dataSource",
+          type: "text",
+          label: "Fuente de información de las cifras",
+          admin: {
+            description:
+              "Se muestra encima del botón “Conoce más”. Ej: Fuente: Comscore, mayo 2026.",
+            placeholder: "Fuente: Comscore, mayo 2026",
+          },
+        },
         ctaField({
           name: "ctaContact",
           label: "CTA de contacto para esta marca (opcional)",

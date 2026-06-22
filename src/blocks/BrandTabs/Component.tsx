@@ -581,16 +581,27 @@ function TabPanel({ tab }: { tab: Tab }) {
           </div>
         ) : null}
 
-        {/* CTA "Conoce más" bottom-right — bg #015BC4 size Medium */}
-        {tab.ctaContact?.label && tab.ctaContact?.href ? (
-          <div className="m-auto flex justify-center pt-2 min-[920px]:m-0 min-[920px]:ml-auto min-[920px]:justify-end">
-            <Link
-              href={tab.ctaContact.href}
-              target={tab.ctaContact.openInNewTab ? "_blank" : undefined}
-              className="font-display inline-flex items-center justify-center rounded-[4px] border border-[#015BC4] bg-[#015BC4] px-8 py-2 text-[14px] leading-5 font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#015BC4]"
-            >
-              {tab.ctaContact.label}
-            </Link>
+        {/* Fuente + CTA "Conoce más" bottom-right. La fuente de las cifras
+            se muestra encima del botón, alineada a la derecha en desktop. */}
+        {tab.dataSource || (tab.ctaContact?.label && tab.ctaContact?.href) ? (
+          <div className="m-auto flex flex-col items-center gap-2 pt-2 min-[920px]:m-0 min-[920px]:ml-auto min-[920px]:items-end">
+            {tab.dataSource ? (
+              <p
+                className="font-display text-center text-[12px] leading-normal font-normal min-[920px]:text-right"
+                style={{ color: NEUTRO_GRIS_OSCURO }}
+              >
+                {tab.dataSource}
+              </p>
+            ) : null}
+            {tab.ctaContact?.label && tab.ctaContact?.href ? (
+              <Link
+                href={tab.ctaContact.href}
+                target={tab.ctaContact.openInNewTab ? "_blank" : undefined}
+                className="font-display inline-flex items-center justify-center rounded-[4px] border border-[#015BC4] bg-[#015BC4] px-8 py-2 text-[14px] leading-5 font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#015BC4]"
+              >
+                {tab.ctaContact.label}
+              </Link>
+            ) : null}
           </div>
         ) : null}
       </div>
