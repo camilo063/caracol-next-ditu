@@ -55,10 +55,35 @@ export function KeyMomentsCalendarComponent({
   events,
   displayMode,
   ctaText,
+  hidePastEvents,
 }: KeyMomentsBlockProps) {
+  // `now` se setea solo tras el mount: el primer render (SSR + hidratación)
+  // muestra todos los eventos para evitar hydration mismatch, y luego el
+  // cliente filtra los pasados con la fecha real del navegador.
+  const [now, setNow] = React.useState<number | null>(null);
+  React.useEffect(() => {
+    setNow(Date.now());
+  }, []);
+
+  const visibleEvents = React.useMemo(() => {
+    const list = events ?? [];
+    // Default true: si el campo viene null/undefined (eventos viejos), oculta.
+    const shouldHide = hidePastEvents ?? true;
+    if (!shouldHide || now === null) return list;
+    const startOfToday = new Date(now);
+    startOfToday.setHours(0, 0, 0, 0);
+    return list.filter((e: EventItem) => {
+      // El evento sigue vigente hasta su fecha de fin (o la de inicio si no
+      // hay fin). Se oculta solo cuando ese día ya pasó por completo.
+      const endRaw = e.dateEnd ?? e.dateStart;
+      if (!endRaw) return true;
+      return new Date(endRaw).getTime() >= startOfToday.getTime();
+    });
+  }, [events, hidePastEvents, now]);
+
   if (!events || events.length === 0) return null;
   const mode = displayMode ?? "grid";
-  const cappedEvents = events.slice(0, 12);
+  const cappedEvents = visibleEvents.slice(0, 12);
 
   const ctaHeading =
     ctaText?.heading ??
