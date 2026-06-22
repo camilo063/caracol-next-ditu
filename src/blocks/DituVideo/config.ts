@@ -15,13 +15,26 @@ export const DituVideoBlock: Block = {
   fields: [
     anchorIdField,
     {
+      name: "youtubeUrl",
+      type: "text",
+      label: "URL de YouTube",
+      admin: {
+        description:
+          "Pegá el link del video de YouTube (watch, youtu.be, shorts o embed). " +
+          "El CMS extrae el ID y genera el embed automáticamente. " +
+          "Si se deja vacío, se muestra solo la imagen.",
+        placeholder: "https://www.youtube.com/watch?v=...",
+      },
+    },
+    {
       name: "image",
       type: "upload",
       relationTo: "media",
-      label: "Imagen / captura de video",
+      label: "Imagen (poster / fallback)",
       admin: {
         description:
-          "Imagen que se muestra con efecto scroll-scale. Proporciones 507×285 recomendadas.",
+          "Si hay URL de YouTube, se usa como portada antes de reproducir. " +
+          "Si no, se muestra sola con el efecto scroll-scale. Proporciones 507×285 recomendadas.",
       },
     },
     {

@@ -10,6 +10,7 @@ export function DituVideoBlockComponent(block: DituVideoBlockProps) {
       src={mediaUrl(block.image as number | Media | null | undefined)}
       alt={block.alt ?? ""}
       background={block.background ?? undefined}
+      youtubeUrl={block.youtubeUrl ?? undefined}
     />
   );
 }
