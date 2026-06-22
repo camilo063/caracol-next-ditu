@@ -24,6 +24,14 @@ export function DituPautaBlockComponent(block: DituPautaBlockProps) {
       : undefined;
 
   return (
-    <DituPautaBlock anchorId={block.anchorId ?? undefined} categories={categories} />
+    <DituPautaBlock
+      anchorId={block.anchorId ?? undefined}
+      stickerLabel={block.stickerLabel ?? undefined}
+      heading={block.heading ?? undefined}
+      subtitle={block.subtitle ?? undefined}
+      sidebarLabel={block.sidebarLabel ?? undefined}
+      cta={block.cta ?? undefined}
+      categories={categories}
+    />
   );
 }

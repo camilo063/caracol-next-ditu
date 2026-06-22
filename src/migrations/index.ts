@@ -14,6 +14,7 @@ import * as migration_20260619_ditu_audiencia_cms_fields from "./20260619_ditu_a
 import * as migration_20260619_ditu_adn_cms_fields from "./20260619_ditu_adn_cms_fields";
 import * as migration_20260619_ditu_calendario_cms_fields from "./20260619_ditu_calendario_cms_fields";
 import * as migration_20260622_ditu_calendario_badge_color from "./20260622_ditu_calendario_badge_color";
+import * as migration_20260622_ditu_pauta_cms_fields from "./20260622_ditu_pauta_cms_fields";
 
 export const migrations = [
   {
@@ -95,5 +96,10 @@ export const migrations = [
     up: migration_20260622_ditu_calendario_badge_color.up,
     down: migration_20260622_ditu_calendario_badge_color.down,
     name: "20260622_ditu_calendario_badge_color",
+  },
+  {
+    up: migration_20260622_ditu_pauta_cms_fields.up,
+    down: migration_20260622_ditu_pauta_cms_fields.down,
+    name: "20260622_ditu_pauta_cms_fields",
   },
 ];
