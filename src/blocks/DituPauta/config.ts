@@ -7,6 +7,39 @@ export const DituPautaBlock: Block = {
   fields: [
     anchorIdField,
     {
+      name: "stickerLabel",
+      type: "text",
+      label: "Sticker (etiqueta rotada)",
+      defaultValue: "Impulsa tu marca",
+    },
+    {
+      name: "heading",
+      type: "group",
+      label: "Titular principal (2 líneas)",
+      fields: [
+        { name: "line1", type: "text", label: "Línea 1", defaultValue: "con formatos" },
+        {
+          name: "line2",
+          type: "text",
+          label: "Línea 2",
+          defaultValue: "de alto impacto.",
+        },
+      ],
+    },
+    {
+      name: "subtitle",
+      type: "textarea",
+      label: "Subtítulo",
+      defaultValue:
+        "Diseñados para capturar atención en nuestro ecosistema digital — de display a video, audio y patrocinios.",
+    },
+    {
+      name: "sidebarLabel",
+      type: "text",
+      label: "Sticker del sidebar",
+      defaultValue: "Formatos de pauta",
+    },
+    {
       name: "categories",
       type: "array",
       label: "Categorías de pauta",
@@ -46,6 +79,38 @@ export const DituPautaBlock: Block = {
               label: "Imagen preview",
             },
           ],
+        },
+      ],
+    },
+    {
+      name: "cta",
+      type: "group",
+      label: "CTA (pie del bloque)",
+      fields: [
+        {
+          name: "boldText",
+          type: "text",
+          label: "Texto en negrita",
+          defaultValue:
+            "¡Asegura la presencia de tu marca en los eventos más importantes del país!",
+        },
+        {
+          name: "text",
+          type: "text",
+          label: "Texto normal (tras la negrita)",
+          defaultValue: "Contáctanos ahora y diseñemos juntos tu participación.",
+        },
+        {
+          name: "buttonLabel",
+          type: "text",
+          label: "Etiqueta del botón",
+          defaultValue: "Descargar Especificaciones",
+        },
+        {
+          name: "buttonHref",
+          type: "text",
+          label: "Link del botón",
+          defaultValue: "#contacto",
         },
       ],
     },

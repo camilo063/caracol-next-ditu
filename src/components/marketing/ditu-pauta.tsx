@@ -176,6 +176,16 @@ const CATEGORIES: Category[] = [
 
 export interface DituPautaProps {
   anchorId?: string;
+  stickerLabel?: string;
+  heading?: { line1?: string | null; line2?: string | null };
+  subtitle?: string;
+  sidebarLabel?: string;
+  cta?: {
+    boldText?: string | null;
+    text?: string | null;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+  };
   categories?: Category[];
 }
 
@@ -188,8 +198,21 @@ const ease = [0.25, 0.46, 0.45, 0.94] as const;
 
 export function DituPautaBlock({
   anchorId = "pauta",
+  stickerLabel = "Impulsa tu marca",
+  heading,
+  subtitle = "Diseñados para capturar atención en nuestro ecosistema digital — de display a video, audio y patrocinios.",
+  sidebarLabel = "Formatos de pauta",
+  cta,
   categories: categoriesProp,
 }: DituPautaProps) {
+  const headingLine1 = heading?.line1 ?? "con formatos";
+  const headingLine2 = heading?.line2 ?? "de alto impacto.";
+  const ctaBoldText =
+    cta?.boldText ??
+    "¡Asegura la presencia de tu marca en los eventos más importantes del país!";
+  const ctaText = cta?.text ?? "Contáctanos ahora y diseñemos juntos tu participación.";
+  const ctaButtonLabel = cta?.buttonLabel ?? "Descargar Especificaciones";
+  const ctaButtonHref = cta?.buttonHref ?? "#contacto";
   const finalCategories =
     categoriesProp && categoriesProp.length > 0 ? categoriesProp : CATEGORIES;
   const [activeKey, setActiveKey] = useState<CategoryKey>("ads");
@@ -226,7 +249,7 @@ export function DituPautaBlock({
               className="font-display text-[24px] font-bold whitespace-nowrap uppercase sm:text-[36px] lg:text-[48px]"
               style={{ lineHeight: 1 }}
             >
-              Impulsa tu marca
+              {stickerLabel}
             </p>
           </div>
 
@@ -235,8 +258,8 @@ export function DituPautaBlock({
             className="font-display text-[42px] font-bold text-white uppercase sm:text-[60px] lg:text-[84px]"
             style={{ lineHeight: 1 }}
           >
-            <span className="block">con formatos</span>
-            <span className="block">de alto impacto.</span>
+            <span className="block">{headingLine1}</span>
+            <span className="block">{headingLine2}</span>
           </h2>
 
           {/* Subtitle */}
@@ -247,8 +270,7 @@ export function DituPautaBlock({
               lineHeight: "normal",
             }}
           >
-            Diseñados para capturar atención en nuestro ecosistema digital — de display a
-            video, audio y patrocinios.
+            {subtitle}
           </p>
         </motion.div>
 
@@ -263,6 +285,7 @@ export function DituPautaBlock({
             categories={finalCategories}
             activeKey={activeKey}
             onSelect={setActiveKey}
+            sidebarLabel={sidebarLabel}
           />
 
           {/* Content — formats list with fade-in transition between categories */}
@@ -302,13 +325,10 @@ export function DituPautaBlock({
               lineHeight: "normal",
             }}
           >
-            <span className="font-bold">
-              ¡Asegura la presencia de tu marca en los eventos más importantes del país!
-            </span>{" "}
-            Contáctanos ahora y diseñemos juntos tu participación.
+            <span className="font-bold">{ctaBoldText}</span> {ctaText}
           </p>
           <Link
-            href="#contacto"
+            href={ctaButtonHref}
             className="inline-flex items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold whitespace-nowrap transition-opacity hover:opacity-90"
             style={{
               borderColor: "#FFFFFF",
@@ -317,7 +337,7 @@ export function DituPautaBlock({
               lineHeight: 1.5,
             }}
           >
-            Descargar Especificaciones
+            {ctaButtonLabel}
           </Link>
         </motion.div>
       </div>
@@ -337,10 +357,12 @@ function PautaSidebar({
   categories,
   activeKey,
   onSelect,
+  sidebarLabel,
 }: {
   categories: Category[];
   activeKey: CategoryKey;
   onSelect: (k: CategoryKey) => void;
+  sidebarLabel: string;
 }) {
   return (
     <>
@@ -365,7 +387,7 @@ function PautaSidebar({
             className="font-display text-[20px] font-bold whitespace-nowrap uppercase lg:text-[24px]"
             style={{ lineHeight: "32px" }}
           >
-            Formatos de pauta
+            {sidebarLabel}
           </p>
         </div>
 

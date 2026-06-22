@@ -2096,6 +2096,18 @@ function buildDituLayout(assets: {
     {
       blockType: "ditu-pauta" as const,
       anchorId: "pauta",
+      stickerLabel: "Impulsa tu marca",
+      heading: { line1: "con formatos", line2: "de alto impacto." },
+      subtitle:
+        "Diseñados para capturar atención en nuestro ecosistema digital — de display a video, audio y patrocinios.",
+      sidebarLabel: "Formatos de pauta",
+      cta: {
+        boldText:
+          "¡Asegura la presencia de tu marca en los eventos más importantes del país!",
+        text: "Contáctanos ahora y diseñemos juntos tu participación.",
+        buttonLabel: "Descargar Especificaciones",
+        buttonHref: "#contacto",
+      },
       categories: [
         {
           key: "ads" as const,
