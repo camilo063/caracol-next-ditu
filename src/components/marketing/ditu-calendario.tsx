@@ -39,18 +39,27 @@ import { motion, useReducedMotion } from "framer-motion";
 
 const CYAN = "#77EDED";
 const NAVY_DARK = "#12082D";
-const VIOLET = "#8232F0";
 const VIOLET_MED = "#561BDB";
 
-/** Variantes de badge según Figma (4 colores). */
-type BadgeVariant = "cyan" | "violet" | "navy" | "white";
+/**
+ * Texto legible (oscuro/claro) según la luminancia del color de fondo del badge.
+ * Permite cualquier color hex: si el fondo es claro → texto navy; si oscuro → blanco.
+ */
+function readableTextColor(hex: string): string {
+  const h = hex.replace("#", "").trim();
+  const full = h.length === 3 ? h.replace(/(.)/g, "$1$1") : h;
+  const r = parseInt(full.slice(0, 2), 16);
+  const g = parseInt(full.slice(2, 4), 16);
+  const b = parseInt(full.slice(4, 6), 16);
+  if ([r, g, b].some(Number.isNaN)) return "#FFFFFF";
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.6 ? NAVY_DARK : "#FFFFFF";
+}
 
-const BADGE_STYLES: Record<BadgeVariant, React.CSSProperties> = {
-  cyan: { backgroundColor: CYAN, color: NAVY_DARK, borderColor: CYAN },
-  violet: { backgroundColor: VIOLET, color: "#FFFFFF", borderColor: VIOLET },
-  navy: { backgroundColor: NAVY_DARK, color: "#FFFFFF", borderColor: "#FFFFFF" },
-  white: { backgroundColor: "#FFFFFF", color: NAVY_DARK, borderColor: NAVY_DARK },
-};
+/** Estilo del badge a partir de un color hex (fondo + borde = color, texto auto). */
+function badgeStyle(hex: string): React.CSSProperties {
+  return { backgroundColor: hex, borderColor: hex, color: readableTextColor(hex) };
+}
 
 interface CalendarEvent {
   id: string;
@@ -63,7 +72,8 @@ interface CalendarEvent {
   title: string;
   subtitle: string;
   category: string;
-  badgeVariant: BadgeVariant;
+  /** Color hex del badge de categoría. */
+  badgeColor: string;
 }
 
 /** Mock data — 14 eventos representativos del año 2026.
@@ -77,7 +87,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "FilBo 2026",
     subtitle: "Libros e historias",
     category: "Categoría",
-    badgeVariant: "cyan",
+    badgeColor: "#77EDED",
   },
   {
     id: "carnaval",
@@ -87,7 +97,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Carnaval de Barranquilla",
     subtitle: "Celebraciones",
     category: "Categoría",
-    badgeVariant: "violet",
+    badgeColor: "#8232F0",
   },
   {
     id: "mundial",
@@ -97,7 +107,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Mundial / Eurocopa",
     subtitle: "Picos deportivos",
     category: "Categoría",
-    badgeVariant: "navy",
+    badgeColor: "#12082D",
   },
   {
     id: "independencia",
@@ -107,7 +117,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Día de la independencia",
     subtitle: "Conversaciones",
     category: "Categoría",
-    badgeVariant: "white",
+    badgeColor: "#FFFFFF",
   },
   {
     id: "amorista",
@@ -117,7 +127,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "San Valentín",
     subtitle: "Conexiones",
     category: "Categoría",
-    badgeVariant: "cyan",
+    badgeColor: "#77EDED",
   },
   {
     id: "padre",
@@ -127,7 +137,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Día del Padre",
     subtitle: "Familias",
     category: "Categoría",
-    badgeVariant: "violet",
+    badgeColor: "#8232F0",
   },
   {
     id: "madre",
@@ -137,7 +147,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Día de la Madre",
     subtitle: "Tributos",
     category: "Categoría",
-    badgeVariant: "navy",
+    badgeColor: "#12082D",
   },
   {
     id: "amistad",
@@ -147,7 +157,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Día del Amor y la Amistad",
     subtitle: "Conexiones",
     category: "Categoría",
-    badgeVariant: "white",
+    badgeColor: "#FFFFFF",
   },
   {
     id: "halloween",
@@ -157,7 +167,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Halloween",
     subtitle: "Espectáculos",
     category: "Categoría",
-    badgeVariant: "cyan",
+    badgeColor: "#77EDED",
   },
   {
     id: "navidad",
@@ -167,7 +177,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Navidad",
     subtitle: "Tradiciones",
     category: "Categoría",
-    badgeVariant: "violet",
+    badgeColor: "#8232F0",
   },
   {
     id: "fin-anio",
@@ -177,7 +187,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Fin de Año",
     subtitle: "Celebraciones",
     category: "Categoría",
-    badgeVariant: "navy",
+    badgeColor: "#12082D",
   },
   {
     id: "festival-cine",
@@ -187,7 +197,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Festival de Cine Cartagena",
     subtitle: "Cultura audiovisual",
     category: "Categoría",
-    badgeVariant: "white",
+    badgeColor: "#FFFFFF",
   },
   {
     id: "rock-park",
@@ -197,7 +207,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Rock al Parque",
     subtitle: "Música en vivo",
     category: "Categoría",
-    badgeVariant: "cyan",
+    badgeColor: "#77EDED",
   },
   {
     id: "feria-flores",
@@ -207,7 +217,7 @@ const DEMO_EVENTS: CalendarEvent[] = [
     title: "Feria de las Flores",
     subtitle: "Tradiciones",
     category: "Categoría",
-    badgeVariant: "violet",
+    badgeColor: "#8232F0",
   },
 ];
 
@@ -597,7 +607,7 @@ function CalendarCard({ event }: { event: CalendarEvent }) {
           </div>
           <div
             className="inline-flex items-center justify-center rounded-[4px] border px-[8px] py-[4px]"
-            style={BADGE_STYLES[event.badgeVariant]}
+            style={badgeStyle(event.badgeColor)}
           >
             <p
               className="text-[12px] font-semibold uppercase"

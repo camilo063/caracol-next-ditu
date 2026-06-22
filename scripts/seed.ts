@@ -1961,7 +1961,7 @@ function buildDituLayout(assets: {
           title: "FilBo 2026",
           subtitle: "Libros e historias",
           category: "Categoría",
-          badgeVariant: "cyan" as const,
+          badgeColor: "#77EDED",
         },
         {
           dateLabel: "DEL 13 AL 17 DE MARZO",
@@ -1970,7 +1970,7 @@ function buildDituLayout(assets: {
           title: "Carnaval de Barranquilla",
           subtitle: "Celebraciones",
           category: "Categoría",
-          badgeVariant: "violet" as const,
+          badgeColor: "#8232F0",
         },
         {
           dateLabel: "JUN",
@@ -1979,7 +1979,7 @@ function buildDituLayout(assets: {
           title: "Mundial / Eurocopa",
           subtitle: "Picos deportivos",
           category: "Categoría",
-          badgeVariant: "navy" as const,
+          badgeColor: "#12082D",
         },
         {
           dateLabel: "20 - JUL",
@@ -1988,7 +1988,7 @@ function buildDituLayout(assets: {
           title: "Día de la independencia",
           subtitle: "Conversaciones",
           category: "Categoría",
-          badgeVariant: "white" as const,
+          badgeColor: "#FFFFFF",
         },
         {
           dateLabel: "14 DE FEBRERO",
@@ -1997,7 +1997,7 @@ function buildDituLayout(assets: {
           title: "San Valentín",
           subtitle: "Conexiones",
           category: "Categoría",
-          badgeVariant: "cyan" as const,
+          badgeColor: "#77EDED",
         },
         {
           dateLabel: "21 DE JUNIO",
@@ -2006,7 +2006,7 @@ function buildDituLayout(assets: {
           title: "Día del Padre",
           subtitle: "Familias",
           category: "Categoría",
-          badgeVariant: "violet" as const,
+          badgeColor: "#8232F0",
         },
         {
           dateLabel: "10 DE MAYO",
@@ -2015,7 +2015,7 @@ function buildDituLayout(assets: {
           title: "Día de la Madre",
           subtitle: "Tributos",
           category: "Categoría",
-          badgeVariant: "navy" as const,
+          badgeColor: "#12082D",
         },
         {
           dateLabel: "19 DE SEPTIEMBRE",
@@ -2024,7 +2024,7 @@ function buildDituLayout(assets: {
           title: "Día del Amor y la Amistad",
           subtitle: "Conexiones",
           category: "Categoría",
-          badgeVariant: "white" as const,
+          badgeColor: "#FFFFFF",
         },
         {
           dateLabel: "31 DE OCTUBRE",
@@ -2033,7 +2033,7 @@ function buildDituLayout(assets: {
           title: "Halloween",
           subtitle: "Espectáculos",
           category: "Categoría",
-          badgeVariant: "cyan" as const,
+          badgeColor: "#77EDED",
         },
         {
           dateLabel: "DEL 20 AL 31 DE DICIEMBRE",
@@ -2042,7 +2042,7 @@ function buildDituLayout(assets: {
           title: "Navidad",
           subtitle: "Tradiciones",
           category: "Categoría",
-          badgeVariant: "violet" as const,
+          badgeColor: "#8232F0",
         },
         {
           dateLabel: "31 DE DICIEMBRE",
@@ -2051,7 +2051,7 @@ function buildDituLayout(assets: {
           title: "Fin de Año",
           subtitle: "Celebraciones",
           category: "Categoría",
-          badgeVariant: "navy" as const,
+          badgeColor: "#12082D",
         },
         {
           dateLabel: "DEL 05 AL 12 DE OCTUBRE",
@@ -2060,7 +2060,7 @@ function buildDituLayout(assets: {
           title: "Festival de Cine Cartagena",
           subtitle: "Cultura audiovisual",
           category: "Categoría",
-          badgeVariant: "white" as const,
+          badgeColor: "#FFFFFF",
         },
         {
           dateLabel: "DEL 04 AL 06 DE JULIO",
@@ -2069,7 +2069,7 @@ function buildDituLayout(assets: {
           title: "Rock al Parque",
           subtitle: "Música en vivo",
           category: "Categoría",
-          badgeVariant: "cyan" as const,
+          badgeColor: "#77EDED",
         },
         {
           dateLabel: "DEL 31 DE JULIO AL 09 DE AGOSTO",
@@ -2078,7 +2078,7 @@ function buildDituLayout(assets: {
           title: "Feria de las Flores",
           subtitle: "Tradiciones",
           category: "Categoría",
-          badgeVariant: "violet" as const,
+          badgeColor: "#8232F0",
         },
       ],
       blockName: "Ditu Calendario",
