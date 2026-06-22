@@ -151,7 +151,7 @@ export function BrandTabsBlockComponent({
                       });
                     }}
                     className={cn(
-                      "font-display cursor-pointer rounded-[4px] border px-[20px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-all duration-200 hover:opacity-90 sm:px-[36px] lg:px-[48px]",
+                      "font-display cursor-pointer rounded-[4px] border px-[20px] py-[12px] text-[16px] leading-[24px] font-semibold whitespace-nowrap transition-all duration-200 hover:opacity-90 sm:px-[32px]",
                       "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
                     )}
                     style={
