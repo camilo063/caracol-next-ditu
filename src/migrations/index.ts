@@ -16,6 +16,7 @@ import * as migration_20260619_ditu_calendario_cms_fields from "./20260619_ditu_
 import * as migration_20260622_ditu_calendario_badge_color from "./20260622_ditu_calendario_badge_color";
 import * as migration_20260622_ditu_pauta_cms_fields from "./20260622_ditu_pauta_cms_fields";
 import * as migration_20260622_ditu_video_youtube_url from "./20260622_ditu_video_youtube_url";
+import * as migration_20260622_floating_contact_per_landing from "./20260622_floating_contact_per_landing";
 
 export const migrations = [
   {
@@ -107,5 +108,10 @@ export const migrations = [
     up: migration_20260622_ditu_video_youtube_url.up,
     down: migration_20260622_ditu_video_youtube_url.down,
     name: "20260622_ditu_video_youtube_url",
+  },
+  {
+    up: migration_20260622_floating_contact_per_landing.up,
+    down: migration_20260622_floating_contact_per_landing.down,
+    name: "20260622_floating_contact_per_landing",
   },
 ];

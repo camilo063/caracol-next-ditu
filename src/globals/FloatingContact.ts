@@ -62,7 +62,12 @@ export const FloatingContact: GlobalConfig = {
       label: "Representantes",
       labels: { singular: "Representante", plural: "Representantes" },
       minRows: 1,
-      admin: { initCollapsed: true },
+      admin: {
+        initCollapsed: true,
+        description:
+          "Cada representante puede mostrarse en una, varias o todas las landings. " +
+          "Con las 3 casillas marcadas (por defecto) es transversal; desmarcá para dejarlo independiente.",
+      },
       fields: [
         { name: "name", type: "text", required: true },
         { name: "role", type: "text" },
@@ -74,6 +79,29 @@ export const FloatingContact: GlobalConfig = {
           admin: { placeholder: "573001234567" },
         },
         { name: "photo", type: "upload", relationTo: "media" },
+        {
+          type: "row",
+          fields: [
+            {
+              name: "showOnHome",
+              type: "checkbox",
+              label: "Mostrar en Home",
+              defaultValue: true,
+            },
+            {
+              name: "showOnCaracolNext",
+              type: "checkbox",
+              label: "Mostrar en Caracol Next",
+              defaultValue: true,
+            },
+            {
+              name: "showOnDitu",
+              type: "checkbox",
+              label: "Mostrar en Ditu",
+              defaultValue: true,
+            },
+          ],
+        },
       ],
     },
     {

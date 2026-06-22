@@ -83,13 +83,15 @@ export default async function CaracolNextPage() {
         buttonIcon={floating.buttonIcon ?? undefined}
         panelHeading={floating.panelHeading ?? undefined}
         panelDescription={floating.panelDescription ?? undefined}
-        representatives={(floating.representatives ?? []).map((rep) => ({
-          name: rep.name,
-          role: rep.role,
-          email: rep.email,
-          whatsapp: rep.whatsapp,
-          photo: rep.photo,
-        }))}
+        representatives={(floating.representatives ?? [])
+          .filter((rep) => rep.showOnCaracolNext !== false)
+          .map((rep) => ({
+            name: rep.name,
+            role: rep.role,
+            email: rep.email,
+            whatsapp: rep.whatsapp,
+            photo: rep.photo,
+          }))}
         position={floating.position ?? undefined}
       />
     </div>
