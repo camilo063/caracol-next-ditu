@@ -17,6 +17,7 @@ import * as migration_20260622_ditu_calendario_badge_color from "./20260622_ditu
 import * as migration_20260622_ditu_pauta_cms_fields from "./20260622_ditu_pauta_cms_fields";
 import * as migration_20260622_ditu_video_youtube_url from "./20260622_ditu_video_youtube_url";
 import * as migration_20260622_floating_contact_per_landing from "./20260622_floating_contact_per_landing";
+import * as migration_20260622_brand_tabs_data_source from "./20260622_brand_tabs_data_source";
 
 export const migrations = [
   {
@@ -113,5 +114,10 @@ export const migrations = [
     up: migration_20260622_floating_contact_per_landing.up,
     down: migration_20260622_floating_contact_per_landing.down,
     name: "20260622_floating_contact_per_landing",
+  },
+  {
+    up: migration_20260622_brand_tabs_data_source.up,
+    down: migration_20260622_brand_tabs_data_source.down,
+    name: "20260622_brand_tabs_data_source",
   },
 ];
