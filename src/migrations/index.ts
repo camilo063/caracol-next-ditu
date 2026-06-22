@@ -18,6 +18,7 @@ import * as migration_20260622_ditu_pauta_cms_fields from "./20260622_ditu_pauta
 import * as migration_20260622_ditu_video_youtube_url from "./20260622_ditu_video_youtube_url";
 import * as migration_20260622_floating_contact_per_landing from "./20260622_floating_contact_per_landing";
 import * as migration_20260622_brand_tabs_data_source from "./20260622_brand_tabs_data_source";
+import * as migration_20260623_key_moments_hide_past from "./20260623_key_moments_hide_past";
 
 export const migrations = [
   {
@@ -119,5 +120,10 @@ export const migrations = [
     up: migration_20260622_brand_tabs_data_source.up,
     down: migration_20260622_brand_tabs_data_source.down,
     name: "20260622_brand_tabs_data_source",
+  },
+  {
+    up: migration_20260623_key_moments_hide_past.up,
+    down: migration_20260623_key_moments_hide_past.down,
+    name: "20260623_key_moments_hide_past",
   },
 ];

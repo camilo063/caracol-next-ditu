@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "devsafe": "rm -rf .next && next dev",
-    "build": "payload generate:importmap && next build",
+    "build": "if [ \"$VERCEL_ENV\" = production ]; then payload migrate; fi && payload generate:importmap && next build",
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",

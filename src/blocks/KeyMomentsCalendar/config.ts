@@ -82,6 +82,16 @@ export const KeyMomentsCalendarBlock: Block = {
       ],
     },
     {
+      name: "hidePastEvents",
+      type: "checkbox",
+      defaultValue: true,
+      label: "Ocultar eventos pasados automáticamente",
+      admin: {
+        description:
+          "Si está activo, los eventos cuya fecha ya pasó dejan de mostrarse solos. Desactívalo para mostrar todos los eventos siempre.",
+      },
+    },
+    {
       name: "displayMode",
       type: "select",
       defaultValue: "grid",
