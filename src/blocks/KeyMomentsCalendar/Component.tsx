@@ -173,11 +173,13 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
     <motion.article
       custom={index * 0.08}
       variants={{
-        hidden: { opacity: 0, y: 28, scale: 0.97 },
+        // Sin `scale`: animar la escala de un elemento con backdrop-filter
+        // obliga a Chrome/Safari a re-rasterizar el desenfoque en cada frame,
+        // lo que produce un parpadeo en la card glassmorphism. Solo opacity + y.
+        hidden: { opacity: 0, y: 28 },
         visible: (delay: number) => ({
           opacity: 1,
           y: 0,
-          scale: 1,
           transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay },
         }),
       }}
@@ -189,6 +191,9 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
         borderColor: `${badgeColor}80`,
         transition: { duration: 0.2, ease: "easeOut" },
       }}
+      // Mantiene la card en una capa GPU estable durante toda la animación —
+      // estabiliza el render del backdrop-filter y evita el flicker.
+      transformTemplate={(_, generated) => `${generated} translateZ(0)`}
       className={cn(
         // Mobile carrusel: 1.5 → 2.5 → 3.5 cards visibles según breakpoint.
         "shrink-0 snap-start",
@@ -203,6 +208,9 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
       style={{
         backgroundColor: "rgba(0,172,255,0.1)",
         borderColor: PILL_GREY_BORDER,
+        backfaceVisibility: "hidden",
+        WebkitBackfaceVisibility: "hidden",
+        willChange: "transform, opacity",
       }}
     >
       <div className="flex flex-col items-start gap-2">
