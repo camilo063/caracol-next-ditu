@@ -12,11 +12,7 @@ export function DituCalendarioBlockComponent(block: DituCalendarioBlockProps) {
           title: e.title,
           subtitle: e.subtitle ?? "",
           category: e.category ?? "Categoría",
-          badgeVariant: (e.badgeVariant ?? "cyan") as
-            | "cyan"
-            | "violet"
-            | "navy"
-            | "white",
+          badgeColor: e.badgeColor ?? "#77EDED",
         }))
       : undefined;
 

@@ -54,15 +54,15 @@ export const DituCalendarioBlock: Block = {
         { name: "subtitle", type: "text" },
         { name: "category", type: "text", defaultValue: "Categoría" },
         {
-          name: "badgeVariant",
-          type: "select",
-          defaultValue: "cyan",
-          options: [
-            { label: "Cyan", value: "cyan" },
-            { label: "Violet", value: "violet" },
-            { label: "Navy", value: "navy" },
-            { label: "White", value: "white" },
-          ],
+          name: "badgeColor",
+          type: "text",
+          label: "Color del badge (hex)",
+          defaultValue: "#77EDED",
+          admin: {
+            description:
+              "Color hex del badge de categoría, ej. #77EDED. El texto se ajusta solo (claro/oscuro) según el color.",
+            placeholder: "#77EDED",
+          },
         },
       ],
     },
