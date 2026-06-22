@@ -137,12 +137,14 @@ export default async function HomePage() {
     },
   };
 
-  // ── Representatives desde floating-contact ───────────────────────────────
-  const representatives = (floating.representatives ?? []).map((r) => ({
-    name: r.name,
-    email: r.email,
-    whatsapp: r.whatsapp,
-  }));
+  // ── Representatives desde floating-contact (solo los marcados para Home) ──
+  const representatives = (floating.representatives ?? [])
+    .filter((r) => r.showOnHome !== false)
+    .map((r) => ({
+      name: r.name,
+      email: r.email,
+      whatsapp: r.whatsapp,
+    }));
 
   return (
     <HubLanding
