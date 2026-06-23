@@ -26,6 +26,7 @@ import * as migration_20260623_branded_content_external_video from "./20260623_b
 import * as migration_20260623_format_preview_video from "./20260623_format_preview_video";
 import * as migration_20260623_cta_open_in_new_tab from "./20260623_cta_open_in_new_tab";
 import * as migration_20260623_brand_tabs_panel_image from "./20260623_brand_tabs_panel_image";
+import * as migration_20260623_brand_pie_colors from "./20260623_brand_pie_colors";
 
 export const migrations = [
   {
@@ -167,5 +168,10 @@ export const migrations = [
     up: migration_20260623_brand_tabs_panel_image.up,
     down: migration_20260623_brand_tabs_panel_image.down,
     name: "20260623_brand_tabs_panel_image",
+  },
+  {
+    up: migration_20260623_brand_pie_colors.up,
+    down: migration_20260623_brand_pie_colors.down,
+    name: "20260623_brand_pie_colors",
   },
 ];

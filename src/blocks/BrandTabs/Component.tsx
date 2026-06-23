@@ -269,12 +269,18 @@ function TabPanel({ tab }: { tab: Tab }) {
   // Mujeres (mayoría 71%) = NEGRO #353535, Hombres (29%) = AMARILLO #FEFF00.
   // En el resto de brands el slice MAYOR usa brandAccent (más claro).
   const isLaKalle = brandSlug === "lakalle";
-  const piePrimaryColor = isLaKalle
-    ? brandPanelBg // larger slice = #353535 (negro)
-    : (brandAccent ?? brandColor);
-  const pieSecondaryColor = isLaKalle
-    ? (brandAccent ?? brandColor) // smaller slice = #FEFF00 (amarillo)
-    : brandPanelBg;
+  // Override editable desde el CMS (campos pieColorMajor/pieColorMinor de la
+  // marca). Si vacíos, se mantiene la derivación por marca de siempre.
+  const piePrimaryColor =
+    meta.pieColorMajor ??
+    (isLaKalle
+      ? brandPanelBg // larger slice = #353535 (negro)
+      : (brandAccent ?? brandColor));
+  const pieSecondaryColor =
+    meta.pieColorMinor ??
+    (isLaKalle
+      ? (brandAccent ?? brandColor) // smaller slice = #FEFF00 (amarillo)
+      : brandPanelBg);
 
   return (
     <div
