@@ -92,7 +92,12 @@ export const DituAdnBlock: Block = {
           name: "value",
           type: "number",
           required: true,
-          label: "Altura relativa (px Figma)",
+          label: "Porcentaje (e.g. 18.5)",
+          admin: {
+            description:
+              "Porcentaje de la audiencia en este rango. La altura de la barra se calcula automáticamente: la barra con mayor % llena el alto y el resto queda proporcional.",
+            placeholder: "18.5",
+          },
         },
         {
           name: "peak",
