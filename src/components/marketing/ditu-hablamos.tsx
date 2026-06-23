@@ -10,7 +10,7 @@ export interface DituHablamosProps {
   heading?: string;
   headingAccent?: string;
   description?: string;
-  cta?: { label?: string; href?: string };
+  cta?: { label?: string; href?: string; openInNewTab?: boolean };
 }
 
 export function DituHablamosBlock({
@@ -78,6 +78,8 @@ export function DituHablamosBlock({
               </p>
               <Link
                 href={ctaHref}
+                target={cta?.openInNewTab ? "_blank" : undefined}
+                rel={cta?.openInNewTab ? "noopener noreferrer" : undefined}
                 className="group relative inline-flex items-center justify-center overflow-hidden rounded-[10px] border border-white bg-white px-12.5 py-3 text-[16px] font-bold whitespace-nowrap text-[#561BDB] transition-opacity duration-300 hover:text-white"
                 style={{
                   fontFamily: "var(--font-spline-sans), system-ui, sans-serif",

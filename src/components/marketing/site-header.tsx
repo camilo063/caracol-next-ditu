@@ -20,6 +20,7 @@ export interface SiteHeaderProps {
     label: string;
     href: string;
     variant?: "default" | "outline" | "brand-caracolnext" | "brand-ditu" | "ghost" | null;
+    openInNewTab?: boolean | null;
   } | null;
   sticky?: boolean;
   /** Si `false`, el botón fullscreen no se muestra. */
@@ -193,6 +194,8 @@ export function SiteHeader({
             {ctaButton?.enabled !== false && ctaButton?.label ? (
               <Link
                 href={ctaButton.href}
+                target={ctaButton.openInNewTab ? "_blank" : undefined}
+                rel={ctaButton.openInNewTab ? "noopener noreferrer" : undefined}
                 className="font-display inline-flex h-8 items-center justify-center rounded-[4px] border border-[#00ACFF] bg-[#00ACFF] px-3 py-2 text-[13px] leading-[20px] font-semibold whitespace-nowrap text-white transition-colors duration-300 hover:border-[#2862FF] hover:bg-[#2862FF] lg:text-[14px]"
                 style={{
                   fontFamily: "var(--font-montserrat), system-ui",
@@ -277,6 +280,8 @@ export function SiteHeader({
             {ctaButton?.enabled !== false && ctaButton?.label ? (
               <Link
                 href={ctaButton.href}
+                target={ctaButton.openInNewTab ? "_blank" : undefined}
+                rel={ctaButton.openInNewTab ? "noopener noreferrer" : undefined}
                 className="group relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-[8px] px-3 py-1.5 text-[12px] font-semibold whitespace-nowrap text-[#FDFDFD] [transition:box-shadow_0.35s_ease-in-out,transform_0.12s_ease] hover:shadow-lg hover:shadow-[#8232F0]/40 active:scale-[0.98] xl:rounded-[10px] xl:px-5 xl:py-[8px] xl:text-[14px]"
                 style={{
                   fontFamily: "var(--font-montserrat), system-ui, sans-serif",
@@ -365,7 +370,12 @@ export function SiteHeader({
               asChild
               className="mt-2 w-full"
             >
-              <Link href={ctaButton.href} onClick={() => setOpen(false)}>
+              <Link
+                href={ctaButton.href}
+                target={ctaButton.openInNewTab ? "_blank" : undefined}
+                rel={ctaButton.openInNewTab ? "noopener noreferrer" : undefined}
+                onClick={() => setOpen(false)}
+              >
                 {ctaButton.label}
               </Link>
             </Button>

@@ -11,7 +11,11 @@ export function DituHablamosBlockComponent(block: DituHablamosBlockProps) {
       description={block.description ?? undefined}
       cta={
         block.cta
-          ? { label: block.cta.label ?? undefined, href: block.cta.href ?? undefined }
+          ? {
+              label: block.cta.label ?? undefined,
+              href: block.cta.href ?? undefined,
+              openInNewTab: block.cta.openInNewTab ?? undefined,
+            }
           : undefined
       }
     />

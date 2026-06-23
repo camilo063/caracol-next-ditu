@@ -1,5 +1,5 @@
 import type { Block } from "payload";
-import { anchorIdField } from "../shared-fields";
+import { anchorIdField, openInNewTabField } from "../shared-fields";
 
 export const DituHablamosBlock: Block = {
   slug: "ditu-hablamos",
@@ -56,6 +56,7 @@ export const DituHablamosBlock: Block = {
           defaultValue: "#contacto",
           admin: { placeholder: "#contacto" },
         },
+        openInNewTabField,
       ],
     },
     // Mascota: /ditu/mascot/pato-ditu.svg — asset estático en /public.

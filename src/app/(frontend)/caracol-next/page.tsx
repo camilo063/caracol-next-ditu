@@ -43,6 +43,7 @@ export default async function CaracolNextPage() {
           label: header.ctaButton.label,
           href: header.ctaButton.href,
           variant: header.ctaButton.variant ?? null,
+          openInNewTab: header.ctaButton.openInNewTab ?? null,
         }
       : null;
 

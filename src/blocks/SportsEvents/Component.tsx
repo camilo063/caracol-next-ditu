@@ -73,6 +73,8 @@ export function SportsEventsBlockComponent({
                   {e.ctaLabel && e.ctaHref ? (
                     <a
                       href={e.ctaHref}
+                      target={e.ctaOpenInNewTab ? "_blank" : undefined}
+                      rel={e.ctaOpenInNewTab ? "noopener noreferrer" : undefined}
                       className="text-primary inline-block text-sm font-bold"
                     >
                       {e.ctaLabel} →

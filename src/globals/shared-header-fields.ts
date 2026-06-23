@@ -48,6 +48,12 @@ export const headerSharedFields: Field[] = [
       { name: "label", type: "text", defaultValue: "Quiero pautar" },
       { name: "href", type: "text", defaultValue: "#contacto" },
       {
+        name: "openInNewTab",
+        type: "checkbox",
+        defaultValue: false,
+        label: "Abrir el enlace en una pestaña nueva",
+      },
+      {
         name: "variant",
         type: "select",
         defaultValue: "default",

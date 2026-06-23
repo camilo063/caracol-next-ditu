@@ -247,6 +247,8 @@ export function FormatModal({ open, format, onClose }: FormatModalProps) {
             <div className="flex w-full justify-end">
               <Link
                 href={ctaHref}
+                target={modal?.ctaOpenInNewTab ? "_blank" : undefined}
+                rel={modal?.ctaOpenInNewTab ? "noopener noreferrer" : undefined}
                 className="font-display inline-flex min-h-[32px] cursor-pointer items-center justify-center rounded-[4px] px-4 py-1 text-[12px] leading-[16px] font-bold whitespace-nowrap text-white transition-all duration-200 hover:bg-[#0099E5] hover:shadow-md hover:shadow-[#00ACFF]/30 active:scale-[0.98]"
                 style={{
                   backgroundColor: AZUL_CLARO,

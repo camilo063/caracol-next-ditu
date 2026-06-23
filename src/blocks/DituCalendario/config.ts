@@ -1,5 +1,5 @@
 import type { Block } from "payload";
-import { anchorIdField } from "../shared-fields";
+import { anchorIdField, openInNewTabField } from "../shared-fields";
 
 export const DituCalendarioBlock: Block = {
   slug: "ditu-calendario",
@@ -96,6 +96,7 @@ export const DituCalendarioBlock: Block = {
           label: "Link del botón",
           defaultValue: "#contacto",
         },
+        openInNewTabField,
       ],
     },
   ],

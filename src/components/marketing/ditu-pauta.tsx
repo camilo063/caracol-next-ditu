@@ -193,6 +193,7 @@ export interface DituPautaProps {
     text?: string | null;
     buttonLabel?: string | null;
     buttonHref?: string | null;
+    openInNewTab?: boolean | null;
   };
   categories?: Category[];
 }
@@ -337,6 +338,8 @@ export function DituPautaBlock({
           </p>
           <Link
             href={ctaButtonHref}
+            target={cta?.openInNewTab ? "_blank" : undefined}
+            rel={cta?.openInNewTab ? "noopener noreferrer" : undefined}
             className="inline-flex items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold whitespace-nowrap transition-opacity hover:opacity-90"
             style={{
               borderColor: "#FFFFFF",

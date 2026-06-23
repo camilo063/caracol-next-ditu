@@ -1,6 +1,11 @@
 import type { Block } from "payload";
 
-import { anchorIdField, ctaField, sectionHeaderFields } from "../shared-fields";
+import {
+  anchorIdField,
+  ctaField,
+  openInNewTabField,
+  sectionHeaderFields,
+} from "../shared-fields";
 
 /**
  * KeyMomentsCalendarBlock — calendario de momentos clave del año.
@@ -119,6 +124,7 @@ export const KeyMomentsCalendarBlock: Block = {
         },
         { name: "label", type: "text", defaultValue: "Contáctenos" },
         { name: "href", type: "text", defaultValue: "#contacto" },
+        openInNewTabField,
       ],
     },
   ],

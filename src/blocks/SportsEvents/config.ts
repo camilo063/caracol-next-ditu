@@ -42,6 +42,12 @@ export const SportsEventsBlock: Block = {
           admin: { placeholder: "Quiero pautar este evento" },
         },
         { name: "ctaHref", type: "text" },
+        {
+          name: "ctaOpenInNewTab",
+          type: "checkbox",
+          defaultValue: false,
+          label: "Abrir el CTA en una pestaña nueva",
+        },
       ],
     },
     {
