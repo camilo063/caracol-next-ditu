@@ -115,13 +115,13 @@ export function AudienceNetworksBlockComponent({
                 {audience.reachLabel ?? "Usuarios mensuales"}
               </p>
             </div>
-            <div className="flex items-center gap-1 px-2 py-1">
+            <div className="flex items-start gap-1 px-2 py-1">
               <span
-                className="inline-block h-[13px] w-[13px] shrink-0 rounded-full"
+                className="mt-[5px] inline-block h-[13px] w-[13px] shrink-0 rounded-full"
                 style={{ backgroundColor: SCREAMIN_GREEN }}
               />
               <p
-                className="font-display font-normal whitespace-nowrap text-black"
+                className="font-display min-w-0 font-normal text-black"
                 style={{ fontSize: "16px", lineHeight: "24px" }}
               >
                 {audienceSource}
@@ -196,13 +196,13 @@ export function AudienceNetworksBlockComponent({
         ) : null}
 
         {/* Source bottom right */}
-        <div className="mx-auto mt-8 flex max-w-[1200px] items-center justify-end gap-1 px-4 py-2 sm:px-6">
+        <div className="mx-auto mt-8 flex max-w-[1200px] items-start justify-end gap-1 px-4 py-2 sm:px-6">
           <span
-            className="inline-block h-[13px] w-[13px] shrink-0 rounded-full"
+            className="mt-[5px] inline-block h-[13px] w-[13px] shrink-0 rounded-full"
             style={{ backgroundColor: SCREAMIN_GREEN }}
           />
           <p
-            className="font-display font-normal whitespace-nowrap text-black"
+            className="font-display min-w-0 font-normal text-black sm:text-right"
             style={{ fontSize: "16px", lineHeight: "24px" }}
           >
             {networksSource}
