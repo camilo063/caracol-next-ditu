@@ -1,6 +1,6 @@
 import type { Block } from "payload";
 
-import { anchorIdField, sectionHeaderFields } from "../shared-fields";
+import { anchorIdField, sectionHeaderFields, videoUrlFields } from "../shared-fields";
 
 /**
  * AdFormatsBlock — Formatos de pauta globales.
@@ -42,7 +42,18 @@ export const AdFormatsBlock: Block = {
             { label: "Otro", value: "other" },
           ],
         },
-        { name: "image", type: "upload", relationTo: "media" },
+        {
+          name: "image",
+          type: "upload",
+          relationTo: "media",
+          label: "Imagen o video (subir archivo)",
+          admin: {
+            description:
+              "Subí una imagen o un video (mp4). Si es video se reproduce en el modal. " +
+              "También podés usar una URL de YouTube/externa abajo.",
+          },
+        },
+        ...videoUrlFields,
         {
           name: "specs",
           type: "richText",
@@ -101,8 +112,13 @@ export const AdFormatsBlock: Block = {
                   name: "image",
                   type: "upload",
                   relationTo: "media",
-                  label: "Imagen / mockup",
+                  label: "Imagen o video (subir archivo)",
+                  admin: {
+                    description:
+                      "Imagen o video (mp4). También podés usar una URL de YouTube/externa abajo.",
+                  },
                 },
+                ...videoUrlFields,
                 {
                   name: "description",
                   type: "textarea",

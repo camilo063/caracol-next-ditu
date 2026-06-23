@@ -4,7 +4,7 @@ import {
   type Category,
   type CategoryKey,
 } from "@/components/marketing/ditu-pauta";
-import { mediaUrl } from "@/lib/media";
+import { isMediaVideo, mediaUrl } from "@/lib/media";
 import type { DituPautaBlockProps } from "../types";
 
 export function DituPautaBlockComponent(block: DituPautaBlockProps) {
@@ -19,6 +19,9 @@ export function DituPautaBlockComponent(block: DituPautaBlockProps) {
             title: f.title,
             description: f.description ?? "",
             image: mediaUrl(f.image as number | Media | null | undefined) ?? undefined,
+            imageIsVideo: isMediaVideo(f.image as number | Media | null | undefined),
+            youtubeUrl: f.youtubeUrl ?? undefined,
+            videoExternalUrl: f.videoExternalUrl ?? undefined,
           })),
         }))
       : undefined;
