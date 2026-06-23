@@ -132,6 +132,10 @@ export default buildConfig({
         media: true,
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || "",
+      // El navegador sube el archivo DIRECTO a Vercel Blob (no pasa por la
+      // función serverless), evitando el límite de body (~4.5MB en Vercel)
+      // que producía "Your request was too large" al subir videos grandes.
+      clientUploads: true,
     }),
   ],
 });
