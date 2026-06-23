@@ -231,6 +231,7 @@ export interface DituCalendarioProps {
     text?: string | null;
     buttonLabel?: string | null;
     buttonHref?: string | null;
+    openInNewTab?: boolean | null;
   };
   /** Override de eventos (Payload). Si no, usa demo. */
   events?: CalendarEvent[];
@@ -371,6 +372,8 @@ export function DituCalendarioBlock({
           </p>
           <Link
             href={ctaButtonHref}
+            target={cta?.openInNewTab ? "_blank" : undefined}
+            rel={cta?.openInNewTab ? "noopener noreferrer" : undefined}
             className="inline-flex cursor-pointer items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold transition-all duration-200 hover:bg-[#F3F3F3] hover:shadow-lg hover:shadow-white/30 active:scale-[0.98]"
             style={{
               borderColor: "#FFFFFF",

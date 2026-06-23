@@ -97,6 +97,12 @@ export const AdFormatsBlock: Block = {
               label: "URL del CTA",
             },
             {
+              name: "ctaOpenInNewTab",
+              type: "checkbox",
+              defaultValue: false,
+              label: "Abrir el CTA en una pestaña nueva",
+            },
+            {
               name: "childTabs",
               type: "array",
               label: "Sub-tabs (variantes del formato)",

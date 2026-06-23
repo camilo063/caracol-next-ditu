@@ -24,6 +24,7 @@ import * as migration_20260623_ad_formats_footer_cta_newtab from "./20260623_ad_
 import * as migration_20260623_ditu_video_source from "./20260623_ditu_video_source";
 import * as migration_20260623_branded_content_external_video from "./20260623_branded_content_external_video";
 import * as migration_20260623_format_preview_video from "./20260623_format_preview_video";
+import * as migration_20260623_cta_open_in_new_tab from "./20260623_cta_open_in_new_tab";
 
 export const migrations = [
   {
@@ -155,5 +156,10 @@ export const migrations = [
     up: migration_20260623_format_preview_video.up,
     down: migration_20260623_format_preview_video.down,
     name: "20260623_format_preview_video",
+  },
+  {
+    up: migration_20260623_cta_open_in_new_tab.up,
+    down: migration_20260623_cta_open_in_new_tab.down,
+    name: "20260623_cta_open_in_new_tab",
   },
 ];

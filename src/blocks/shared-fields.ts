@@ -139,6 +139,17 @@ export const videoSourceFields = (): Field[] => [
 ];
 
 /**
+ * Checkbox reutilizable "abrir en pestaña nueva" para CTAs / links externos.
+ * Se agrega al group/array del CTA; el front aplica target="_blank" si está on.
+ */
+export const openInNewTabField: Field = {
+  name: "openInNewTab",
+  type: "checkbox",
+  defaultValue: false,
+  label: "Abrir el enlace en una pestaña nueva",
+};
+
+/**
  * Campos de video URL para un slot de "preview" que ya tiene un upload `image`.
  * El preview puede ser imagen o video: si se sube un mp4 al campo `image` se
  * reproduce como video; o se puede pegar una URL de YouTube / externa acá.

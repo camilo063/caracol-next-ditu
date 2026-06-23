@@ -1,5 +1,5 @@
 import type { Block } from "payload";
-import { anchorIdField, videoUrlFields } from "../shared-fields";
+import { anchorIdField, openInNewTabField, videoUrlFields } from "../shared-fields";
 
 export const DituPautaBlock: Block = {
   slug: "ditu-pauta",
@@ -118,6 +118,7 @@ export const DituPautaBlock: Block = {
           label: "Link del botón",
           defaultValue: "#contacto",
         },
+        openInNewTabField,
       ],
     },
   ],
