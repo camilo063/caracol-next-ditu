@@ -11,8 +11,9 @@ import { getYouTubeEmbedUrl, getYouTubeThumb } from "@/lib/youtube";
 type MediaRef = number | string | MediaLike | null | undefined;
 
 export interface MediaPreviewData {
-  type?: ("youtube" | "image" | "video") | null;
+  type?: ("youtube" | "external" | "image" | "video") | null;
   youtubeUrl?: string | null;
+  externalUrl?: string | null;
   image?: MediaRef;
   video?: MediaRef;
   captionTag?: string | null;
@@ -83,6 +84,14 @@ export function MediaPreview({ data, className }: MediaPreviewProps) {
         <video
           src={videoUrl}
           controls
+          className="absolute inset-0 h-full w-full object-cover"
+          poster={imageUrl}
+        />
+      ) : data.type === "external" && data.externalUrl ? (
+        <video
+          src={data.externalUrl}
+          controls
+          playsInline
           className="absolute inset-0 h-full w-full object-cover"
           poster={imageUrl}
         />

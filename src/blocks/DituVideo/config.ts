@@ -1,6 +1,6 @@
 import type { Block } from "payload";
 
-import { anchorIdField } from "../shared-fields";
+import { anchorIdField, videoSourceFields } from "../shared-fields";
 
 /**
  * DituVideoBlock — bloque fullwidth de imagen/video con scroll-scale animation.
@@ -14,18 +14,8 @@ export const DituVideoBlock: Block = {
   labels: { singular: "Ditu Video", plural: "Ditu Videos" },
   fields: [
     anchorIdField,
-    {
-      name: "youtubeUrl",
-      type: "text",
-      label: "URL de YouTube",
-      admin: {
-        description:
-          "Pegá el link del video de YouTube (watch, youtu.be, shorts o embed). " +
-          "El CMS extrae el ID y genera el embed automáticamente. " +
-          "Si se deja vacío, se muestra solo la imagen.",
-        placeholder: "https://www.youtube.com/watch?v=...",
-      },
-    },
+    // Fuente del video: YouTube, link externo o archivo subido.
+    ...videoSourceFields(),
     {
       name: "image",
       type: "upload",

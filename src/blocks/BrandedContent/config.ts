@@ -14,8 +14,9 @@ const multimediaFields: Field[] = [
     dbName: "bc_multimedia_type",
     options: [
       { label: "YouTube embed", value: "youtube" },
+      { label: "Link externo (URL de video)", value: "external" },
       { label: "Imagen", value: "image" },
-      { label: "Video MP4 propio", value: "video" },
+      { label: "Video MP4 propio (subir archivo)", value: "video" },
     ],
   },
   {
@@ -28,12 +29,24 @@ const multimediaFields: Field[] = [
     },
   },
   {
+    name: "externalUrl",
+    type: "text",
+    label: "URL de video externo",
+    admin: {
+      condition: (_data, siblingData) => siblingData?.type === "external",
+      placeholder: "https://cdn.ejemplo.com/video.mp4",
+      description: "Link directo a un archivo de video reproducible (.mp4, .webm, etc.).",
+    },
+  },
+  {
     name: "image",
     type: "upload",
     relationTo: "media",
     admin: {
       condition: (_data, siblingData) =>
-        siblingData?.type === "image" || siblingData?.type === "video",
+        siblingData?.type === "image" ||
+        siblingData?.type === "video" ||
+        siblingData?.type === "external",
     },
   },
   {
