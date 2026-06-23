@@ -7,6 +7,7 @@ import { ChevronRight, Play } from "lucide-react";
 
 import { Container, Section } from "@/components/ui";
 import { brandFromDoc } from "@/lib/brand";
+import { mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import type { AdFormatsBlockProps } from "../types";
 import { FormatModal } from "./FormatModal";
@@ -75,7 +76,13 @@ function AdFormatsDefault({
   const ctaDesc =
     footerCta?.description ?? "Contáctanos ahora y diseñemos juntos tu participación.";
   const ctaLabel = footerCta?.label ?? "Descargar Especificaciones";
-  const ctaHref = footerCta?.href ?? "#contacto";
+  // El botón puede llevar a una URL o descargar un archivo subido, según
+  // `linkType` en el admin. Si es archivo y está cargado, se usa su URL con
+  // atributo download; si no, cae al href (link).
+  const ctaFileUrl =
+    footerCta?.linkType === "file" ? mediaUrl(footerCta?.file) : undefined;
+  const ctaHref = ctaFileUrl ?? footerCta?.href ?? "#contacto";
+  const ctaIsDownload = Boolean(ctaFileUrl);
 
   return (
     <>
@@ -128,15 +135,30 @@ function AdFormatsDefault({
                   {ctaDesc}
                 </p>
               </div>
-              <Link
-                href={ctaHref}
-                className={cn(
-                  "font-display inline-flex h-12 w-76.5 cursor-pointer items-center justify-center rounded-[4px] bg-[#00ACFF] text-[18px] leading-[24px] font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-[#2862FF] active:scale-[0.98]",
-                  "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
-                )}
-              >
-                {ctaLabel}
-              </Link>
+              {ctaIsDownload ? (
+                <a
+                  href={ctaHref}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "font-display inline-flex h-12 w-76.5 cursor-pointer items-center justify-center rounded-[4px] bg-[#00ACFF] text-[18px] leading-[24px] font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-[#2862FF] active:scale-[0.98]",
+                    "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+                  )}
+                >
+                  {ctaLabel}
+                </a>
+              ) : (
+                <Link
+                  href={ctaHref}
+                  className={cn(
+                    "font-display inline-flex h-12 w-76.5 cursor-pointer items-center justify-center rounded-[4px] bg-[#00ACFF] text-[18px] leading-[24px] font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-[#2862FF] active:scale-[0.98]",
+                    "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+                  )}
+                >
+                  {ctaLabel}
+                </Link>
+              )}
             </div>
           </div>
         </div>

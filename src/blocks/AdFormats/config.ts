@@ -148,7 +148,39 @@ export const AdFormatsBlock: Block = {
           defaultValue: "Contáctanos ahora y diseñemos juntos tu participación.",
         },
         { name: "label", type: "text", defaultValue: "Descargar Especificaciones" },
-        { name: "href", type: "text", defaultValue: "#contacto" },
+        {
+          name: "linkType",
+          type: "radio",
+          defaultValue: "link",
+          label: "¿Qué hace el botón?",
+          options: [
+            { label: "Ir a un enlace (URL)", value: "link" },
+            { label: "Descargar un archivo", value: "file" },
+          ],
+          admin: {
+            description:
+              "Elegí si el botón lleva a una URL o descarga un archivo subido.",
+          },
+        },
+        {
+          name: "href",
+          type: "text",
+          defaultValue: "#contacto",
+          label: "Enlace (URL)",
+          admin: {
+            condition: (_, siblingData) => siblingData?.linkType !== "file",
+          },
+        },
+        {
+          name: "file",
+          type: "upload",
+          relationTo: "media",
+          label: "Archivo a descargar",
+          admin: {
+            condition: (_, siblingData) => siblingData?.linkType === "file",
+            description: "PDF, imagen u otro archivo que el usuario descargará.",
+          },
+        },
       ],
     },
   ],

@@ -19,6 +19,7 @@ import * as migration_20260622_ditu_video_youtube_url from "./20260622_ditu_vide
 import * as migration_20260622_floating_contact_per_landing from "./20260622_floating_contact_per_landing";
 import * as migration_20260622_brand_tabs_data_source from "./20260622_brand_tabs_data_source";
 import * as migration_20260623_key_moments_hide_past from "./20260623_key_moments_hide_past";
+import * as migration_20260623_ad_formats_footer_cta_file from "./20260623_ad_formats_footer_cta_file";
 
 export const migrations = [
   {
@@ -125,5 +126,10 @@ export const migrations = [
     up: migration_20260623_key_moments_hide_past.up,
     down: migration_20260623_key_moments_hide_past.down,
     name: "20260623_key_moments_hide_past",
+  },
+  {
+    up: migration_20260623_ad_formats_footer_cta_file.up,
+    down: migration_20260623_ad_formats_footer_cta_file.down,
+    name: "20260623_ad_formats_footer_cta_file",
   },
 ];
