@@ -79,6 +79,65 @@ export const ctaField = (overrides?: { name?: string; label?: string }): GroupFi
   ],
 });
 
+/**
+ * Campos de "fuente de video" reutilizables: el admin elige entre YouTube,
+ * un link externo (URL directa a un archivo de video) o subir el archivo.
+ * Los campos se muestran condicionalmente según `videoType`. Pensado para
+ * spread a nivel raíz de un block o dentro de un group.
+ *
+ * Nombres de campo: videoType, youtubeUrl, videoExternalUrl, videoFile.
+ */
+export const videoSourceFields = (): Field[] => [
+  {
+    name: "videoType",
+    type: "radio",
+    defaultValue: "youtube",
+    label: "Fuente del video",
+    options: [
+      { label: "YouTube", value: "youtube" },
+      { label: "Link externo (URL de video)", value: "external" },
+      { label: "Subir archivo desde el computador", value: "upload" },
+    ],
+    admin: {
+      description:
+        "Elegí de dónde viene el video. Según la opción, aparece el campo correspondiente.",
+    },
+  },
+  {
+    name: "youtubeUrl",
+    type: "text",
+    label: "URL de YouTube",
+    admin: {
+      // Default 'youtube' también cubre registros viejos sin videoType.
+      condition: (_data, siblingData) =>
+        (siblingData?.videoType ?? "youtube") === "youtube",
+      placeholder: "https://www.youtube.com/watch?v=...",
+      description:
+        "Pegá el link de YouTube (watch, youtu.be, shorts o embed). El embed se genera solo.",
+    },
+  },
+  {
+    name: "videoExternalUrl",
+    type: "text",
+    label: "URL de video externo",
+    admin: {
+      condition: (_data, siblingData) => siblingData?.videoType === "external",
+      placeholder: "https://cdn.ejemplo.com/video.mp4",
+      description: "Link directo a un archivo de video reproducible (.mp4, .webm, etc.).",
+    },
+  },
+  {
+    name: "videoFile",
+    type: "upload",
+    relationTo: "media",
+    label: "Archivo de video",
+    admin: {
+      condition: (_data, siblingData) => siblingData?.videoType === "upload",
+      description: "Subí el video desde tu computador (MP4 recomendado).",
+    },
+  },
+];
+
 /** Brand options usadas en BrandTabs y en cards que referencian una marca. */
 export const brandOptions = [
   { label: "Ditu", value: "ditu" },

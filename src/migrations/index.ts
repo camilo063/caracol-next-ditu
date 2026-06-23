@@ -21,6 +21,8 @@ import * as migration_20260622_brand_tabs_data_source from "./20260622_brand_tab
 import * as migration_20260623_key_moments_hide_past from "./20260623_key_moments_hide_past";
 import * as migration_20260623_ad_formats_footer_cta_file from "./20260623_ad_formats_footer_cta_file";
 import * as migration_20260623_ad_formats_footer_cta_newtab from "./20260623_ad_formats_footer_cta_newtab";
+import * as migration_20260623_ditu_video_source from "./20260623_ditu_video_source";
+import * as migration_20260623_branded_content_external_video from "./20260623_branded_content_external_video";
 
 export const migrations = [
   {
@@ -137,5 +139,15 @@ export const migrations = [
     up: migration_20260623_ad_formats_footer_cta_newtab.up,
     down: migration_20260623_ad_formats_footer_cta_newtab.down,
     name: "20260623_ad_formats_footer_cta_newtab",
+  },
+  {
+    up: migration_20260623_ditu_video_source.up,
+    down: migration_20260623_ditu_video_source.down,
+    name: "20260623_ditu_video_source",
+  },
+  {
+    up: migration_20260623_branded_content_external_video.up,
+    down: migration_20260623_branded_content_external_video.down,
+    name: "20260623_branded_content_external_video",
   },
 ];

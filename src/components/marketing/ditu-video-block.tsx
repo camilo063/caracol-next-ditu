@@ -36,6 +36,8 @@ export interface DituVideoBlockProps {
   background?: string;
   /** URL de YouTube — si está, se muestra el embed (poster + play → iframe). */
   youtubeUrl?: string;
+  /** URL directa de un video (link externo o archivo subido) — se reproduce con <video>. */
+  videoSrc?: string;
 }
 
 export function DituVideoBlock({
@@ -44,6 +46,7 @@ export function DituVideoBlock({
   anchorId,
   background = "linear-gradient(90deg, #1E0E4C 0%, #3A1A92 100%)",
   youtubeUrl,
+  videoSrc,
 }: DituVideoBlockProps) {
   const containerRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
@@ -120,6 +123,17 @@ export function DituVideoBlock({
                 </span>
               </button>
             )}
+          </div>
+        ) : videoSrc ? (
+          /* Video directo (link externo o archivo subido) — <video> nativo. */
+          <div className="absolute inset-0 overflow-hidden rounded-[12px] bg-black">
+            <video
+              src={videoSrc}
+              controls
+              playsInline
+              poster={src || undefined}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
           </div>
         ) : (
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]">
