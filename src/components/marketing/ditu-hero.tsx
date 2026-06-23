@@ -233,6 +233,8 @@ export function DituHero({
             >
               <Link
                 href={btn.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="font-display inline-flex cursor-pointer items-center justify-center gap-[10px] rounded-[8px] border border-[#77EDED] p-[16px] text-[14px] leading-[20px] font-bold whitespace-nowrap text-[#77EDED] uppercase transition-all duration-300 ease-in-out hover:bg-[#77EDED] hover:text-[#12082D] hover:shadow-md hover:shadow-[#77EDED]/30 active:scale-[0.98] sm:text-[16px] lg:text-[20px] [&>img]:transition-all [&>img]:duration-300 hover:[&>img]:brightness-0"
                 style={{ fontFamily: "var(--font-ditu-display), system-ui, sans-serif" }}
               >
