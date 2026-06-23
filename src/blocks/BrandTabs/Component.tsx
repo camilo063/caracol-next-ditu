@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import { brandFromDoc } from "@/lib/brand";
 import { formatNumber } from "@/lib/format";
+import { mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import type { BrandTabsBlockProps } from "../types";
 import { AgePeakBarChart } from "./AgePeakBarChart";
@@ -246,7 +247,13 @@ function TabPanel({ tab }: { tab: Tab }) {
   const meta = brandFromDoc(tab.brand);
   const brandSlug = meta.slug;
   const displayName = tab.displayName ?? meta.label;
-  const avatarUrl = brandSlug ? BRAND_AVATAR_PATHS[brandSlug] : undefined;
+  // Logo pequeño (esquina superior derecha + ícono mobile): prioridad CMS
+  // (campo `brandLogo`) → avatar estático por slug → fallback texto.
+  const cmsLogoUrl = mediaUrl(tab.brandLogo);
+  const avatarUrl = cmsLogoUrl ?? (brandSlug ? BRAND_AVATAR_PATHS[brandSlug] : undefined);
+  // Imagen de fondo del panel derecho (campo `panelImage`). Si vacío, el panel
+  // queda con el color sólido de la marca.
+  const panelImageUrl = mediaUrl(tab.panelImage);
   // Colores por brand (Figma): heading usa brand.color, panel usa brand.colorDark,
   // chart peak usa brand.chartPeak. Cada brand tiene su propia paleta.
   const brandColor = meta.color;
@@ -610,16 +617,26 @@ function TabPanel({ tab }: { tab: Tab }) {
           Background sólido brandPanelBg + wordmark logo centrado + avatar
           76×76 absolute top-right. Oculta en mobile. */}
       <div
-        className="relative hidden items-center justify-center lg:flex"
+        className="relative hidden items-center justify-center overflow-hidden lg:flex"
         style={{ backgroundColor: brandPanelBg }}
       >
-        {/* Wordmark logo centrado — pendiente de assets definitivos */}
+        {/* Imagen de fondo del panel (Figma 402:8192, 504×769). Llena todo el
+            banner con object-cover; el color sólido queda de fallback. */}
+        {panelImageUrl ? (
+          <Image
+            src={panelImageUrl}
+            alt={`${displayName} panel`}
+            fill
+            sizes="(max-width: 1280px) 40vw, 504px"
+            className="object-cover"
+          />
+        ) : null}
         {/* Avatar top-right (76×76 rounded-16 border-2) — Figma muestra una
             imagen distinta del logo (avatar/icon del brand).
             Excepciones de border: La Kalle yellow, BumBox/Volk white,
             default azul medio #015BC4 (Caracol TV variant). */}
         <div
-          className="absolute top-7.5 right-7.5 flex h-19 w-19 items-center justify-center overflow-hidden rounded-2xl border-2"
+          className="absolute top-7.5 right-7.5 z-10 flex h-19 w-19 items-center justify-center overflow-hidden rounded-2xl border-2"
           style={{
             backgroundColor: brandPanelBg,
             borderColor:
