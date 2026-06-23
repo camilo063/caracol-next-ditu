@@ -90,6 +90,26 @@ export const Brands: CollectionConfig = {
       },
     },
     {
+      name: "pieColorMajor",
+      type: "text",
+      label: "Color segmento mayor del pie (género)",
+      admin: {
+        description:
+          "Color del segmento MÁS GRANDE del pie de género (en la mayoría de marcas es Mujeres). Si vacío, se deriva del accent/primario.",
+        placeholder: "#00ACFF",
+      },
+    },
+    {
+      name: "pieColorMinor",
+      type: "text",
+      label: "Color segmento menor del pie (género)",
+      admin: {
+        description:
+          "Color del segmento MÁS PEQUEÑO del pie de género. Debe contrastar con el mayor para que se note la diferencia. Si vacío, usa el color oscuro de la marca.",
+        placeholder: "#003381",
+      },
+    },
+    {
       name: "logo",
       type: "upload",
       relationTo: "media",

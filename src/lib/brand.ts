@@ -31,6 +31,10 @@ interface BrandMeta {
   colorAccent?: string;
   /** Color usado para la barra peak del Edad Pico bar chart. */
   chartPeak?: string;
+  /** Color del segmento MAYOR del pie de género (override editable). */
+  pieColorMajor?: string;
+  /** Color del segmento MENOR del pie de género (override editable). */
+  pieColorMinor?: string;
 }
 
 export const BRAND_META: Record<BrandKey, BrandMeta> = {
@@ -134,6 +138,8 @@ export type BrandDocLike =
       colorDark?: string | null;
       colorAccent?: string | null;
       chartPeak?: string | null;
+      pieColorMajor?: string | null;
+      pieColorMinor?: string | null;
     }
   | number
   | string
@@ -164,5 +170,7 @@ export function brandFromDoc(doc: BrandDocLike): BrandResolved {
     colorDark: doc.colorDark ?? base?.colorDark,
     colorAccent: doc.colorAccent ?? base?.colorAccent,
     chartPeak: doc.chartPeak ?? base?.chartPeak,
+    pieColorMajor: doc.pieColorMajor ?? base?.pieColorMajor,
+    pieColorMinor: doc.pieColorMinor ?? base?.pieColorMinor,
   };
 }
