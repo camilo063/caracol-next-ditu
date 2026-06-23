@@ -47,7 +47,21 @@ export const BrandTabsBlock: Block = {
           name: "brandLogo",
           type: "upload",
           relationTo: "media",
-          label: "Logo de la marca",
+          label: "Logo de la marca (ícono pequeño)",
+          admin: {
+            description:
+              "Ícono pequeño que aparece arriba a la derecha del panel (76×76) y, en móvil, en la esquina de la card. Si vacío, usa el avatar por defecto de la marca.",
+          },
+        },
+        {
+          name: "panelImage",
+          type: "upload",
+          relationTo: "media",
+          label: "Imagen de fondo del panel",
+          admin: {
+            description:
+              "Imagen vertical que ocupa todo el banner derecho del tab (formato ~504×769, vertical). El logo pequeño se muestra encima. Si vacío, el panel usa el color sólido de la marca.",
+          },
         },
         {
           name: "brandColor",
