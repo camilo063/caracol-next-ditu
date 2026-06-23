@@ -44,17 +44,18 @@ const NAVY_DARK = "#12082D";
  *  - +65: 93 - 19 = 74
  */
 /**
- * AGE_BARS — Recharts BarChart data. Cada bar tiene un valor numérico (height
- * en Figma como proxy del porcentaje relativo) y un flag peak.
- * Heights del Figma 747:2627 (bar visible Rectangle 46).
+ * AGE_BARS — Recharts BarChart data (fallback). `value` es el PORCENTAJE de
+ * audiencia en cada rango; la altura de cada barra la calcula Recharts
+ * proporcional al máximo del set (la mayor llena el alto). `peak` la destaca.
+ * Proporciones del Figma 747:2627 normalizadas a porcentajes.
  */
 const AGE_BARS = [
-  { label: "18-24", value: 58, peak: false },
-  { label: "25-34", value: 80, peak: false },
-  { label: "35-44", value: 95, peak: false },
-  { label: "45-54", value: 58, peak: false },
-  { label: "55-64", value: 148, peak: true },
-  { label: "+65", value: 74, peak: false },
+  { label: "18-24", value: 11.3, peak: false },
+  { label: "25-34", value: 15.6, peak: false },
+  { label: "35-44", value: 18.5, peak: false },
+  { label: "45-54", value: 11.3, peak: false },
+  { label: "55-64", value: 28.8, peak: true },
+  { label: "+65", value: 14.4, peak: false },
 ];
 
 /**
