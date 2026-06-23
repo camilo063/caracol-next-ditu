@@ -172,6 +172,17 @@ export const AdFormatsBlock: Block = {
           },
         },
         {
+          name: "openInNewTab",
+          type: "checkbox",
+          defaultValue: false,
+          label: "Abrir el enlace en una pestaña nueva",
+          admin: {
+            condition: (_, siblingData) => siblingData?.linkType !== "file",
+            description:
+              "Solo para enlaces. Los archivos siempre se abren en pestaña nueva.",
+          },
+        },
+        {
           name: "file",
           type: "upload",
           relationTo: "media",

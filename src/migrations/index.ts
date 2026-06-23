@@ -20,6 +20,7 @@ import * as migration_20260622_floating_contact_per_landing from "./20260622_flo
 import * as migration_20260622_brand_tabs_data_source from "./20260622_brand_tabs_data_source";
 import * as migration_20260623_key_moments_hide_past from "./20260623_key_moments_hide_past";
 import * as migration_20260623_ad_formats_footer_cta_file from "./20260623_ad_formats_footer_cta_file";
+import * as migration_20260623_ad_formats_footer_cta_newtab from "./20260623_ad_formats_footer_cta_newtab";
 
 export const migrations = [
   {
@@ -131,5 +132,10 @@ export const migrations = [
     up: migration_20260623_ad_formats_footer_cta_file.up,
     down: migration_20260623_ad_formats_footer_cta_file.down,
     name: "20260623_ad_formats_footer_cta_file",
+  },
+  {
+    up: migration_20260623_ad_formats_footer_cta_newtab.up,
+    down: migration_20260623_ad_formats_footer_cta_newtab.down,
+    name: "20260623_ad_formats_footer_cta_newtab",
   },
 ];

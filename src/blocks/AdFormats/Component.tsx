@@ -151,6 +151,8 @@ function AdFormatsDefault({
               ) : (
                 <Link
                   href={ctaHref}
+                  target={footerCta?.openInNewTab ? "_blank" : undefined}
+                  rel={footerCta?.openInNewTab ? "noopener noreferrer" : undefined}
                   className={cn(
                     "font-display inline-flex h-12 w-76.5 cursor-pointer items-center justify-center rounded-[4px] bg-[#00ACFF] text-[18px] leading-[24px] font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-[#2862FF] active:scale-[0.98]",
                     "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
