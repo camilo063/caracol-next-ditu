@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
+import { MediaFill } from "@/components/marketing/media-fill";
+
 /**
  * DituPautaBlock — Figma 892:6463.
  *
@@ -53,8 +55,14 @@ interface AdFormat {
   title: string;
   /** Descripción larga. */
   description: string;
-  /** Imagen preview (placeholder por ahora). */
+  /** Imagen o video subido (URL resuelta). */
   image?: string;
+  /** El archivo subido es un video (mp4). */
+  imageIsVideo?: boolean;
+  /** URL de YouTube (si el preview es video). */
+  youtubeUrl?: string;
+  /** URL de video externo (si el preview es video). */
+  videoExternalUrl?: string;
 }
 
 interface Category {
@@ -539,22 +547,31 @@ function FormatRow({
       }`}
       style={isLast ? undefined : { borderColor: "rgba(255,255,255,0.4)" }}
     >
-      {/* Image preview — w-176 h-320 rounded-20 (cropped, top-aligned) */}
+      {/* Image/video preview — w-176 h-320 rounded-20 (imagen cropped; video fill) */}
       <div className="relative h-[200px] w-[100px] shrink-0 overflow-hidden rounded-[20px] sm:h-[280px] sm:w-[140px] lg:h-[320px] lg:w-[176px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={format.image ?? "/ditu/pauta-card.png"}
-          alt=""
-          className="absolute block"
-          style={{
-            // Figma crop exacto: h-125.96% w-106.89% top-(-4.98%) left-(-5.96%)
-            width: "106.89%",
-            height: "125.96%",
-            top: "-4.98%",
-            left: "-5.96%",
-            maxWidth: "none",
-            objectFit: "cover",
-          }}
+        <MediaFill
+          youtubeUrl={format.youtubeUrl}
+          videoExternalUrl={format.videoExternalUrl}
+          fileUrl={format.image}
+          fileIsVideo={format.imageIsVideo}
+          alt={format.title}
+          imageNode={
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={format.image ?? "/ditu/pauta-card.png"}
+              alt=""
+              className="absolute block"
+              style={{
+                // Figma crop exacto: h-125.96% w-106.89% top-(-4.98%) left-(-5.96%)
+                width: "106.89%",
+                height: "125.96%",
+                top: "-4.98%",
+                left: "-5.96%",
+                maxWidth: "none",
+                objectFit: "cover",
+              }}
+            />
+          }
         />
       </div>
 

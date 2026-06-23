@@ -138,6 +138,35 @@ export const videoSourceFields = (): Field[] => [
   },
 ];
 
+/**
+ * Campos de video URL para un slot de "preview" que ya tiene un upload `image`.
+ * El preview puede ser imagen o video: si se sube un mp4 al campo `image` se
+ * reproduce como video; o se puede pegar una URL de YouTube / externa acá.
+ * Prioridad de render: YouTube → URL externa → archivo subido (video o imagen).
+ * Spread junto al campo `image` del slot.
+ */
+export const videoUrlFields: Field[] = [
+  {
+    name: "youtubeUrl",
+    type: "text",
+    label: "URL de YouTube (si el preview es video)",
+    admin: {
+      placeholder: "https://www.youtube.com/watch?v=...",
+      description: "Si lo llenás, el preview muestra este video de YouTube.",
+    },
+  },
+  {
+    name: "videoExternalUrl",
+    type: "text",
+    label: "URL de video externo (si el preview es video)",
+    admin: {
+      placeholder: "https://cdn.ejemplo.com/video.mp4",
+      description:
+        "Link directo a un archivo de video (.mp4, .webm…). Tiene prioridad sobre el archivo subido.",
+    },
+  },
+];
+
 /** Brand options usadas en BrandTabs y en cards que referencian una marca. */
 export const brandOptions = [
   { label: "Ditu", value: "ditu" },

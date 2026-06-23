@@ -1,5 +1,5 @@
 import type { Block } from "payload";
-import { anchorIdField } from "../shared-fields";
+import { anchorIdField, videoUrlFields } from "../shared-fields";
 
 export const DituPautaBlock: Block = {
   slug: "ditu-pauta",
@@ -76,8 +76,14 @@ export const DituPautaBlock: Block = {
               name: "image",
               type: "upload",
               relationTo: "media",
-              label: "Imagen preview",
+              label: "Imagen o video (subir archivo)",
+              admin: {
+                description:
+                  "Subí una imagen o un video (mp4). Si es video, se reproduce en el preview. " +
+                  "También podés usar una URL de YouTube/externa abajo.",
+              },
             },
+            ...videoUrlFields,
           ],
         },
       ],

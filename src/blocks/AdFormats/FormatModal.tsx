@@ -6,8 +6,9 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 
-import { mediaAlt, mediaUrl } from "@/lib/media";
+import { isMediaVideo, mediaAlt, mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
+import { MediaFill } from "@/components/marketing/media-fill";
 import type { AdFormatsBlockProps } from "../types";
 
 type Format = NonNullable<AdFormatsBlockProps["formats"]>[number];
@@ -73,8 +74,12 @@ export function FormatModal({ open, format, onClose }: FormatModalProps) {
 
   const title = modal?.title || format.name;
   const description = currentTab?.description ?? modal?.description ?? "";
+  // El preview puede ser imagen o video (archivo mp4, YouTube o URL externa).
+  // Fallback por campo: la variante (childTab) override al formato base.
   const imageRef = currentTab?.image ?? format.image;
   const imageUrl = mediaUrl(imageRef);
+  const ytUrl = currentTab?.youtubeUrl ?? format.youtubeUrl;
+  const extUrl = currentTab?.videoExternalUrl ?? format.videoExternalUrl;
   const ctaLabel = modal?.ctaLabel || "Contáctanos";
   const ctaHref = modal?.ctaHref || "#contacto";
 
@@ -146,27 +151,36 @@ export function FormatModal({ open, format, onClose }: FormatModalProps) {
                   className="relative aspect-[657/370] w-full overflow-hidden rounded-[8px]"
                   style={{ border: `1px solid ${GRIS_MEDIO}` }}
                 >
-                  {imageUrl ? (
-                    <Image
-                      src={imageUrl}
-                      alt={mediaAlt(imageRef, title)}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 420px"
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div
-                      className="absolute inset-0 flex items-center justify-center"
-                      style={{ backgroundColor: "#F3F4F6" }}
-                    >
-                      <span
-                        className="text-sm font-bold opacity-50"
-                        style={{ color: NAVY_DARK }}
-                      >
-                        {title}
-                      </span>
-                    </div>
-                  )}
+                  <MediaFill
+                    youtubeUrl={ytUrl}
+                    videoExternalUrl={extUrl}
+                    fileUrl={imageUrl}
+                    fileIsVideo={isMediaVideo(imageRef)}
+                    alt={mediaAlt(imageRef, title)}
+                    imageNode={
+                      imageUrl ? (
+                        <Image
+                          src={imageUrl}
+                          alt={mediaAlt(imageRef, title)}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 420px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div
+                          className="absolute inset-0 flex items-center justify-center"
+                          style={{ backgroundColor: "#F3F4F6" }}
+                        >
+                          <span
+                            className="text-sm font-bold opacity-50"
+                            style={{ color: NAVY_DARK }}
+                          >
+                            {title}
+                          </span>
+                        </div>
+                      )
+                    }
+                  />
                 </div>
               </div>
 
