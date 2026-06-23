@@ -247,7 +247,7 @@ export function DituAdnBlock({
                         innerRadius="60%"
                         outerRadius="100%"
                         startAngle={90}
-                        endAngle={-270}
+                        endAngle={450}
                         isAnimationActive
                         animationBegin={0}
                         animationDuration={1200}
