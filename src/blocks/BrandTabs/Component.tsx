@@ -290,21 +290,9 @@ function TabPanel({ tab }: { tab: Tab }) {
     >
       {/* Columna izquierda — content */}
       <div className="relative flex flex-col items-center gap-5 p-6 sm:p-8 md:pt-10 md:pr-10 md:pb-10 md:pl-20 lg:items-start">
-        {/* Brand icon top-right corner — visible solo en mobile, usa avatar */}
-        {avatarUrl ? (
-          <div
-            className="absolute top-4 right-4 z-10 flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg lg:hidden"
-            style={{ backgroundColor: brandPanelBg }}
-          >
-            <Image
-              src={avatarUrl}
-              alt={displayName}
-              width={48}
-              height={48}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        ) : null}
+        {/* En mobile la columna derecha (panel + logo) se oculta, así que NO se
+            muestra ningún ícono de marca en la card izquierda: antes había un
+            avatar absolute top-right que se encimaba sobre el título. */}
 
         {/* Brand name + tagline — siempre left-aligned */}
         <div className="flex w-full flex-col gap-5">
