@@ -427,3 +427,14 @@ html {
 [id] {
   scroll-margin-top: 5rem;
 }
+
+/* Video en fullscreen nativo: el preview usa object-cover (recorta para llenar
+   el marco vertical del mockup), pero en fullscreen eso deja el video cortado.
+   Forzamos object-contain + fondo negro para que se vea completo (letterbox). */
+video:fullscreen,
+video:-webkit-full-screen {
+  object-fit: contain;
+  background-color: #000;
+  width: 100%;
+  height: 100%;
+}
