@@ -2,12 +2,24 @@ import { DituCalendarioBlock } from "@/components/marketing/ditu-calendario";
 import type { DituCalendarioBlockProps } from "../types";
 
 export function DituCalendarioBlockComponent(block: DituCalendarioBlockProps) {
+  // Hoy en zona horaria de Colombia (en-CA → formato YYYY-MM-DD), para comparar
+  // contra el ISO de los eventos sin cortar mal cerca de medianoche.
+  const todayISO = new Date().toLocaleDateString("en-CA", {
+    timeZone: "America/Bogota",
+  });
+
+  // Filtramos eventos vencidos: si `endDate` (ISO) es anterior a hoy, ya pasó y
+  // no se muestra. Sin endDate válido → se conserva (no se oculta por las dudas).
+  const upcoming = (block.events ?? []).filter(
+    (e) => !e.endDate || e.endDate >= todayISO,
+  );
+
   const events =
-    block.events && block.events.length > 0
+    upcoming.length > 0
       ? // Orden cronológico por `startDate` (ISO YYYY-MM-DD ordena lexicográfico
         // == cronológico), sin importar el orden del array en el CMS. Los que no
         // tengan fecha válida van al final.
-        [...block.events]
+        [...upcoming]
           .sort((a, b) => (a.startDate ?? "9999").localeCompare(b.startDate ?? "9999"))
           .map((e) => ({
             id: e.id ?? e.title,
