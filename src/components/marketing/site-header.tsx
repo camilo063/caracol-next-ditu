@@ -64,6 +64,15 @@ export function SiteHeader({
   const mobileMenuRef = React.useRef<HTMLDivElement>(null);
   const mobileToggleRef = React.useRef<HTMLButtonElement>(null);
 
+  // El header siempre vive en su propia landing, así que el logo sube al inicio
+  // de la sección con scroll suave en lugar de "navegar" a la misma ruta (que
+  // no hace scroll si ya estás en ella). Cierra el menú mobile si está abierto.
+  const scrollToTop = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   // --- Click outside / ESC: cierra menú mobile (spec usuario) ---
   React.useEffect(() => {
     if (!open) return;
@@ -139,6 +148,7 @@ export function SiteHeader({
           {/* Logo */}
           <Link
             href="/ditu"
+            onClick={scrollToTop}
             className="flex flex-1 items-center"
             aria-label="Ditu — por Caracol"
           >
@@ -226,6 +236,7 @@ export function SiteHeader({
         <div className="mx-auto flex h-12 w-full max-w-[1920px] items-center justify-between gap-4 px-[12px] sm:px-10 lg:px-[40px] xl:h-16">
           <Link
             href="/caracol-next"
+            onClick={scrollToTop}
             className="lg:max-w-[250px]: flex w-full max-w-[160px] shrink-0 items-center gap-2"
             aria-label="Caracol Next"
           >
