@@ -113,10 +113,37 @@ export const DituPautaBlock: Block = {
           defaultValue: "Descargar Especificaciones",
         },
         {
+          name: "linkType",
+          type: "radio",
+          defaultValue: "link",
+          label: "¿Qué hace el botón?",
+          options: [
+            { label: "Ir a un enlace (URL)", value: "link" },
+            { label: "Descargar un archivo", value: "file" },
+          ],
+          admin: {
+            description:
+              "Elegí si el botón lleva a una URL o descarga un archivo subido.",
+          },
+        },
+        {
           name: "buttonHref",
           type: "text",
           label: "Link del botón",
           defaultValue: "#contacto",
+          admin: {
+            condition: (_, siblingData) => siblingData?.linkType !== "file",
+          },
+        },
+        {
+          name: "file",
+          type: "upload",
+          relationTo: "media",
+          label: "Archivo a descargar",
+          admin: {
+            condition: (_, siblingData) => siblingData?.linkType === "file",
+            description: "PDF, imagen u otro archivo que el usuario descargará.",
+          },
         },
         openInNewTabField,
       ],

@@ -26,6 +26,23 @@ export function DituPautaBlockComponent(block: DituPautaBlockProps) {
         }))
       : undefined;
 
+  // El botón del CTA puede llevar a una URL o descargar un archivo subido,
+  // según `linkType`. Resolvemos acá la URL del archivo para el front.
+  const cta = block.cta
+    ? {
+        boldText: block.cta.boldText,
+        text: block.cta.text,
+        buttonLabel: block.cta.buttonLabel,
+        buttonHref: block.cta.buttonHref,
+        openInNewTab: block.cta.openInNewTab,
+        linkType: block.cta.linkType,
+        fileUrl:
+          block.cta.linkType === "file"
+            ? (mediaUrl(block.cta.file as number | Media | null | undefined) ?? null)
+            : null,
+      }
+    : undefined;
+
   return (
     <DituPautaBlock
       anchorId={block.anchorId ?? undefined}
@@ -33,7 +50,7 @@ export function DituPautaBlockComponent(block: DituPautaBlockProps) {
       heading={block.heading ?? undefined}
       subtitle={block.subtitle ?? undefined}
       sidebarLabel={block.sidebarLabel ?? undefined}
-      cta={block.cta ?? undefined}
+      cta={cta}
       categories={categories}
     />
   );

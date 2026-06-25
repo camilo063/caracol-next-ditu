@@ -194,6 +194,8 @@ export interface DituPautaProps {
     buttonLabel?: string | null;
     buttonHref?: string | null;
     openInNewTab?: boolean | null;
+    linkType?: ("link" | "file") | null;
+    fileUrl?: string | null;
   };
   categories?: Category[];
 }
@@ -221,7 +223,11 @@ export function DituPautaBlock({
     "¡Asegura la presencia de tu marca en los eventos más importantes del país!";
   const ctaText = cta?.text ?? "Contáctanos ahora y diseñemos juntos tu participación.";
   const ctaButtonLabel = cta?.buttonLabel ?? "Descargar Especificaciones";
-  const ctaButtonHref = cta?.buttonHref ?? "#contacto";
+  // El botón descarga un archivo (linkType "file" con archivo cargado) o lleva
+  // a una URL. Si es archivo, se usa <a download>; si no, el link normal.
+  const ctaFileUrl = cta?.linkType === "file" ? (cta?.fileUrl ?? undefined) : undefined;
+  const ctaIsDownload = Boolean(ctaFileUrl);
+  const ctaButtonHref = ctaFileUrl ?? cta?.buttonHref ?? "#contacto";
   const finalCategories =
     categoriesProp && categoriesProp.length > 0 ? categoriesProp : CATEGORIES;
   const [activeKey, setActiveKey] = useState<CategoryKey>("ads");
@@ -336,20 +342,38 @@ export function DituPautaBlock({
           >
             <span className="font-bold">{ctaBoldText}</span> {ctaText}
           </p>
-          <Link
-            href={ctaButtonHref}
-            target={cta?.openInNewTab ? "_blank" : undefined}
-            rel={cta?.openInNewTab ? "noopener noreferrer" : undefined}
-            className="inline-flex items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold whitespace-nowrap transition-opacity hover:opacity-90"
-            style={{
-              borderColor: "#FFFFFF",
-              color: VIOLET_MED,
-              fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
-              lineHeight: 1.5,
-            }}
-          >
-            {ctaButtonLabel}
-          </Link>
+          {ctaIsDownload ? (
+            <a
+              href={ctaButtonHref}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold whitespace-nowrap transition-opacity hover:opacity-90"
+              style={{
+                borderColor: "#FFFFFF",
+                color: VIOLET_MED,
+                fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+                lineHeight: 1.5,
+              }}
+            >
+              {ctaButtonLabel}
+            </a>
+          ) : (
+            <Link
+              href={ctaButtonHref}
+              target={cta?.openInNewTab ? "_blank" : undefined}
+              rel={cta?.openInNewTab ? "noopener noreferrer" : undefined}
+              className="inline-flex items-center justify-center rounded-[10px] border bg-white px-[50px] py-[12px] text-[16px] font-bold whitespace-nowrap transition-opacity hover:opacity-90"
+              style={{
+                borderColor: "#FFFFFF",
+                color: VIOLET_MED,
+                fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+                lineHeight: 1.5,
+              }}
+            >
+              {ctaButtonLabel}
+            </Link>
+          )}
         </motion.div>
       </div>
     </section>
