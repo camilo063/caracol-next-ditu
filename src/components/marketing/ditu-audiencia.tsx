@@ -342,9 +342,12 @@ export function DituAudienciaBlock({
           ))}
         </motion.div>
 
-        {/* Watch time row: 60 MIN + 4 device sub-cards */}
+        {/* Watch time row: 60 MIN + device sub-cards.
+            justify-center agrupa y centra TODO el contenido (info izquierda +
+            divisor + cards) como un cluster compacto, en vez de estirarlo de
+            borde a borde. Así se adapta dinámicamente a la cantidad de cards. */}
         <motion.div
-          className="flex flex-col items-stretch gap-6 rounded-[16px] border p-6 sm:flex-row sm:items-center sm:p-8 lg:gap-6 lg:p-[40px]"
+          className="flex flex-col items-stretch gap-6 rounded-[16px] border p-6 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-8 sm:p-8 lg:gap-12 lg:p-[40px]"
           style={{ borderColor: CYAN }}
           variants={itemVariants}
         >
@@ -402,7 +405,7 @@ export function DituAudienciaBlock({
               Flex centrado (no grid de 4 col fijas): el contenedor se adapta a
               la cantidad de cards (2, 3 o 4) y queda centrado sin huecos. */}
           <motion.div
-            className="flex flex-1 flex-wrap items-center justify-center gap-4 lg:gap-[24px]"
+            className="flex flex-wrap items-center justify-center gap-4 lg:gap-[24px]"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "0px 0px -40px 0px" }}
