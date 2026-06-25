@@ -397,10 +397,12 @@ export function DituAudienciaBlock({
             />
           </div>
 
-          {/* 4 device cards — Figma 738:2631/2707/2695/2677.
-              gap-[18px] interno, p-[20px], border-white, backdrop-blur-[7px]. */}
+          {/* Device cards — Figma 738:2631/2707/2695/2677.
+              gap-[18px] interno, p-[20px], border-white, backdrop-blur-[7px].
+              Flex centrado (no grid de 4 col fijas): el contenedor se adapta a
+              la cantidad de cards (2, 3 o 4) y queda centrado sin huecos. */}
           <motion.div
-            className="grid flex-1 grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-[24px]"
+            className="flex flex-1 flex-wrap items-center justify-center gap-4 lg:gap-[24px]"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "0px 0px -40px 0px" }}
@@ -412,7 +414,7 @@ export function DituAudienciaBlock({
             {finalDevices.map((dev) => (
               <motion.div
                 key={dev.label}
-                className="flex flex-col items-center gap-[18px] rounded-[16px] border border-white p-4 lg:p-[20px]"
+                className="flex w-[140px] flex-col items-center gap-[18px] rounded-[16px] border border-white p-4 sm:w-[160px] lg:w-[180px] lg:p-[20px]"
                 style={{
                   backdropFilter: "blur(7px)",
                 }}
