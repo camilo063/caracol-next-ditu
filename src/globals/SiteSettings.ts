@@ -79,6 +79,39 @@ export const SiteSettings: GlobalConfig = {
           ],
         },
         {
+          label: "Analytics",
+          fields: [
+            {
+              name: "analytics",
+              type: "group",
+              label: "Google Analytics",
+              fields: [
+                {
+                  name: "enabled",
+                  type: "checkbox",
+                  label: "Activar Google Analytics",
+                  defaultValue: false,
+                  admin: {
+                    description:
+                      "Si está activo, el script se inyecta SOLO en el ambiente de producción. En ambientes bajos (preview/dev) nunca se carga, aunque esté activo.",
+                  },
+                },
+                {
+                  name: "script",
+                  type: "textarea",
+                  label: "Script de Google Analytics",
+                  admin: {
+                    rows: 10,
+                    description:
+                      "Pega aquí el snippet completo de Google (incluyendo las etiquetas <script>…</script>). Se inserta tal cual al inicio del documento.",
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
           label: "Theme defaults",
           fields: [
             {
