@@ -28,6 +28,7 @@ import * as migration_20260623_cta_open_in_new_tab from "./20260623_cta_open_in_
 import * as migration_20260623_brand_tabs_panel_image from "./20260623_brand_tabs_panel_image";
 import * as migration_20260623_brand_pie_colors from "./20260623_brand_pie_colors";
 import * as migration_20260624_ditu_pauta_cta_file from "./20260624_ditu_pauta_cta_file";
+import * as migration_20260630_site_settings_analytics from "./20260630_site_settings_analytics";
 
 export const migrations = [
   {
@@ -179,5 +180,10 @@ export const migrations = [
     up: migration_20260624_ditu_pauta_cta_file.up,
     down: migration_20260624_ditu_pauta_cta_file.down,
     name: "20260624_ditu_pauta_cta_file",
+  },
+  {
+    up: migration_20260630_site_settings_analytics.up,
+    down: migration_20260630_site_settings_analytics.down,
+    name: "20260630_site_settings_analytics",
   },
 ];
