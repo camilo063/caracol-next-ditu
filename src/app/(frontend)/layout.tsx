@@ -4,6 +4,9 @@ import { Montserrat, Poppins, Spline_Sans } from "next/font/google";
 
 import "@/styles/globals.css";
 
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { getSiteSettings } from "@/lib/payload/queries";
+
 /** Montserrat — fuente principal de Caracol Next + Hub. */
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -57,9 +60,11 @@ export const metadata: Metadata = {
   applicationName: "Caracol Next + Ditu",
 };
 
-export default function FrontendLayout({
+export default async function FrontendLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const settings = await getSiteSettings();
+
   return (
     <html
       lang="es-CO"
@@ -72,6 +77,10 @@ export default function FrontendLayout({
         className="bg-background text-foreground flex min-h-full flex-col font-sans"
         suppressHydrationWarning
       >
+        <GoogleAnalytics
+          enabled={settings?.analytics?.enabled}
+          script={settings?.analytics?.script}
+        />
         {children}
       </body>
     </html>
