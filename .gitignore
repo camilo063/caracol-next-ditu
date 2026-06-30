@@ -1,0 +1,54 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files
+.env*
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Payload — types se regeneran; importMap SÍ se commitea
+# (Vercel necesita el archivo presente al hacer `payload generate:importmap`
+# en el build — el comando lee el archivo existente para hacer diff y crashea
+# con ENOENT si no existe en clean checkout).
+src/payload-types.ts
+
+# Caches locales
+.turbo
+.cache
+
+# IDE
+.idea
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
