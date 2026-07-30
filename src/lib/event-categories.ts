@@ -1,57 +1,58 @@
-/**
- * event-categories — vocabulario de categorías de los calendarios de eventos.
- *
- * El badge de cada evento mostraba texto libre: el editor lo tipeaba a mano en
- * cada tarjeta, con la variación de mayúsculas y nombres que eso implica. Acá
- * queda la lista cerrada que alimenta el dropdown del admin, más el escape
- * `custom` para cuando de verdad hace falta una etiqueta propia.
- *
- * Las etiquetas van en mayúsculas porque así se rendea el badge.
- */
-
-/** Valor reservado: la etiqueta la escribe el editor a mano. */
-export const CUSTOM_CATEGORY = "custom";
-
-export const EVENT_CATEGORIES = [
-  { value: "deportes", label: "DEPORTES" },
-  { value: "futbol", label: "FÚTBOL" },
-  { value: "ciclismo", label: "CICLISMO" },
-  { value: "cultural", label: "CULTURAL" },
-  { value: "entretenimiento", label: "ENTRETENIMIENTO" },
-  { value: "musica", label: "MÚSICA" },
-  { value: "noticias", label: "NOTICIAS" },
-  { value: "especial", label: "ESPECIAL" },
-  { value: "comercial", label: "COMERCIAL" },
-  { value: "otro", label: "CATEGORÍA" },
-  { value: CUSTOM_CATEGORY, label: "Personalizada (escribo la etiqueta)" },
-] as const;
-
-export type EventCategoryValue = (typeof EVENT_CATEGORIES)[number]["value"];
-
-/** Opciones para un campo `select` de Payload. */
-export const eventCategoryOptions = EVENT_CATEGORIES.map(({ value, label }) => ({
-  value,
-  label,
-}));
-
-const LABEL_BY_VALUE = new Map<string, string>(
-  EVENT_CATEGORIES.map(({ value, label }) => [value, label]),
-);
+import type { EventCategory } from "@/payload-types";
 
 /**
- * Etiqueta que va en el badge.
+ * event-categories — cómo se resuelve el badge de un evento de calendario.
  *
- * `customLabel` (el texto libre del evento) manda siempre que exista: cubre los
- * eventos cargados antes de que existiera el dropdown, que la migración dejó en
- * `custom` justamente para no cambiarles lo que hoy muestran en producción.
+ * La categoría es un documento de la colección `event-categories`, editable
+ * desde el admin: ahí viven el nombre, el color por landing y el estilo. El
+ * evento solo la referencia, y la categoría manda sobre texto Y color.
+ *
+ * Que mande la categoría y punto —sin campos de excepción por evento— es
+ * deliberado. La versión anterior tenía un texto y un color propios en cada
+ * evento que le ganaban a la categoría, y eso produjo exactamente los dos bugs
+ * que reportó el cliente: elegía una categoría y el badge no cambiaba de texto
+ * (le ganaba el texto guardado) ni de color (le ganaba el color guardado). Si
+ * hace falta un badge distinto, se crea una categoría: para eso son
+ * administrables.
+ *
+ * Las columnas viejas de esos campos siguen en la base sin que nadie las lea,
+ * a propósito: son la red que permite revertir la migración.
  */
-export function resolveCategoryLabel(
-  categoryKey: string | null | undefined,
-  customLabel: string | null | undefined,
-  fallback = "CATEGORÍA",
-): string {
-  const custom = customLabel?.trim();
-  if (categoryKey === CUSTOM_CATEGORY) return custom || fallback;
-  if (categoryKey) return LABEL_BY_VALUE.get(categoryKey) ?? (custom || fallback);
-  return custom || fallback;
+
+/** La relación puede llegar poblada o como id, según el `depth` de la query. */
+export type EventCategoryRef = number | EventCategory | null | undefined;
+
+/** Qué se muestra mientras un evento no tenga categoría asignada. */
+const FALLBACK = {
+  label: "CATEGORÍA",
+  next: "#2862FF",
+  ditu: "#77EDED",
+} as const;
+
+export interface ResolvedBadge {
+  /** Texto del badge. */
+  label: string;
+  /** Color del badge para esta landing. */
+  color: string;
+  /** `outline` pinta borde y texto con el color, sin fondo. */
+  style: "solid" | "outline";
+}
+
+/** Resuelve texto, color y estilo del badge de un evento. */
+export function resolveEventBadge(
+  category: EventCategoryRef,
+  landing: "next" | "ditu",
+): ResolvedBadge {
+  // Con `depth` bajo la relación llega como id: sin el documento no hay nada
+  // que leer, así que se cae al genérico.
+  const doc = category && typeof category === "object" ? category : null;
+  const color = landing === "next" ? doc?.colorNext : doc?.colorDitu;
+
+  return {
+    // `?.trim() ||` y no `??`: Payload guarda cadena vacía, no NULL, cuando se
+    // limpia un campo de texto, y con `??` un campo vaciado seguiría ganando.
+    label: doc?.name?.trim() || FALLBACK.label,
+    color: color?.trim() || FALLBACK[landing],
+    style: doc?.style === "outline" ? "outline" : "solid",
+  };
 }

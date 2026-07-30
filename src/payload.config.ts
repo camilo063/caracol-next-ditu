@@ -12,6 +12,7 @@ import sharp from "sharp";
 
 import { Brands } from "./collections/Brands";
 import { Categories } from "./collections/Categories";
+import { EventCategories } from "./collections/EventCategories";
 import { Media } from "./collections/Media";
 import { Pages } from "./collections/Pages";
 import { Users } from "./collections/Users";
@@ -40,7 +41,7 @@ export default buildConfig({
       titleSuffix: " · Caracol Next + Ditu CMS",
     },
   },
-  collections: [Pages, Media, Categories, Brands, Users],
+  collections: [Pages, Media, Categories, Brands, EventCategories, Users],
   globals: [
     HeaderCaracolNext,
     HeaderDitu,

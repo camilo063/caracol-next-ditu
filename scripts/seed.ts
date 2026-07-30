@@ -188,6 +188,52 @@ async function uploadBrandIcons(
 // Crea/actualiza las 10 marcas desde BRAND_META y devuelve un mapa slug→id
 // para que los bloques las referencien vía relationship.
 // --------------------------------------------------------------------------
+/** Las 5 categorías de badge acordadas con el cliente, con el color de cada landing. */
+const EVENT_CATEGORIES = [
+  { name: "FÚTBOL", colorNext: "#FF0013", colorDitu: "#8232F0", order: 1 },
+  { name: "CICLISMO", colorNext: "#05E8FD", colorDitu: "#77EDED", order: 2 },
+  { name: "CULTURAL", colorNext: "#A139C6", colorDitu: "#561BDB", order: 3 },
+  { name: "PRODUCCIONES PROPIAS", colorNext: "#FFC200", colorDitu: "#12082D", order: 4 },
+  { name: "OTROS EVENTOS", colorNext: "#2862FF", colorDitu: "#FFFFFF", order: 5 },
+] as const;
+
+async function seedEventCategories(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+): Promise<Record<string, number>> {
+  console.log("\n🎨  Upserting Categorías de evento...");
+  const map: Record<string, number> = {};
+  for (const cat of EVENT_CATEGORIES) {
+    const data = {
+      name: cat.name,
+      scope: "both" as const,
+      colorNext: cat.colorNext,
+      colorDitu: cat.colorDitu,
+      style: "solid" as const,
+      order: cat.order,
+    };
+    const existing = await payload.find({
+      collection: "event-categories",
+      where: { name: { equals: cat.name } },
+      limit: 1,
+      depth: 0,
+    });
+    if (existing.docs[0]) {
+      await payload.update({
+        collection: "event-categories",
+        id: existing.docs[0].id,
+        data,
+      });
+      map[cat.name] = existing.docs[0].id as number;
+      console.log(`  ↩  ${cat.name} → #${map[cat.name]} (actualizado)`);
+    } else {
+      const created = await payload.create({ collection: "event-categories", data });
+      map[cat.name] = created.id as number;
+      console.log(`  ✓  ${cat.name} → #${map[cat.name]} (creado)`);
+    }
+  }
+  return map;
+}
+
 async function seedBrands(
   payload: Awaited<ReturnType<typeof getPayload>>,
 ): Promise<Record<string, number>> {
@@ -227,6 +273,7 @@ async function seedBrands(
 function buildCaracolNextLayout(
   iconIds: Record<string, number>,
   brandIds: Record<string, number>,
+  categoryIds: Record<string, number>,
 ) {
   return [
     // ── HERO ─────────────────────────────────────────────────────────────
@@ -750,10 +797,7 @@ function buildCaracolNextLayout(
           dateEnd: null,
           dateLabelOverride: "ENE",
           description: "Apertura del año, balances",
-          image: null,
-          importance: "high" as const,
-          categoryKey: "especial" as const,
-          badgeColor: "#2862FF",
+          eventCategory: categoryIds["PRODUCCIONES PROPIAS"]!,
           cta: { label: "", href: "" },
         },
         {
@@ -762,10 +806,7 @@ function buildCaracolNextLayout(
           dateEnd: "2026-03-17",
           dateLabelOverride: "DEL 13 AL 17 DE MARZO",
           description: "Celebraciones",
-          image: null,
-          importance: "critical" as const,
-          categoryKey: "entretenimiento" as const,
-          badgeColor: "#0000C4",
+          eventCategory: categoryIds["CULTURAL"]!,
           cta: { label: "", href: "" },
         },
         {
@@ -774,10 +815,7 @@ function buildCaracolNextLayout(
           dateEnd: null,
           dateLabelOverride: "MARZO",
           description: "Turismo y familia",
-          image: null,
-          importance: "high" as const,
-          categoryKey: "especial" as const,
-          badgeColor: "#FFC200",
+          eventCategory: categoryIds["PRODUCCIONES PROPIAS"]!,
           cta: { label: "", href: "" },
         },
         {
@@ -786,10 +824,7 @@ function buildCaracolNextLayout(
           dateEnd: null,
           dateLabelOverride: "ABR",
           description: "Audiencia familiar",
-          image: null,
-          importance: "medium" as const,
-          categoryKey: "entretenimiento" as const,
-          badgeColor: "#A139C6",
+          eventCategory: categoryIds["CULTURAL"]!,
           cta: { label: "", href: "" },
         },
         {
@@ -798,10 +833,7 @@ function buildCaracolNextLayout(
           dateEnd: "2026-05-04",
           dateLabelOverride: "DEL 06 DE MARZO AL 04 DE MAYO",
           description: "Libros e historias",
-          image: null,
-          importance: "medium" as const,
-          categoryKey: "especial" as const,
-          badgeColor: "#FF0013",
+          eventCategory: categoryIds["PRODUCCIONES PROPIAS"]!,
           cta: { label: "", href: "" },
         },
         {
@@ -810,10 +842,7 @@ function buildCaracolNextLayout(
           dateEnd: "2026-07-19",
           dateLabelOverride: "JUN",
           description: "Picos deportivos",
-          image: null,
-          importance: "critical" as const,
-          categoryKey: "deportes" as const,
-          badgeColor: "#05E8FD",
+          eventCategory: categoryIds["FÚTBOL"]!,
           cta: { label: "", href: "" },
         },
         {
@@ -822,10 +851,7 @@ function buildCaracolNextLayout(
           dateEnd: null,
           dateLabelOverride: "OCT",
           description: "Entretenimiento y consumo",
-          image: null,
-          importance: "medium" as const,
-          categoryKey: "entretenimiento" as const,
-          badgeColor: "#2862FF",
+          eventCategory: categoryIds["CULTURAL"]!,
           cta: { label: "", href: "" },
         },
         {
@@ -834,10 +860,7 @@ function buildCaracolNextLayout(
           dateEnd: null,
           dateLabelOverride: "20-JUL",
           description: "Conversaciones",
-          image: null,
-          importance: "high" as const,
-          categoryKey: "noticias" as const,
-          badgeColor: "#FFC200",
+          eventCategory: categoryIds["OTROS EVENTOS"]!,
           cta: { label: "", href: "" },
         },
         {
@@ -846,10 +869,7 @@ function buildCaracolNextLayout(
           dateEnd: null,
           dateLabelOverride: "NOV",
           description: "Comercio digital",
-          image: null,
-          importance: "high" as const,
-          categoryKey: "especial" as const,
-          badgeColor: "#2862FF",
+          eventCategory: categoryIds["PRODUCCIONES PROPIAS"]!,
           cta: { label: "", href: "" },
         },
         {
@@ -858,10 +878,7 @@ function buildCaracolNextLayout(
           dateEnd: null,
           dateLabelOverride: "AGO",
           description: "Educación y economía familiar",
-          image: null,
-          importance: "medium" as const,
-          categoryKey: "noticias" as const,
-          badgeColor: "#2862FF",
+          eventCategory: categoryIds["OTROS EVENTOS"]!,
           cta: { label: "", href: "" },
         },
         {
@@ -870,10 +887,7 @@ function buildCaracolNextLayout(
           dateEnd: null,
           dateLabelOverride: "SEP",
           description: "Pico de gifting",
-          image: null,
-          importance: "medium" as const,
-          categoryKey: "entretenimiento" as const,
-          badgeColor: "#0000C4",
+          eventCategory: categoryIds["CULTURAL"]!,
           cta: { label: "", href: "" },
         },
         {
@@ -882,10 +896,7 @@ function buildCaracolNextLayout(
           dateEnd: "2027-01-01",
           dateLabelOverride: "ENE - 2027",
           description: "Nuevos comienzos y balances",
-          image: null,
-          importance: "high" as const,
-          categoryKey: "especial" as const,
-          badgeColor: "#2862FF",
+          eventCategory: categoryIds["PRODUCCIONES PROPIAS"]!,
           cta: { label: "", href: "" },
         },
       ],
@@ -1299,9 +1310,10 @@ async function upsertCaracolNextPage(
   payload: Awaited<ReturnType<typeof getPayload>>,
   iconIds: Record<string, number>,
   brandIds: Record<string, number>,
+  categoryIds: Record<string, number>,
 ) {
   console.log("\n📄 Upserting Page slug='caracol-next'...");
-  const layout = buildCaracolNextLayout(iconIds, brandIds);
+  const layout = buildCaracolNextLayout(iconIds, brandIds, categoryIds);
 
   const existing = await payload.find({
     collection: "pages",
@@ -1734,17 +1746,20 @@ async function uploadDituPilotAssets(
   };
 }
 
-function buildDituLayout(assets: {
-  googleplay: number | null;
-  appstore: number | null;
-  tv: number | null;
-  videoBlock: number | null;
-  iconDownload: number | null;
-  iconLivetv: number | null;
-  iconBolt: number | null;
-  logoCaracol: number | null;
-  pautaCard: number | null;
-}) {
+function buildDituLayout(
+  assets: {
+    googleplay: number | null;
+    appstore: number | null;
+    tv: number | null;
+    videoBlock: number | null;
+    iconDownload: number | null;
+    iconLivetv: number | null;
+    iconBolt: number | null;
+    logoCaracol: number | null;
+    pautaCard: number | null;
+  },
+  categoryIds: Record<string, number>,
+) {
   return [
     // 1 — Hero
     {
@@ -1962,8 +1977,7 @@ function buildDituLayout(assets: {
           endDate: "2026-05-04",
           title: "FilBo 2026",
           subtitle: "Libros e historias",
-          categoryKey: "otro" as const,
-          badgeColor: "#77EDED",
+          eventCategory: categoryIds["CULTURAL"]!,
         },
         {
           dateLabel: "DEL 13 AL 17 DE MARZO",
@@ -1971,8 +1985,7 @@ function buildDituLayout(assets: {
           endDate: "2026-03-17",
           title: "Carnaval de Barranquilla",
           subtitle: "Celebraciones",
-          categoryKey: "otro" as const,
-          badgeColor: "#8232F0",
+          eventCategory: categoryIds["CULTURAL"]!,
         },
         {
           dateLabel: "JUN",
@@ -1980,8 +1993,7 @@ function buildDituLayout(assets: {
           endDate: "2026-07-19",
           title: "Mundial / Eurocopa",
           subtitle: "Picos deportivos",
-          categoryKey: "otro" as const,
-          badgeColor: "#12082D",
+          eventCategory: categoryIds["FÚTBOL"]!,
         },
         {
           dateLabel: "20 - JUL",
@@ -1989,8 +2001,7 @@ function buildDituLayout(assets: {
           endDate: "2026-07-20",
           title: "Día de la independencia",
           subtitle: "Conversaciones",
-          categoryKey: "otro" as const,
-          badgeColor: "#FFFFFF",
+          eventCategory: categoryIds["OTROS EVENTOS"]!,
         },
         {
           dateLabel: "14 DE FEBRERO",
@@ -1998,8 +2009,7 @@ function buildDituLayout(assets: {
           endDate: "2026-02-14",
           title: "San Valentín",
           subtitle: "Conexiones",
-          categoryKey: "otro" as const,
-          badgeColor: "#77EDED",
+          eventCategory: categoryIds["OTROS EVENTOS"]!,
         },
         {
           dateLabel: "21 DE JUNIO",
@@ -2007,8 +2017,7 @@ function buildDituLayout(assets: {
           endDate: "2026-06-21",
           title: "Día del Padre",
           subtitle: "Familias",
-          categoryKey: "otro" as const,
-          badgeColor: "#8232F0",
+          eventCategory: categoryIds["OTROS EVENTOS"]!,
         },
         {
           dateLabel: "10 DE MAYO",
@@ -2016,8 +2025,7 @@ function buildDituLayout(assets: {
           endDate: "2026-05-10",
           title: "Día de la Madre",
           subtitle: "Tributos",
-          categoryKey: "otro" as const,
-          badgeColor: "#12082D",
+          eventCategory: categoryIds["OTROS EVENTOS"]!,
         },
         {
           dateLabel: "19 DE SEPTIEMBRE",
@@ -2025,8 +2033,7 @@ function buildDituLayout(assets: {
           endDate: "2026-09-19",
           title: "Día del Amor y la Amistad",
           subtitle: "Conexiones",
-          categoryKey: "otro" as const,
-          badgeColor: "#FFFFFF",
+          eventCategory: categoryIds["OTROS EVENTOS"]!,
         },
         {
           dateLabel: "31 DE OCTUBRE",
@@ -2034,8 +2041,7 @@ function buildDituLayout(assets: {
           endDate: "2026-10-31",
           title: "Halloween",
           subtitle: "Espectáculos",
-          categoryKey: "otro" as const,
-          badgeColor: "#77EDED",
+          eventCategory: categoryIds["PRODUCCIONES PROPIAS"]!,
         },
         {
           dateLabel: "DEL 20 AL 31 DE DICIEMBRE",
@@ -2043,8 +2049,7 @@ function buildDituLayout(assets: {
           endDate: "2026-12-31",
           title: "Navidad",
           subtitle: "Tradiciones",
-          categoryKey: "otro" as const,
-          badgeColor: "#8232F0",
+          eventCategory: categoryIds["CULTURAL"]!,
         },
         {
           dateLabel: "31 DE DICIEMBRE",
@@ -2052,8 +2057,7 @@ function buildDituLayout(assets: {
           endDate: "2026-12-31",
           title: "Fin de Año",
           subtitle: "Celebraciones",
-          categoryKey: "otro" as const,
-          badgeColor: "#12082D",
+          eventCategory: categoryIds["CULTURAL"]!,
         },
         {
           dateLabel: "DEL 05 AL 12 DE OCTUBRE",
@@ -2061,8 +2065,7 @@ function buildDituLayout(assets: {
           endDate: "2026-10-12",
           title: "Festival de Cine Cartagena",
           subtitle: "Cultura audiovisual",
-          categoryKey: "otro" as const,
-          badgeColor: "#FFFFFF",
+          eventCategory: categoryIds["PRODUCCIONES PROPIAS"]!,
         },
         {
           dateLabel: "DEL 04 AL 06 DE JULIO",
@@ -2070,8 +2073,7 @@ function buildDituLayout(assets: {
           endDate: "2026-07-06",
           title: "Rock al Parque",
           subtitle: "Música en vivo",
-          categoryKey: "otro" as const,
-          badgeColor: "#77EDED",
+          eventCategory: categoryIds["CULTURAL"]!,
         },
         {
           dateLabel: "DEL 31 DE JULIO AL 09 DE AGOSTO",
@@ -2079,8 +2081,7 @@ function buildDituLayout(assets: {
           endDate: "2026-08-09",
           title: "Feria de las Flores",
           subtitle: "Tradiciones",
-          categoryKey: "otro" as const,
-          badgeColor: "#8232F0",
+          eventCategory: categoryIds["CULTURAL"]!,
         },
       ],
       blockName: "Ditu Calendario",
@@ -2249,9 +2250,10 @@ async function upsertDituPage(
     logoCaracol: number | null;
     pautaCard: number | null;
   },
+  categoryIds: Record<string, number>,
 ) {
   console.log("\n📄 Upserting Page slug='ditu'...");
-  const layout = buildDituLayout(assets);
+  const layout = buildDituLayout(assets, categoryIds);
 
   const existing = await payload.find({
     collection: "pages",
@@ -2358,13 +2360,14 @@ async function main() {
   const payload = await getPayload({ config: configPromise });
 
   const brandIds = await seedBrands(payload);
+  const categoryIds = await seedEventCategories(payload);
   const iconIds = await uploadBrandIcons(payload, report);
-  await upsertCaracolNextPage(payload, iconIds, brandIds);
+  await upsertCaracolNextPage(payload, iconIds, brandIds, categoryIds);
   await upsertGlobals(payload);
   const homeAssets = await uploadHomeAssets(payload, report);
   await upsertHomeContent(payload, homeAssets);
   const dituAssets = await uploadDituPilotAssets(payload, report);
-  await upsertDituPage(payload, dituAssets);
+  await upsertDituPage(payload, dituAssets, categoryIds);
   await upsertFooterDitu(payload);
   printReport(report);
 

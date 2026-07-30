@@ -1,9 +1,9 @@
 import type { Block } from "payload";
 
-import { CUSTOM_CATEGORY, eventCategoryOptions } from "@/lib/event-categories";
 import {
   anchorIdField,
   ctaField,
+  eventCategoryField,
   openInNewTabField,
   sectionHeaderFields,
 } from "../shared-fields";
@@ -44,47 +44,7 @@ export const KeyMomentsCalendarBlock: Block = {
           },
         },
         { name: "description", type: "textarea" },
-        { name: "image", type: "upload", relationTo: "media" },
-        {
-          name: "importance",
-          type: "select",
-          defaultValue: "high",
-          options: [
-            { label: "Crítico", value: "critical" },
-            { label: "Alto", value: "high" },
-            { label: "Medio", value: "medium" },
-          ],
-        },
-        {
-          name: "categoryKey",
-          type: "select",
-          label: "Categoría",
-          defaultValue: "otro",
-          options: eventCategoryOptions,
-          admin: {
-            description:
-              "Es el texto del badge de color. Elegí “Personalizada” si necesitás uno que no esté en la lista.",
-          },
-        },
-        {
-          name: "badgeColor",
-          type: "text",
-          admin: {
-            description:
-              "Override manual del color. Si lo dejás vacío, el badge toma el color de la categoría elegida arriba. Ej. #FFC200.",
-            placeholder: "#015BC4",
-          },
-        },
-        {
-          name: "categoryLabel",
-          type: "text",
-          label: "Etiqueta personalizada",
-          admin: {
-            condition: (_, siblingData) => siblingData?.categoryKey === CUSTOM_CATEGORY,
-            placeholder: "PREVENTA",
-            description: "Se muestra tal cual en el badge.",
-          },
-        },
+        eventCategoryField("next"),
         ctaField({ name: "cta", label: "CTA (opcional)" }),
       ],
     },

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { Container } from "@/components/ui";
-import { resolveCategoryLabel } from "@/lib/event-categories";
+import { resolveEventBadge } from "@/lib/event-categories";
 import { activeEventsSorted } from "@/lib/event-dates";
 import { formatDateRange } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -31,25 +31,6 @@ import type { KeyMomentsBlockProps } from "../types";
  *
  * Mobile: carrusel horizontal scroll-snap.
  */
-
-/**
- * Color por defecto de cada categoría, según el design system Figma
- * (Categorias/01..06). Solo aplica a eventos nuevos: los que ya existían tienen
- * su color guardado explícito en `badgeColor`, que siempre manda.
- */
-const CATEGORY_COLORS: Record<string, string> = {
-  deportes: "#2862FF", // Categorias/01 azul medio
-  futbol: "#2862FF",
-  ciclismo: "#05E8FD", // Categorias/06 cyan
-  noticias: "#0000C4", // Categorias/02 azul oscuro
-  especial: "#FFC200", // Categorias/03 amarillo
-  cultural: "#A139C6", // Categorias/04 morado
-  entretenimiento: "#A139C6",
-  musica: "#A139C6",
-  comercial: "#FF0013", // Categorias/05 rojo
-  otro: "#2862FF",
-  custom: "#2862FF",
-};
 
 const NAVY_DARK = "#003381";
 const PILL_GREY_BORDER = "#95999A";
@@ -174,9 +155,10 @@ export function KeyMomentsCalendarComponent({
 }
 
 function CalendarCard({ event, index }: { event: EventItem; index: number }) {
-  const cat = event.categoryKey ?? "otro";
-  const badgeColor =
-    event.badgeColor?.trim() || CATEGORY_COLORS[cat] || CATEGORY_COLORS.otro;
+  // Texto, color y estilo del badge salen de la categoría relacionada, que se
+  // administra desde la colección "Categorías de evento". Los campos del evento
+  // son excepciones puntuales y normalmente van vacíos.
+  const badge = resolveEventBadge(event.eventCategory, "next");
   // `?.trim() ||` y no `??`: Payload guarda cadena vacía, no NULL, cuando el
   // editor limpia un campo de texto. Con `??` la cadena vacía ganaba y el
   // fallback nunca corría — vaciar este campo hacía desaparecer la fecha entera
@@ -184,9 +166,6 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
   const dateLabel =
     event.dateLabelOverride?.trim() ||
     formatDateRange(event.dateStart, event.dateEnd ?? undefined).toUpperCase();
-  // El badge lo manda el dropdown de categoría; el texto libre solo se usa
-  // cuando la categoría elegida es "Personalizada". Mismo criterio que Ditu.
-  const categoryLabel = resolveCategoryLabel(event.categoryKey, event.categoryLabel);
 
   return (
     <motion.article
@@ -207,7 +186,7 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
       viewport={{ once: true, amount: 0.15 }}
       whileHover={{
         y: -2,
-        borderColor: `${badgeColor}80`,
+        borderColor: `${badge.color}80`,
         transition: { duration: 0.2, ease: "easeOut" },
       }}
       // Mantiene la card en una capa GPU estable durante toda la animación —
@@ -234,10 +213,17 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
     >
       <div className="flex flex-col items-start gap-2">
         <span
-          className="font-display inline-flex items-center justify-center rounded-[4px] px-2 py-1 text-[12px] leading-3 font-bold text-white uppercase"
-          style={{ backgroundColor: badgeColor }}
+          className={cn(
+            "font-display inline-flex items-center justify-center rounded-[4px] px-2 py-1 text-[12px] leading-3 font-bold uppercase",
+            badge.style === "outline" && "border",
+          )}
+          style={
+            badge.style === "outline"
+              ? { borderColor: badge.color, color: badge.color }
+              : { backgroundColor: badge.color, color: "#FFFFFF" }
+          }
         >
-          {categoryLabel}
+          {badge.label}
         </span>
         {dateLabel ? (
           <p className="font-display text-[14px] leading-5 font-semibold text-white">

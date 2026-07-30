@@ -1,6 +1,5 @@
 import type { Block } from "payload";
-import { CUSTOM_CATEGORY, eventCategoryOptions } from "@/lib/event-categories";
-import { anchorIdField, openInNewTabField } from "../shared-fields";
+import { anchorIdField, eventCategoryField, openInNewTabField } from "../shared-fields";
 
 export const DituCalendarioBlock: Block = {
   slug: "ditu-calendario",
@@ -77,38 +76,7 @@ export const DituCalendarioBlock: Block = {
               "Si lo dejás vacío se escribe solo (ej. DEL 06 DE MARZO AL 04 DE MAYO). Llenalo únicamente si querés un texto distinto.",
           },
         },
-        {
-          name: "categoryKey",
-          type: "select",
-          label: "Categoría",
-          defaultValue: "otro",
-          options: eventCategoryOptions,
-          admin: {
-            description:
-              "Es el texto del badge de color. Elegí “Personalizada” si necesitás uno que no esté en la lista.",
-          },
-        },
-        {
-          name: "category",
-          type: "text",
-          label: "Etiqueta personalizada",
-          admin: {
-            condition: (_, siblingData) => siblingData?.categoryKey === CUSTOM_CATEGORY,
-            placeholder: "PREVENTA",
-            description: "Se muestra tal cual en el badge.",
-          },
-        },
-        {
-          name: "badgeColor",
-          type: "text",
-          label: "Color del badge (hex)",
-          defaultValue: "#77EDED",
-          admin: {
-            description:
-              "Color hex del badge de categoría, ej. #77EDED. El texto se ajusta solo (claro/oscuro) según el color.",
-            placeholder: "#77EDED",
-          },
-        },
+        eventCategoryField("ditu"),
       ],
     },
     {

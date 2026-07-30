@@ -203,3 +203,26 @@ export const networkOptions = [
   { label: "LinkedIn", value: "linkedin" },
   { label: "Web", value: "web" },
 ] as const;
+
+/**
+ * Campo de categoría de los calendarios: relación a la colección
+ * `event-categories`, que es editable desde el admin.
+ *
+ * `filterOptions` limita el desplegable a las categorías habilitadas para esta
+ * landing, para que el editor de Ditu no vea las exclusivas de Caracol Next y
+ * viceversa.
+ */
+export const eventCategoryField = (landing: "next" | "ditu"): Field => ({
+  name: "eventCategory",
+  type: "relationship",
+  relationTo: "event-categories",
+  required: true,
+  label: "Categoría",
+  admin: {
+    description:
+      "Define el texto y el color del badge. Para crear, renombrar o recolorear categorías: colección Categorías de evento.",
+  },
+  filterOptions: () => ({
+    scope: { in: ["both", landing] },
+  }),
+});
