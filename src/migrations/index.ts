@@ -34,6 +34,7 @@ import * as migration_20260730_ditu_audiencia_watch_time_toggles from "./2026073
 import * as migration_20260730_ditu_calendario_category_select from "./20260730_ditu_calendario_category_select";
 import * as migration_20260730_ditu_pauta_image_fit from "./20260730_ditu_pauta_image_fit";
 import * as migration_20260730_key_moments_category_label_default from "./20260730_key_moments_category_label_default";
+import * as migration_20260730_key_moments_category_key from "./20260730_key_moments_category_key";
 
 export const migrations = [
   {
@@ -215,5 +216,10 @@ export const migrations = [
     up: migration_20260730_key_moments_category_label_default.up,
     down: migration_20260730_key_moments_category_label_default.down,
     name: "20260730_key_moments_category_label_default",
+  },
+  {
+    up: migration_20260730_key_moments_category_key.up,
+    down: migration_20260730_key_moments_category_key.down,
+    name: "20260730_key_moments_category_key",
   },
 ];
