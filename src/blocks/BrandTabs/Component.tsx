@@ -261,9 +261,30 @@ function TabPanel({ tab }: { tab: Tab }) {
   const brandChartPeak = meta.chartPeak ?? meta.color;
   const brandAccent = meta.colorAccent;
 
-  // Figma override: BumBox (402:8734) y Volk (402:8828) NO tienen los bloques
-  // WEB ni REDES en su diseño. Solo se renderiza AUDIENCIA + CTA.
-  const showWebAndNetworks = brandSlug !== "bumbox" && brandSlug !== "volk";
+  // Visibilidad de WEB y REDES: administrable por marca desde Payload
+  // (`showWeb` / `showNetworks`).
+  //
+  // Antes estaba hardcodeado por slug (`brandSlug !== "bumbox" && !== "volk"`)
+  // siguiendo el Figma original, así que en esas dos marcas las cifras cargadas
+  // en el admin no se rendeaban nunca. Ahora la decisión es del editor: los
+  // toggles arrancan en ON para marcas nuevas y la migración
+  // `20260730_brand_tabs_show_web_networks` los dejó en OFF para BumBox y Volk,
+  // que es como se ven hoy en producción.
+  //
+  // `?? true` cubre las filas viejas que quedaran con NULL: mantiene el
+  // comportamiento de "mostrar si hay data", igual que el resto de las marcas.
+  const showWeb = tab.showWeb ?? true;
+  const showNetworks = tab.showNetworks ?? true;
+  // Cada recuadro necesita toggle prendido Y data cargada. La fila contenedora
+  // se rendea solo si va a tener al menos un hijo: un div vacío igual consume
+  // un `gap-5` de la columna y deja un espacio en blanco entre el tagline y
+  // AUDIENCIA (pasaba con cualquier marca sin cifras cargadas).
+  const hasWeb =
+    showWeb &&
+    !!tab.webMetrics &&
+    !!(tab.webMetrics.usersPerMonth || tab.webMetrics.viewsPerMonth);
+  const hasNetworks = showNetworks && !!tab.networks && tab.networks.length > 0;
+  const showWebAndNetworksRow = hasWeb || hasNetworks;
 
   // Figma La Kalle (402:8626): pie chart con colores invertidos vs el resto.
   // Mujeres (mayoría 71%) = NEGRO #353535, Hombres (29%) = AMARILLO #FEFF00.
@@ -312,14 +333,13 @@ function TabPanel({ tab }: { tab: Tab }) {
           ) : null}
         </div>
 
-        {/* WEB + REDES side by side — Figma override: NO renderiza para
-            BumBox (402:8734) ni Volk (402:8828) — esos tabs solo tienen
-            AUDIENCIA + CTA. */}
-        {showWebAndNetworks ? (
+        {/* WEB + REDES side by side — cada recuadro se muestra si su toggle
+            está prendido Y tiene data cargada. Si los dos quedan afuera, la fila
+            entera no se rendea (no deja un hueco de gap en la columna). */}
+        {showWebAndNetworksRow ? (
           <div className="m-auto flex flex-col gap-5 min-[920px]:flex-row lg:items-start">
             {/* WEB box */}
-            {tab.webMetrics &&
-            (tab.webMetrics.usersPerMonth || tab.webMetrics.viewsPerMonth) ? (
+            {hasWeb && tab.webMetrics ? (
               <div
                 className="flex h-full w-full flex-col items-start gap-2 rounded-[8px] bg-white p-5 md:w-auto"
                 style={{ border: `1px solid ${CARD_BORDER}` }}
@@ -388,10 +408,15 @@ function TabPanel({ tab }: { tab: Tab }) {
               </div>
             ) : null}
 
-            {/* REDES box */}
-            {tab.networks && tab.networks.length > 0 ? (
+            {/* REDES box — `flex-1` solo cuando comparte fila con WEB. Solo,
+                estirarse al ancho completo lo dejaría con una forma distinta a
+                la del recuadro WEB solo (que es `w-auto`). */}
+            {hasNetworks && tab.networks ? (
               <div
-                className="flex h-full w-full flex-1 flex-col items-start gap-2 rounded-[8px] bg-white p-5"
+                className={cn(
+                  "flex h-full w-full flex-col items-start gap-2 rounded-[8px] bg-white p-5",
+                  hasWeb && "flex-1",
+                )}
                 style={{ border: `1px solid ${CARD_BORDER}` }}
               >
                 <Pill>REDES</Pill>

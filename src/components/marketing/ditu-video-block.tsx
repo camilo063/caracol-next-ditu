@@ -137,18 +137,18 @@ export function DituVideoBlock({
           </div>
         ) : (
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]">
+            {/* Recorte centrado, igual que el poster de video de arriba.
+                Antes acá había un encuadre calcado del asset del Figma
+                (`video-block.png`, 707×4096) —w-139.45% h-1437.19% con offsets
+                negativos y SIN object-fit— que estiraba verticalmente ~10× a
+                cualquier imagen que se subiera desde el admin. El campo se llama
+                "Imagen (poster / fallback)", así que lo natural es cargar ahí un
+                16:9 y quedaba destrozado. Mismo bug que el de Ditu Pauta. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageSrc}
               alt={alt}
-              className="absolute block"
-              style={{
-                width: "139.45%",
-                height: "1437.19%",
-                top: "-414.39%",
-                left: "-19.72%",
-                maxWidth: "none",
-              }}
+              className="absolute inset-0 block h-full w-full object-cover object-center"
             />
           </div>
         )}

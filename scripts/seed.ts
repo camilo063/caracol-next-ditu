@@ -634,6 +634,11 @@ function buildCaracolNextLayout(
           brand: brandIds["bumbox"]!,
           displayName: null,
           brandLogo: null,
+          // BumBox y Volk nacieron sin los recuadros WEB/REDES en el Figma, y
+          // así siguen en producción. Se declara explícito para que un entorno
+          // reseedeado quede igual que prod (antes lo tapaba un hardcode).
+          showWeb: false,
+          showNetworks: false,
           brandColor: "#FFC200",
           tagline:
             "Marketplace y comercio digital — audiencia transaccional con alta intención.",
@@ -681,6 +686,9 @@ function buildCaracolNextLayout(
           brand: brandIds["volk"]!,
           displayName: null,
           brandLogo: null,
+          // Ver nota en el tab de BumBox.
+          showWeb: false,
+          showNetworks: false,
           brandColor: "#00B8D4",
           tagline: "Lifestyle, cultura pop y contenido nicho para audiencia urbana.",
           whyChoose: null,
@@ -1966,7 +1974,7 @@ function buildDituLayout(assets: {
           endDate: "2026-05-04",
           title: "FilBo 2026",
           subtitle: "Libros e historias",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#77EDED",
         },
         {
@@ -1975,7 +1983,7 @@ function buildDituLayout(assets: {
           endDate: "2026-03-17",
           title: "Carnaval de Barranquilla",
           subtitle: "Celebraciones",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#8232F0",
         },
         {
@@ -1984,7 +1992,7 @@ function buildDituLayout(assets: {
           endDate: "2026-07-19",
           title: "Mundial / Eurocopa",
           subtitle: "Picos deportivos",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#12082D",
         },
         {
@@ -1993,7 +2001,7 @@ function buildDituLayout(assets: {
           endDate: "2026-07-20",
           title: "Día de la independencia",
           subtitle: "Conversaciones",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#FFFFFF",
         },
         {
@@ -2002,7 +2010,7 @@ function buildDituLayout(assets: {
           endDate: "2026-02-14",
           title: "San Valentín",
           subtitle: "Conexiones",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#77EDED",
         },
         {
@@ -2011,7 +2019,7 @@ function buildDituLayout(assets: {
           endDate: "2026-06-21",
           title: "Día del Padre",
           subtitle: "Familias",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#8232F0",
         },
         {
@@ -2020,7 +2028,7 @@ function buildDituLayout(assets: {
           endDate: "2026-05-10",
           title: "Día de la Madre",
           subtitle: "Tributos",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#12082D",
         },
         {
@@ -2029,7 +2037,7 @@ function buildDituLayout(assets: {
           endDate: "2026-09-19",
           title: "Día del Amor y la Amistad",
           subtitle: "Conexiones",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#FFFFFF",
         },
         {
@@ -2038,7 +2046,7 @@ function buildDituLayout(assets: {
           endDate: "2026-10-31",
           title: "Halloween",
           subtitle: "Espectáculos",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#77EDED",
         },
         {
@@ -2047,7 +2055,7 @@ function buildDituLayout(assets: {
           endDate: "2026-12-31",
           title: "Navidad",
           subtitle: "Tradiciones",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#8232F0",
         },
         {
@@ -2056,7 +2064,7 @@ function buildDituLayout(assets: {
           endDate: "2026-12-31",
           title: "Fin de Año",
           subtitle: "Celebraciones",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#12082D",
         },
         {
@@ -2065,7 +2073,7 @@ function buildDituLayout(assets: {
           endDate: "2026-10-12",
           title: "Festival de Cine Cartagena",
           subtitle: "Cultura audiovisual",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#FFFFFF",
         },
         {
@@ -2074,7 +2082,7 @@ function buildDituLayout(assets: {
           endDate: "2026-07-06",
           title: "Rock al Parque",
           subtitle: "Música en vivo",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#77EDED",
         },
         {
@@ -2083,7 +2091,7 @@ function buildDituLayout(assets: {
           endDate: "2026-08-09",
           title: "Feria de las Flores",
           subtitle: "Tradiciones",
-          category: "Categoría",
+          categoryKey: "otro" as const,
           badgeColor: "#8232F0",
         },
       ],

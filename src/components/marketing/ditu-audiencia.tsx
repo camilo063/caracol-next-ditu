@@ -62,6 +62,10 @@ export interface DituAudienciaProps {
     value?: string | null;
     description?: string | null;
   };
+  /** Muestra la card grande de watch time. Editable desde Payload. */
+  showWatchTime?: boolean;
+  /** Muestra la fila de cards por dispositivo. Editable desde Payload. */
+  showDevices?: boolean;
   /** Fuente bajo el bloque superior. */
   topSource?: string;
   /** Total seguidores grande (default 1700000 = +1.7M). */
@@ -198,10 +202,21 @@ export function DituAudienciaBlock({
   stats,
   devices,
   networks,
+  showWatchTime = true,
+  showDevices = true,
 }: DituAudienciaProps) {
   const finalStats = stats && stats.length > 0 ? stats : DEFAULT_STATS;
-  const finalDevices = devices && devices.length > 0 ? devices : DEFAULT_DEVICES;
+  // `devices` sin definir = uso fuera del CMS → data de demostración.
+  // `devices: []` = el editor borró todas las cards → no se muestra ninguna.
+  // (No usar `length > 0` acá: eso hacía reaparecer los dispositivos de demo
+  // cuando el cliente los borraba desde Payload.)
+  const finalDevices = devices ?? DEFAULT_DEVICES;
   const finalNetworks = networks && networks.length > 0 ? networks : DEFAULT_NETWORKS;
+
+  // El recuadro es modular: cada mitad se muestra según su toggle y, si no hay
+  // dispositivos cargados, la fila desaparece sin dejar el divisor colgando.
+  const hasDevices = showDevices && finalDevices.length > 0;
+  const showWatchTimeBox = showWatchTime || hasDevices;
   const headingPre = heading?.pre ?? "Cada mes,";
   const headingAccent = heading?.accent ?? "millones de pantallas";
   const headingPost = heading?.post ?? "prendidas.";
@@ -342,117 +357,157 @@ export function DituAudienciaBlock({
           ))}
         </motion.div>
 
-        {/* Watch time row: 60 MIN + device sub-cards.
-            justify-center agrupa y centra TODO el contenido (info izquierda +
-            divisor + cards) como un cluster compacto, en vez de estirarlo de
-            borde a borde. Así se adapta dinámicamente a la cantidad de cards. */}
-        <motion.div
-          className="flex flex-col items-stretch gap-6 rounded-[16px] border p-6 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-8 sm:p-8 lg:gap-12 lg:p-[40px]"
-          style={{ borderColor: CYAN }}
-          variants={itemVariants}
-        >
-          {/* 60 MIN left — Figma 656:4863: backdrop-blur-[25px] rounded-[16px] px-[32px] py-[20px] */}
-          <div className="flex flex-col items-start gap-2 rounded-2xl px-2 py-4 backdrop-blur-[25px] lg:px-8 lg:py-5">
-            <div className="flex items-center gap-2">
-              <Image
-                src="/ditu/icon-schedule.svg"
-                alt=""
-                width={30}
-                height={30}
-                className="h-6 w-6 lg:h-7.5 lg:w-7.5"
-              />
-              <span
-                className="font-display inline-flex items-center rounded-[4px] px-[12px] py-[4px] text-[14px] font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[20px]"
-                style={{ backgroundColor: CYAN, color: NAVY_DARK, lineHeight: "14px" }}
-              >
-                {watchTimeLabel}
-              </span>
-            </div>
-            {/* "60 MIN" — Figma 892:6260 / 656:4869: 64/lh-80 Ditu Display Bold */}
-            <p
-              className="font-display text-[44px] font-bold whitespace-nowrap text-white sm:text-[56px] lg:text-[64px]"
-              style={{ lineHeight: "80px" }}
-            >
-              {watchTimeValue}
-            </p>
-            <p
-              className="text-[14px] leading-snug sm:text-[16px]"
-              style={{
-                color: GREY_LIGHT,
-                fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
-              }}
-            >
-              {watchTimeDescription}
-            </p>
-          </div>
+        {/* Watch time row: card grande + cards por dispositivo.
+            El recuadro se adapta a lo que haya cargado:
 
-          {/* Vertical divider — Figma 738:2713: línea dashed cyan w-[16px] h-[197px].
-              Recreado con CSS background dashed (sin requerir asset extra). */}
-          <div
-            aria-hidden="true"
-            className="hidden h-[197px] w-[16px] self-center lg:flex lg:justify-center"
-          >
-            <div
-              className="h-full w-px"
-              style={{
-                backgroundImage: `repeating-linear-gradient(180deg, ${CYAN} 0 8px, transparent 8px 14px)`,
-              }}
-            />
-          </div>
+             - `lg:w-fit` + `lg:max-w-full`: el borde cyan se achica hasta abrazar
+               el contenido. Con 2 dispositivos —o con ninguno— el recuadro queda
+               angosto y centrado en vez de estirarse de borde a borde.
 
-          {/* Device cards — Figma 738:2631/2707/2695/2677.
-              gap-[18px] interno, p-[20px], border-white, backdrop-blur-[7px].
-              Flex centrado (no grid de 4 col fijas): el contenedor se adapta a
-              la cantidad de cards (2, 3 o 4) y queda centrado sin huecos. */}
+             - `min-[1400px]:flex-nowrap`: la fila única (card grande | divisor |
+               dispositivos) entra recién a partir de ~1400px de viewport. El
+               recuadro pide 2 (borde) + 80 (padding propio) + 293 (card grande)
+               + 32 + 16 (divisor) + 32 + 4 cards de 156 con gaps de 20 = 1139, y
+               la página aporta 240px de padding lateral: 1139 + 240 = 1379.
+
+               El breakpoint NO puede ser `lg` (1024px): ahí solo quedan 784px
+               útiles, la fila única no entra de ninguna manera y forzarla dejaba
+               una card por renglón. Debajo de 1400px se apila —card grande
+               centrada arriba, dispositivos centrados abajo— que es el mismo
+               criterio que ya usaban tablet y mobile.
+
+               Si el editor escribe una etiqueta más larga que "WATCH TIME
+               PROMEDIO", la card grande crece y el bloque cae solo al layout
+               apilado en vez de romperse.
+
+             - Todos los anchos de acá salen de medir en Chrome, no de estimar. */}
+        {showWatchTimeBox ? (
           <motion.div
-            className="flex flex-wrap items-center justify-center gap-4 lg:gap-[24px]"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "0px 0px -40px 0px" }}
-            variants={{
-              hidden: {},
-              visible: { transition: { staggerChildren: reduceMotion ? 0 : 0.11 } },
-            }}
+            className="flex w-full flex-col items-stretch gap-6 rounded-[16px] border p-6 min-[1400px]:mx-auto min-[1400px]:w-fit min-[1400px]:max-w-full min-[1400px]:flex-nowrap min-[1400px]:gap-8 min-[1400px]:p-[40px] sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-8 sm:p-8"
+            style={{ borderColor: CYAN }}
+            variants={itemVariants}
           >
-            {finalDevices.map((dev) => (
-              <motion.div
-                key={dev.label}
-                className="flex w-[140px] flex-col items-center gap-[18px] rounded-[16px] border border-white p-4 sm:w-[160px] lg:w-[180px] lg:p-[20px]"
-                style={{
-                  backdropFilter: "blur(7px)",
-                }}
-                variants={itemVariants}
-              >
-                {/* Icono — Figma usa composite 80×80 (círculo + icon). Replico con
-                    círculo cyan + icono centrado para matchear el visual. */}
-                <div
-                  className="flex h-[64px] w-[64px] items-center justify-center rounded-full lg:h-[80px] lg:w-[80px]"
-                  style={{ border: `2px solid ${CYAN}` }}
-                >
-                  {DEVICE_SVG[dev.icon]}
-                </div>
-                <div className="text-center">
-                  <p
-                    className="font-display text-[26px] font-bold text-white lg:text-[32px]"
-                    style={{ lineHeight: "40px" }}
-                  >
-                    {dev.minutes} min
-                  </p>
-                  <p
-                    className="text-[14px] sm:text-[16px]"
+            {/* 60 MIN left — Figma 656:4863: backdrop-blur-[25px] rounded-[16px] px-[32px] py-[20px] */}
+            {showWatchTime ? (
+              <div className="flex shrink-0 flex-col items-start gap-2 rounded-2xl px-2 py-4 backdrop-blur-[25px] lg:px-8 lg:py-5">
+                <div className="flex items-center gap-2">
+                  <Image
+                    src="/ditu/icon-schedule.svg"
+                    alt=""
+                    width={30}
+                    height={30}
+                    className="h-6 w-6 lg:h-7.5 lg:w-7.5"
+                  />
+                  <span
+                    className="font-display inline-flex items-center rounded-[4px] px-[12px] py-[4px] text-[14px] font-medium whitespace-nowrap uppercase sm:text-[16px] lg:text-[20px]"
                     style={{
-                      color: GREY_LIGHT,
-                      fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
-                      lineHeight: "normal",
+                      backgroundColor: CYAN,
+                      color: NAVY_DARK,
+                      lineHeight: "14px",
                     }}
                   >
-                    {dev.label}
-                  </p>
+                    {watchTimeLabel}
+                  </span>
                 </div>
+                {/* "60 MIN" — Figma 892:6260 / 656:4869: 64/lh-80 Ditu Display Bold */}
+                <p
+                  className="font-display text-[44px] font-bold whitespace-nowrap text-white sm:text-[56px] lg:text-[64px]"
+                  style={{ lineHeight: "80px" }}
+                >
+                  {watchTimeValue}
+                </p>
+                <p
+                  className="text-[14px] leading-snug sm:text-[16px]"
+                  style={{
+                    color: GREY_LIGHT,
+                    fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+                  }}
+                >
+                  {watchTimeDescription}
+                </p>
+              </div>
+            ) : null}
+
+            {/* Vertical divider — Figma 738:2713: línea dashed cyan w-[16px] h-[197px].
+              Recreado con CSS background dashed (sin requerir asset extra).
+              Solo tiene sentido si hay algo a cada lado: si falta una de las dos
+              mitades, se omite para no dejar una línea suelta. */}
+            {showWatchTime && hasDevices ? (
+              <div
+                aria-hidden="true"
+                className="hidden h-[197px] w-[16px] shrink-0 self-center min-[1400px]:flex min-[1400px]:justify-center"
+              >
+                <div
+                  className="h-full w-px"
+                  style={{
+                    backgroundImage: `repeating-linear-gradient(180deg, ${CYAN} 0 8px, transparent 8px 14px)`,
+                  }}
+                />
+              </div>
+            ) : null}
+
+            {/* Device cards — Figma 738:2631/2707/2695/2677.
+              gap-[18px] interno, p-[20px], border-white, backdrop-blur-[7px].
+              Flex centrado (no grid de 4 col fijas): el contenedor se adapta a
+              la cantidad de cards (1 a 6) y queda centrado sin huecos. */}
+            {hasDevices ? (
+              <motion.div
+                className="flex flex-wrap items-center justify-center gap-4 min-[1400px]:min-w-0 min-[1400px]:gap-5"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+                variants={{
+                  hidden: {},
+                  visible: { transition: { staggerChildren: reduceMotion ? 0 : 0.11 } },
+                }}
+              >
+                {finalDevices.map((dev) => (
+                  <motion.div
+                    key={dev.label}
+                    // Ancho FIJO en desktop, no elástico: `lg:w-fit` en el
+                    // recuadro mide a los hijos por su tamaño intrínseco, y el de
+                    // una card encogible es su `min-width`, no su `basis`. Con
+                    // cards elásticas el recuadro se medía contra 128px por card,
+                    // quedaba corto, y las cards saltaban de línea igual. Con
+                    // ancho fijo la cuenta es exacta y entran las 4.
+                    className="flex w-[140px] flex-col items-center gap-[18px] rounded-[16px] border border-white p-4 min-[1400px]:w-[156px] min-[1400px]:p-[20px] sm:w-[160px]"
+                    style={{
+                      backdropFilter: "blur(7px)",
+                    }}
+                    variants={itemVariants}
+                  >
+                    {/* Icono — Figma usa composite 80×80 (círculo + icon). Replico con
+                    círculo cyan + icono centrado para matchear el visual. */}
+                    <div
+                      className="flex h-[64px] w-[64px] items-center justify-center rounded-full lg:h-[80px] lg:w-[80px]"
+                      style={{ border: `2px solid ${CYAN}` }}
+                    >
+                      {DEVICE_SVG[dev.icon]}
+                    </div>
+                    <div className="text-center">
+                      <p
+                        className="font-display text-[26px] font-bold text-white lg:text-[32px]"
+                        style={{ lineHeight: "40px" }}
+                      >
+                        {dev.minutes} min
+                      </p>
+                      <p
+                        className="text-[14px] sm:text-[16px]"
+                        style={{
+                          color: GREY_LIGHT,
+                          fontFamily: "var(--font-spline-sans), system-ui, sans-serif",
+                          lineHeight: "normal",
+                        }}
+                      >
+                        {dev.label}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
               </motion.div>
-            ))}
+            ) : null}
           </motion.div>
-        </motion.div>
+        ) : null}
 
         {/* Source */}
         <motion.div

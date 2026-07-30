@@ -1,37 +1,39 @@
 import { DituCalendarioBlock } from "@/components/marketing/ditu-calendario";
+import { resolveCategoryLabel } from "@/lib/event-categories";
+import { activeEventsSorted, eventDay, formatEventDateLabel } from "@/lib/event-dates";
 import type { DituCalendarioBlockProps } from "../types";
 
 export function DituCalendarioBlockComponent(block: DituCalendarioBlockProps) {
-  // Hoy en zona horaria de Colombia (en-CA → formato YYYY-MM-DD), para comparar
-  // contra el ISO de los eventos sin cortar mal cerca de medianoche.
-  const todayISO = new Date().toLocaleDateString("en-CA", {
-    timeZone: "America/Bogota",
-  });
+  // Misma regla que el calendario de Caracol Next (`@/lib/event-dates`): se
+  // muestran solo los eventos vigentes —vencen al terminar su día de fin, en
+  // hora de Colombia— y se listan del más cercano al más lejano, sin importar el
+  // orden del array en el CMS.
+  const upcoming = activeEventsSorted(block.events ?? [], (e) => ({
+    start: e.startDate,
+    end: e.endDate,
+  }));
 
-  // Filtramos eventos vencidos: si `endDate` (ISO) es anterior a hoy, ya pasó y
-  // no se muestra. Sin endDate válido → se conserva (no se oculta por las dudas).
-  const upcoming = (block.events ?? []).filter(
-    (e) => !e.endDate || e.endDate >= todayISO,
-  );
+  // Sin eventos vigentes no se rendea el bloque. Antes se pasaba `undefined` y
+  // el slider caía a su data de demostración: el día que venzan todos los
+  // eventos cargados, producción mostraría FilBo/Carnaval/etc. como si fueran
+  // reales. Mismo criterio que el calendario de Caracol Next.
+  if (upcoming.length === 0) return null;
 
-  const events =
-    upcoming.length > 0
-      ? // Orden cronológico por `startDate` (ISO YYYY-MM-DD ordena lexicográfico
-        // == cronológico), sin importar el orden del array en el CMS. Los que no
-        // tengan fecha válida van al final.
-        [...upcoming]
-          .sort((a, b) => (a.startDate ?? "9999").localeCompare(b.startDate ?? "9999"))
-          .map((e) => ({
-            id: e.id ?? e.title,
-            dateLabel: e.dateLabel,
-            startDate: e.startDate,
-            endDate: e.endDate,
-            title: e.title,
-            subtitle: e.subtitle ?? "",
-            category: e.category ?? "Categoría",
-            badgeColor: e.badgeColor ?? "#77EDED",
-          }))
-      : undefined;
+  const events = upcoming.map((e) => ({
+    id: e.id ?? e.title,
+    // El texto del badge de fecha se arma solo desde las fechas reales;
+    // `dateLabel` queda como override para redacciones puntuales.
+    dateLabel: e.dateLabel?.trim() || formatEventDateLabel(e.startDate, e.endDate),
+    // El slider tipa estos campos como `YYYY-MM-DD`; Payload devuelve el
+    // timestamp completo, así que lo recortamos al día (en UTC, que es el
+    // día que eligió el editor).
+    startDate: eventDay(e.startDate) ?? "",
+    endDate: eventDay(e.endDate) ?? "",
+    title: e.title,
+    subtitle: e.subtitle ?? "",
+    category: resolveCategoryLabel(e.categoryKey, e.category),
+    badgeColor: e.badgeColor ?? "#77EDED",
+  }));
 
   return (
     <DituCalendarioBlock
