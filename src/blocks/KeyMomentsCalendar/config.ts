@@ -45,25 +45,6 @@ export const KeyMomentsCalendarBlock: Block = {
         },
         { name: "description", type: "textarea" },
         eventCategoryField("next"),
-        {
-          name: "badgeColor",
-          type: "text",
-          admin: {
-            description:
-              "Override manual del color. Si lo dejás vacío, el badge toma el color de la categoría elegida arriba. Ej. #FFC200.",
-            placeholder: "#015BC4",
-          },
-        },
-        {
-          name: "categoryLabel",
-          type: "text",
-          label: "Texto del badge (excepción)",
-          admin: {
-            placeholder: "Se usa el nombre de la categoría",
-            description:
-              "Solo para un caso puntual en el que el badge deba decir algo distinto al nombre de la categoría. Normalmente va vacío.",
-          },
-        },
         ctaField({ name: "cta", label: "CTA (opcional)" }),
       ],
     },
