@@ -1,5 +1,6 @@
 import type { Block } from "payload";
 
+import { CUSTOM_CATEGORY, eventCategoryOptions } from "@/lib/event-categories";
 import {
   anchorIdField,
   ctaField,
@@ -55,20 +56,15 @@ export const KeyMomentsCalendarBlock: Block = {
           ],
         },
         {
-          name: "category",
+          name: "categoryKey",
           type: "select",
           label: "Categoría",
+          defaultValue: "otro",
+          options: eventCategoryOptions,
           admin: {
             description:
-              "Define el color por defecto del badge y, si no escribís un texto propio abajo, también su etiqueta.",
+              "Es el texto del badge de color. Elegí “Personalizada” si necesitás uno que no esté en la lista.",
           },
-          options: [
-            { label: "DEPORTES", value: "sports" },
-            { label: "ENTRETENIMIENTO", value: "entertainment" },
-            { label: "NOTICIAS", value: "news" },
-            { label: "ESPECIAL", value: "special" },
-            { label: "OTRO", value: "other" },
-          ],
         },
         {
           name: "badgeColor",
@@ -82,11 +78,11 @@ export const KeyMomentsCalendarBlock: Block = {
         {
           name: "categoryLabel",
           type: "text",
-          label: "Etiqueta personalizada del badge (opcional)",
+          label: "Etiqueta personalizada",
           admin: {
-            placeholder: "Se usa la categoría elegida arriba",
-            description:
-              "Solo si necesitás un texto distinto al de la categoría (ej. CICLISMO, PREVENTA). Si lo dejás vacío se usa el nombre de la categoría.",
+            condition: (_, siblingData) => siblingData?.categoryKey === CUSTOM_CATEGORY,
+            placeholder: "PREVENTA",
+            description: "Se muestra tal cual en el badge.",
           },
         },
         ctaField({ name: "cta", label: "CTA (opcional)" }),
