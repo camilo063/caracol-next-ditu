@@ -24,7 +24,7 @@ export function DituCalendarioBlockComponent(block: DituCalendarioBlockProps) {
     // administra desde la colección "Categorías de evento". Antes el color venía
     // de un campo por evento que nacía con `#77EDED` por defecto, así que elegir
     // la categoría nunca llegaba a cambiar el color del badge.
-    const badge = resolveEventBadge(e.eventCategory, "ditu", e.category, e.badgeColor);
+    const badge = resolveEventBadge(e.eventCategory, "ditu");
 
     return {
       id: e.id ?? e.title,

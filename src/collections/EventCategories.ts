@@ -1,30 +1,7 @@
-import type { BasePayload, CollectionConfig } from "payload";
+import type { CollectionConfig } from "payload";
 
 import { anyone, authenticated } from "@/access";
-import { pageTag, revalidateTag } from "@/lib/payload/cache-tags";
-
-/**
- * Igual que con las marcas: una categoría se embebe en las páginas vía
- * relationship y la query de páginas está cacheada con `unstable_cache`.
- * Renombrar una categoría o cambiarle el color NO toca el documento de la
- * página, así que hay que invalidar a mano el cache de cada página que pueda
- * referenciarla.
- */
-async function revalidateAllPages(payload: BasePayload): Promise<void> {
-  try {
-    const pages = await payload.find({
-      collection: "pages",
-      limit: 100,
-      depth: 0,
-      pagination: false,
-    });
-    for (const p of pages.docs) {
-      if (p.slug) revalidateTag(pageTag(p.slug));
-    }
-  } catch {
-    // Fuera del contexto de Next (seed/scripts) o error de query — no-op.
-  }
-}
+import { revalidateAllPages } from "@/lib/payload/revalidate-pages";
 
 /**
  * EventCategories — las categorías de los badges de los calendarios,
@@ -77,6 +54,7 @@ export const EventCategories: CollectionConfig = {
       name: "name",
       type: "text",
       required: true,
+      unique: true,
       label: "Nombre",
       admin: {
         description: "El texto que se ve en el badge. Se muestra siempre en mayúsculas.",

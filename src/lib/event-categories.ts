@@ -5,26 +5,29 @@ import type { EventCategory } from "@/payload-types";
  *
  * La categoría es un documento de la colección `event-categories`, editable
  * desde el admin: ahí viven el nombre, el color por landing y el estilo. El
- * evento solo la referencia.
+ * evento solo la referencia, y la categoría manda sobre texto Y color.
  *
- * Cada evento conserva además dos campos de excepción —un texto y un color
- * propios— para el caso puntual en que un badge deba salirse de su categoría.
- * Cuando están vacíos, que es lo normal, manda la categoría.
+ * Que mande la categoría y punto —sin campos de excepción por evento— es
+ * deliberado. La versión anterior tenía un texto y un color propios en cada
+ * evento que le ganaban a la categoría, y eso produjo exactamente los dos bugs
+ * que reportó el cliente: elegía una categoría y el badge no cambiaba de texto
+ * (le ganaba el texto guardado) ni de color (le ganaba el color guardado). Si
+ * hace falta un badge distinto, se crea una categoría: para eso son
+ * administrables.
+ *
+ * Las columnas viejas de esos campos siguen en la base sin que nadie las lea,
+ * a propósito: son la red que permite revertir la migración.
  */
 
 /** La relación puede llegar poblada o como id, según el `depth` de la query. */
 export type EventCategoryRef = number | EventCategory | null | undefined;
 
-/** Paleta por defecto cuando el evento no tiene categoría asignada. */
+/** Qué se muestra mientras un evento no tenga categoría asignada. */
 const FALLBACK = {
   label: "CATEGORÍA",
   next: "#2862FF",
   ditu: "#77EDED",
 } as const;
-
-function asDoc(ref: EventCategoryRef): EventCategory | null {
-  return ref && typeof ref === "object" ? ref : null;
-}
 
 export interface ResolvedBadge {
   /** Texto del badge. */
@@ -35,27 +38,21 @@ export interface ResolvedBadge {
   style: "solid" | "outline";
 }
 
-/**
- * Resuelve texto, color y estilo del badge de un evento.
- *
- * `overrideLabel` y `overrideColor` son los campos de excepción del evento.
- * Se comparan con `?.trim() ||` y no con `??` a propósito: Payload guarda
- * cadena vacía —no NULL— cuando el editor limpia un campo de texto, así que
- * `??` haría que un campo vaciado le siguiera ganando a la categoría.
- */
+/** Resuelve texto, color y estilo del badge de un evento. */
 export function resolveEventBadge(
   category: EventCategoryRef,
   landing: "next" | "ditu",
-  overrideLabel?: string | null,
-  overrideColor?: string | null,
 ): ResolvedBadge {
-  const doc = asDoc(category);
-  const colorDeCategoria =
-    landing === "next" ? doc?.colorNext?.trim() : doc?.colorDitu?.trim();
+  // Con `depth` bajo la relación llega como id: sin el documento no hay nada
+  // que leer, así que se cae al genérico.
+  const doc = category && typeof category === "object" ? category : null;
+  const color = landing === "next" ? doc?.colorNext : doc?.colorDitu;
 
   return {
-    label: overrideLabel?.trim() || doc?.name?.trim() || FALLBACK.label,
-    color: overrideColor?.trim() || colorDeCategoria || FALLBACK[landing],
+    // `?.trim() ||` y no `??`: Payload guarda cadena vacía, no NULL, cuando se
+    // limpia un campo de texto, y con `??` un campo vaciado seguiría ganando.
+    label: doc?.name?.trim() || FALLBACK.label,
+    color: color?.trim() || FALLBACK[landing],
     style: doc?.style === "outline" ? "outline" : "solid",
   };
 }
