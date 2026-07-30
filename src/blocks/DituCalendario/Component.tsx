@@ -32,7 +32,7 @@ export function DituCalendarioBlockComponent(block: DituCalendarioBlockProps) {
     title: e.title,
     subtitle: e.subtitle ?? "",
     category: resolveCategoryLabel(e.categoryKey, e.category),
-    badgeColor: e.badgeColor ?? "#77EDED",
+    badgeColor: e.badgeColor?.trim() || "#77EDED",
   }));
 
   return (

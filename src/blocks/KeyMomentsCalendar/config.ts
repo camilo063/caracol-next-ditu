@@ -71,7 +71,7 @@ export const KeyMomentsCalendarBlock: Block = {
           type: "text",
           admin: {
             description:
-              "Color hex del badge CATEGORÍA (override del color por categoría). Ej. #FFC200.",
+              "Override manual del color. Si lo dejás vacío, el badge toma el color de la categoría elegida arriba. Ej. #FFC200.",
             placeholder: "#015BC4",
           },
         },

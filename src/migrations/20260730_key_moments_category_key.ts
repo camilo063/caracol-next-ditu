@@ -88,6 +88,20 @@ const CATEGORIA_POR_ETIQUETA = `
   END
 `;
 
+/** Color que aplicará la categoría nueva. Debe seguir a `CATEGORY_COLORS`. */
+const COLOR_POR_CATEGORIA_NUEVA = `
+  CASE "category_key"::text
+    WHEN 'ciclismo'  THEN '#05E8FD'
+    WHEN 'noticias'  THEN '#0000C4'
+    WHEN 'especial'  THEN '#FFC200'
+    WHEN 'cultural'  THEN '#A139C6'
+    WHEN 'entretenimiento' THEN '#A139C6'
+    WHEN 'musica'    THEN '#A139C6'
+    WHEN 'comercial' THEN '#FF0013'
+    ELSE '#2862FF'
+  END
+`;
+
 /** Select viejo → categoría nueva, para los eventos sin texto libre. */
 const CATEGORIA_POR_SELECT_VIEJO = `
   CASE "category"::text
@@ -103,16 +117,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   const valueList = VALUES.map((v) => `'${v}'`).join(", ");
 
   for (const { table, enumName } of TABLES) {
-    // 1. Congelar el color actual de cada evento antes de tocar la categoría.
-    await db.execute(
-      sql.raw(`
-        UPDATE "${table}"
-           SET "badge_color" = ${COLOR_POR_CATEGORIA_VIEJA}
-         WHERE "badge_color" IS NULL OR btrim("badge_color") = '';
-      `),
-    );
-
-    // 2. Columna nueva SIN default: si naciera con uno, Postgres 11+ rellena
+    // 1. Columna nueva SIN default: si naciera con uno, Postgres 11+ rellena
     //    todas las filas al instante y el backfill de abajo no encontraría nada
     //    que hacer. El default se agrega al final, para los eventos nuevos.
     await db.execute(
@@ -126,14 +131,16 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       `),
     );
 
-    // 3a. Etiqueta escrita a mano que corresponde a una categoría de la lista:
-    //     se adopta esa categoría y se limpia el texto, para que el dropdown
-    //     quede al mando sin cambiar lo que se ve.
+    // 2a. Etiqueta escrita a mano que corresponde a una categoría de la lista:
+    //     se adopta esa categoría. El texto NO se borra: el badge lo ignora
+    //     mientras la categoría no sea "Personalizada", y conservarlo hace que
+    //     el `down` de esta migración devuelva la página a como estaba. Si se
+    //     borrara acá, un rollback dejaría los badges mostrando la categoría
+    //     vieja en vez del texto original.
     await db.execute(
       sql.raw(`
         UPDATE "${table}"
-           SET "category_key" = (${CATEGORIA_POR_ETIQUETA})::"public"."${enumName}",
-               "category_label" = NULL
+           SET "category_key" = (${CATEGORIA_POR_ETIQUETA})::"public"."${enumName}"
          WHERE "category_key" IS NULL
            AND "category_label" IS NOT NULL
            AND btrim("category_label") <> ''
@@ -141,7 +148,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       `),
     );
 
-    // 3b. Etiqueta propia que no está en la lista: se conserva tal cual bajo
+    // 2b. Etiqueta propia que no está en la lista: se conserva tal cual bajo
     //     la categoría "Personalizada".
     await db.execute(
       sql.raw(`
@@ -153,12 +160,35 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       `),
     );
 
-    // 3c. Sin texto libre: se traduce el select viejo.
+    // 2c. Sin texto libre: se traduce el select viejo.
     await db.execute(
       sql.raw(`
         UPDATE "${table}"
            SET "category_key" = (${CATEGORIA_POR_SELECT_VIEJO})::"public"."${enumName}"
          WHERE "category_key" IS NULL;
+      `),
+    );
+
+    // 3. Congelar el color SOLO donde haría falta.
+    //
+    //    El color de un evento sin `badge_color` propio sale de su categoría, y
+    //    el mapeo de categorías se eligió para que el color no cambie
+    //    (sports→deportes, news→noticias, special→especial,
+    //    entertainment→entretenimiento: mismo color en cada par). El único caso
+    //    donde sí cambiaría es cuando la categoría salió del texto libre —por
+    //    ejemplo 'CICLISMO' escrito sobre un evento con categoría 'news'—, y
+    //    ahí se fija el color viejo para que el badge se siga viendo igual.
+    //
+    //    Rellenar `badge_color` en TODAS las filas sería más simple, pero
+    //    dejaría el color clavado a mano para siempre: cambiar la categoría
+    //    movería el texto del badge y no su color, que es la mitad del
+    //    problema que estamos arreglando.
+    await db.execute(
+      sql.raw(`
+        UPDATE "${table}"
+           SET "badge_color" = ${COLOR_POR_CATEGORIA_VIEJA}
+         WHERE ("badge_color" IS NULL OR btrim("badge_color") = '')
+           AND ${COLOR_POR_CATEGORIA_VIEJA} <> ${COLOR_POR_CATEGORIA_NUEVA};
       `),
     );
 
