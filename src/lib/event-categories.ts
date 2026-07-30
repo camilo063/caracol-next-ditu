@@ -4,8 +4,15 @@ import type { EventCategory } from "@/payload-types";
  * event-categories — cómo se resuelve el badge de un evento de calendario.
  *
  * La categoría es un documento de la colección `event-categories`, editable
- * desde el admin: ahí viven el nombre, el color por landing y el estilo. El
- * evento solo la referencia, y la categoría manda sobre texto Y color.
+ * desde el admin: ahí viven el nombre, y el color y el diseño de cada landing.
+ * El evento solo la referencia, y la categoría manda sobre texto, color y forma.
+ *
+ * Las seis variantes del design system salen de combinar color y forma: cuatro
+ * de relleno y dos de contorno en Ditu, seis de relleno en Caracol Next. El
+ * color del texto no es un campo: en relleno se deduce del fondo (blanco u
+ * oscuro) y en contorno es el mismo color del borde. Esa regla reproduce las
+ * seis variantes exactamente, y evita que alguien pueda elegir blanco sobre
+ * blanco.
  *
  * Que mande la categoría y punto —sin campos de excepción por evento— es
  * deliberado. La versión anterior tenía un texto y un color propios en cada
@@ -47,12 +54,15 @@ export function resolveEventBadge(
   // que leer, así que se cae al genérico.
   const doc = category && typeof category === "object" ? category : null;
   const color = landing === "next" ? doc?.colorNext : doc?.colorDitu;
+  // El diseño del badge es por landing: el design system de Ditu tiene dos
+  // variantes de contorno (Categoría 04 y 06) y el de Caracol Next ninguna.
+  const style = landing === "next" ? doc?.styleNext : doc?.styleDitu;
 
   return {
     // `?.trim() ||` y no `??`: Payload guarda cadena vacía, no NULL, cuando se
     // limpia un campo de texto, y con `??` un campo vaciado seguiría ganando.
     label: doc?.name?.trim() || FALLBACK.label,
     color: color?.trim() || FALLBACK[landing],
-    style: doc?.style === "outline" ? "outline" : "solid",
+    style: style === "outline" ? "outline" : "solid",
   };
 }
