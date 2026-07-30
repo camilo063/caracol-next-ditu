@@ -169,7 +169,7 @@ export function BrandTabsBlockComponent({
                           }
                     }
                   >
-                    {tab.displayName ?? meta.label}
+                    {tab.displayName?.trim() || meta.label}
                   </button>
                 );
               })}
@@ -246,7 +246,10 @@ function TabPanel({ tab }: { tab: Tab }) {
   });
   const meta = brandFromDoc(tab.brand);
   const brandSlug = meta.slug;
-  const displayName = tab.displayName ?? meta.label;
+  // `?.trim() ||` y no `??`: Payload guarda cadena vacía al limpiar un campo de
+  // texto, así que con `??` vaciar el override dejaba el nombre de la marca en
+  // blanco en vez de volver al label del brand, que es lo que promete la ayuda.
+  const displayName = tab.displayName?.trim() || meta.label;
   // Logo pequeño (esquina superior derecha + ícono mobile): prioridad CMS
   // (campo `brandLogo`) → avatar estático por slug → fallback texto.
   const cmsLogoUrl = mediaUrl(tab.brandLogo);

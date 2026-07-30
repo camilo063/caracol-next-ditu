@@ -175,9 +175,14 @@ export function KeyMomentsCalendarComponent({
 
 function CalendarCard({ event, index }: { event: EventItem; index: number }) {
   const cat = event.categoryKey ?? "otro";
-  const badgeColor = event.badgeColor ?? CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.otro;
+  const badgeColor =
+    event.badgeColor?.trim() || CATEGORY_COLORS[cat] || CATEGORY_COLORS.otro;
+  // `?.trim() ||` y no `??`: Payload guarda cadena vacía, no NULL, cuando el
+  // editor limpia un campo de texto. Con `??` la cadena vacía ganaba y el
+  // fallback nunca corría — vaciar este campo hacía desaparecer la fecha entera
+  // de la tarjeta, en vez de recalcularla como promete el texto de ayuda.
   const dateLabel =
-    event.dateLabelOverride ??
+    event.dateLabelOverride?.trim() ||
     formatDateRange(event.dateStart, event.dateEnd ?? undefined).toUpperCase();
   // El badge lo manda el dropdown de categoría; el texto libre solo se usa
   // cuando la categoría elegida es "Personalizada". Mismo criterio que Ditu.
