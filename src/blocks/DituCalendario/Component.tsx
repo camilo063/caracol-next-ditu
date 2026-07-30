@@ -1,5 +1,5 @@
 import { DituCalendarioBlock } from "@/components/marketing/ditu-calendario";
-import { resolveCategoryLabel } from "@/lib/event-categories";
+import { resolveEventBadge } from "@/lib/event-categories";
 import { activeEventsSorted, eventDay, formatEventDateLabel } from "@/lib/event-dates";
 import type { DituCalendarioBlockProps } from "../types";
 
@@ -19,21 +19,30 @@ export function DituCalendarioBlockComponent(block: DituCalendarioBlockProps) {
   // reales. Mismo criterio que el calendario de Caracol Next.
   if (upcoming.length === 0) return null;
 
-  const events = upcoming.map((e) => ({
-    id: e.id ?? e.title,
-    // El texto del badge de fecha se arma solo desde las fechas reales;
-    // `dateLabel` queda como override para redacciones puntuales.
-    dateLabel: e.dateLabel?.trim() || formatEventDateLabel(e.startDate, e.endDate),
-    // El slider tipa estos campos como `YYYY-MM-DD`; Payload devuelve el
-    // timestamp completo, así que lo recortamos al día (en UTC, que es el
-    // día que eligió el editor).
-    startDate: eventDay(e.startDate) ?? "",
-    endDate: eventDay(e.endDate) ?? "",
-    title: e.title,
-    subtitle: e.subtitle ?? "",
-    category: resolveCategoryLabel(e.categoryKey, e.category),
-    badgeColor: e.badgeColor?.trim() || "#77EDED",
-  }));
+  const events = upcoming.map((e) => {
+    // Texto, color y estilo del badge salen de la categoría relacionada, que se
+    // administra desde la colección "Categorías de evento". Antes el color venía
+    // de un campo por evento que nacía con `#77EDED` por defecto, así que elegir
+    // la categoría nunca llegaba a cambiar el color del badge.
+    const badge = resolveEventBadge(e.eventCategory, "ditu", e.category, e.badgeColor);
+
+    return {
+      id: e.id ?? e.title,
+      // El texto del badge de fecha se arma solo desde las fechas reales;
+      // `dateLabel` queda como override para redacciones puntuales.
+      dateLabel: e.dateLabel?.trim() || formatEventDateLabel(e.startDate, e.endDate),
+      // El slider tipa estos campos como `YYYY-MM-DD`; Payload devuelve el
+      // timestamp completo, así que lo recortamos al día (en UTC, que es el
+      // día que eligió el editor).
+      startDate: eventDay(e.startDate) ?? "",
+      endDate: eventDay(e.endDate) ?? "",
+      title: e.title,
+      subtitle: e.subtitle ?? "",
+      category: badge.label,
+      badgeColor: badge.color,
+      badgeStyle: badge.style,
+    };
+  });
 
   return (
     <DituCalendarioBlock

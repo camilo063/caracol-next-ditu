@@ -57,7 +57,12 @@ function readableTextColor(hex: string): string {
 }
 
 /** Estilo del badge a partir de un color hex (fondo + borde = color, texto auto). */
-function badgeStyle(hex: string): React.CSSProperties {
+function badgeStyle(hex: string, style: "solid" | "outline"): React.CSSProperties {
+  // "outline" es uno de los seis estilos del design system de Ditu: borde y
+  // texto del color, fondo transparente.
+  if (style === "outline") {
+    return { backgroundColor: "transparent", borderColor: hex, color: hex };
+  }
   return { backgroundColor: hex, borderColor: hex, color: readableTextColor(hex) };
 }
 
@@ -72,8 +77,10 @@ interface CalendarEvent {
   title: string;
   subtitle: string;
   category: string;
-  /** Color hex del badge de categoría. */
+  /** Color hex del badge, ya resuelto (categoría o excepción del evento). */
   badgeColor: string;
+  /** Estilo del badge según la categoría. */
+  badgeStyle?: "solid" | "outline";
 }
 
 /** Mock data — 14 eventos representativos del año 2026.
@@ -610,7 +617,7 @@ function CalendarCard({ event }: { event: CalendarEvent }) {
           </div>
           <div
             className="inline-flex items-center justify-center rounded-[4px] border px-[8px] py-[4px]"
-            style={badgeStyle(event.badgeColor)}
+            style={badgeStyle(event.badgeColor, event.badgeStyle ?? "solid")}
           >
             <p
               className="text-[12px] font-semibold uppercase"
