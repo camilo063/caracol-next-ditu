@@ -29,6 +29,11 @@ import * as migration_20260623_brand_tabs_panel_image from "./20260623_brand_tab
 import * as migration_20260623_brand_pie_colors from "./20260623_brand_pie_colors";
 import * as migration_20260624_ditu_pauta_cta_file from "./20260624_ditu_pauta_cta_file";
 import * as migration_20260630_site_settings_analytics from "./20260630_site_settings_analytics";
+import * as migration_20260730_brand_tabs_show_web_networks from "./20260730_brand_tabs_show_web_networks";
+import * as migration_20260730_ditu_audiencia_watch_time_toggles from "./20260730_ditu_audiencia_watch_time_toggles";
+import * as migration_20260730_ditu_calendario_category_select from "./20260730_ditu_calendario_category_select";
+import * as migration_20260730_ditu_pauta_image_fit from "./20260730_ditu_pauta_image_fit";
+import * as migration_20260730_key_moments_category_label_default from "./20260730_key_moments_category_label_default";
 
 export const migrations = [
   {
@@ -185,5 +190,30 @@ export const migrations = [
     up: migration_20260630_site_settings_analytics.up,
     down: migration_20260630_site_settings_analytics.down,
     name: "20260630_site_settings_analytics",
+  },
+  {
+    up: migration_20260730_brand_tabs_show_web_networks.up,
+    down: migration_20260730_brand_tabs_show_web_networks.down,
+    name: "20260730_brand_tabs_show_web_networks",
+  },
+  {
+    up: migration_20260730_ditu_audiencia_watch_time_toggles.up,
+    down: migration_20260730_ditu_audiencia_watch_time_toggles.down,
+    name: "20260730_ditu_audiencia_watch_time_toggles",
+  },
+  {
+    up: migration_20260730_ditu_calendario_category_select.up,
+    down: migration_20260730_ditu_calendario_category_select.down,
+    name: "20260730_ditu_calendario_category_select",
+  },
+  {
+    up: migration_20260730_ditu_pauta_image_fit.up,
+    down: migration_20260730_ditu_pauta_image_fit.down,
+    name: "20260730_ditu_pauta_image_fit",
+  },
+  {
+    up: migration_20260730_key_moments_category_label_default.up,
+    down: migration_20260730_key_moments_category_label_default.down,
+    name: "20260730_key_moments_category_label_default",
   },
 ];

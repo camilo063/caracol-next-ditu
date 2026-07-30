@@ -20,6 +20,7 @@ export function DituPautaBlockComponent(block: DituPautaBlockProps) {
             description: f.description ?? "",
             image: mediaUrl(f.image as number | Media | null | undefined) ?? undefined,
             imageIsVideo: isMediaVideo(f.image as number | Media | null | undefined),
+            imageFit: (f.imageFit ?? "cover") as "cover" | "contain",
             youtubeUrl: f.youtubeUrl ?? undefined,
             videoExternalUrl: f.videoExternalUrl ?? undefined,
           })),

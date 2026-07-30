@@ -49,9 +49,22 @@ export const DituAudienciaBlock: Block = {
       ],
     },
     {
+      name: "showWatchTime",
+      type: "checkbox",
+      defaultValue: true,
+      label: "Mostrar watch time",
+      admin: {
+        description:
+          "Apagalo para ocultar la card grande de watch time. Si también apagás el watch time por dispositivo, desaparece el recuadro completo.",
+      },
+    },
+    {
       name: "watchTime",
       type: "group",
       label: "Watch time (card grande)",
+      admin: {
+        condition: (_, siblingData) => siblingData?.showWatchTime !== false,
+      },
       fields: [
         {
           name: "label",
@@ -69,10 +82,25 @@ export const DituAudienciaBlock: Block = {
       ],
     },
     {
+      name: "showDevices",
+      type: "checkbox",
+      defaultValue: true,
+      label: "Mostrar watch time por dispositivo",
+      admin: {
+        description:
+          "Apagalo para ocultar las cards de dispositivo sin tener que borrarlas. El recuadro se achica solo y el watch time queda centrado.",
+      },
+    },
+    {
       name: "devices",
       type: "array",
       label: "Watch time por dispositivo",
       maxRows: 6,
+      admin: {
+        condition: (_, siblingData) => siblingData?.showDevices !== false,
+        description:
+          "Se muestran tantas cards como cargues (1 a 6) y el contenedor se ajusta a esa cantidad. Si borrás todas, la fila desaparece.",
+      },
       fields: [
         { name: "label", type: "text", required: true },
         { name: "minutes", type: "number", required: true },
