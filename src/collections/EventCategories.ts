@@ -102,17 +102,33 @@ export const EventCategories: CollectionConfig = {
       },
     },
     {
-      name: "style",
+      name: "styleNext",
       type: "select",
       defaultValue: "solid",
-      label: "Estilo del badge",
+      label: "Diseño en Caracol Next",
       options: [
         { label: "Relleno", value: "solid" },
         { label: "Contorno (fondo transparente)", value: "outline" },
       ],
       admin: {
+        condition: (_, siblingData) => siblingData?.scope !== "ditu",
         description:
-          "“Contorno” pinta solo el borde y el texto con el color, dejando el fondo transparente.",
+          "Relleno = el fondo del badge es el color y el texto se ajusta solo. Contorno = solo el borde y el texto llevan el color. El design system de Caracol Next usa relleno en sus seis variantes.",
+      },
+    },
+    {
+      name: "styleDitu",
+      type: "select",
+      defaultValue: "solid",
+      label: "Diseño en Ditu",
+      options: [
+        { label: "Relleno", value: "solid" },
+        { label: "Contorno (fondo transparente)", value: "outline" },
+      ],
+      admin: {
+        condition: (_, siblingData) => siblingData?.scope !== "next",
+        description:
+          "Relleno = variantes Categoría 01, 02, 03 y 05 del design system. Contorno = variantes 04 y 06. Ojo con el contorno en colores oscuros: el calendario de Ditu va sobre un degradado violeta oscuro y el badge puede quedar casi invisible — conviene mirarlo en la página antes de dejarlo.",
       },
     },
     {

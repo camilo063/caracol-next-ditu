@@ -208,7 +208,8 @@ async function seedEventCategories(
       scope: "both" as const,
       colorNext: cat.colorNext,
       colorDitu: cat.colorDitu,
-      style: "solid" as const,
+      styleNext: "solid" as const,
+      styleDitu: "solid" as const,
       order: cat.order,
     };
     const existing = await payload.find({
