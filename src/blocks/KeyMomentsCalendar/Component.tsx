@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { Container } from "@/components/ui";
+import { resolveCategoryLabel } from "@/lib/event-categories";
 import { activeEventsSorted } from "@/lib/event-dates";
 import { formatDateRange } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -31,30 +32,23 @@ import type { KeyMomentsBlockProps } from "../types";
  * Mobile: carrusel horizontal scroll-snap.
  */
 
-/** Colores de categoría según el design system Figma (Categorias/01..06). */
-const CATEGORY_COLORS: Record<string, string> = {
-  // Mapping semántico → token Figma.
-  sports: "#2862FF", // Categorias/01 azul medio
-  news: "#0000C4", // Categorias/02 azul oscuro
-  special: "#FFC200", // Categorias/03 amarillo
-  entertainment: "#A139C6", // Categorias/04 morado
-  promo: "#FF0013", // Categorias/05 rojo
-  cyan: "#05E8FD", // Categorias/06 cyan
-  other: "#2862FF",
-};
-
 /**
- * Etiqueta del badge por categoría. Se usa cuando el evento no trae un texto
- * propio en `categoryLabel`: antes, sin ese texto, el badge decía siempre
- * "CATEGORÍA" aunque el editor hubiera elegido una categoría en el dropdown.
+ * Color por defecto de cada categoría, según el design system Figma
+ * (Categorias/01..06). Solo aplica a eventos nuevos: los que ya existían tienen
+ * su color guardado explícito en `badgeColor`, que siempre manda.
  */
-const CATEGORY_LABELS: Record<string, string> = {
-  sports: "DEPORTES",
-  news: "NOTICIAS",
-  special: "ESPECIAL",
-  entertainment: "ENTRETENIMIENTO",
-  promo: "PROMO",
-  other: "CATEGORÍA",
+const CATEGORY_COLORS: Record<string, string> = {
+  deportes: "#2862FF", // Categorias/01 azul medio
+  futbol: "#2862FF",
+  ciclismo: "#05E8FD", // Categorias/06 cyan
+  noticias: "#0000C4", // Categorias/02 azul oscuro
+  especial: "#FFC200", // Categorias/03 amarillo
+  cultural: "#A139C6", // Categorias/04 morado
+  entretenimiento: "#A139C6",
+  musica: "#A139C6",
+  comercial: "#FF0013", // Categorias/05 rojo
+  otro: "#2862FF",
+  custom: "#2862FF",
 };
 
 const NAVY_DARK = "#003381";
@@ -180,15 +174,14 @@ export function KeyMomentsCalendarComponent({
 }
 
 function CalendarCard({ event, index }: { event: EventItem; index: number }) {
-  const cat = event.category ?? "other";
-  const badgeColor = event.badgeColor ?? CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.other;
+  const cat = event.categoryKey ?? "otro";
+  const badgeColor = event.badgeColor ?? CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.otro;
   const dateLabel =
     event.dateLabelOverride ??
     formatDateRange(event.dateStart, event.dateEnd ?? undefined).toUpperCase();
-  // El texto propio manda; si está vacío se usa el nombre de la categoría
-  // elegida en el dropdown, y recién al final el genérico.
-  const categoryLabel =
-    event.categoryLabel?.trim() || CATEGORY_LABELS[cat] || "CATEGORÍA";
+  // El badge lo manda el dropdown de categoría; el texto libre solo se usa
+  // cuando la categoría elegida es "Personalizada". Mismo criterio que Ditu.
+  const categoryLabel = resolveCategoryLabel(event.categoryKey, event.categoryLabel);
 
   return (
     <motion.article
