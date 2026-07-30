@@ -1,9 +1,9 @@
 import type { Block } from "payload";
 
-import { CUSTOM_CATEGORY, eventCategoryOptions } from "@/lib/event-categories";
 import {
   anchorIdField,
   ctaField,
+  eventCategoryField,
   openInNewTabField,
   sectionHeaderFields,
 } from "../shared-fields";
@@ -44,28 +44,7 @@ export const KeyMomentsCalendarBlock: Block = {
           },
         },
         { name: "description", type: "textarea" },
-        { name: "image", type: "upload", relationTo: "media" },
-        {
-          name: "importance",
-          type: "select",
-          defaultValue: "high",
-          options: [
-            { label: "Crítico", value: "critical" },
-            { label: "Alto", value: "high" },
-            { label: "Medio", value: "medium" },
-          ],
-        },
-        {
-          name: "categoryKey",
-          type: "select",
-          label: "Categoría",
-          defaultValue: "otro",
-          options: eventCategoryOptions,
-          admin: {
-            description:
-              "Es el texto del badge de color. Elegí “Personalizada” si necesitás uno que no esté en la lista.",
-          },
-        },
+        eventCategoryField("next"),
         {
           name: "badgeColor",
           type: "text",
@@ -78,11 +57,11 @@ export const KeyMomentsCalendarBlock: Block = {
         {
           name: "categoryLabel",
           type: "text",
-          label: "Etiqueta personalizada",
+          label: "Texto del badge (excepción)",
           admin: {
-            condition: (_, siblingData) => siblingData?.categoryKey === CUSTOM_CATEGORY,
-            placeholder: "PREVENTA",
-            description: "Se muestra tal cual en el badge.",
+            placeholder: "Se usa el nombre de la categoría",
+            description:
+              "Solo para un caso puntual en el que el badge deba decir algo distinto al nombre de la categoría. Normalmente va vacío.",
           },
         },
         ctaField({ name: "cta", label: "CTA (opcional)" }),

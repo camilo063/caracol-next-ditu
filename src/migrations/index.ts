@@ -35,6 +35,7 @@ import * as migration_20260730_ditu_calendario_category_select from "./20260730_
 import * as migration_20260730_ditu_pauta_image_fit from "./20260730_ditu_pauta_image_fit";
 import * as migration_20260730_key_moments_category_label_default from "./20260730_key_moments_category_label_default";
 import * as migration_20260730_key_moments_category_key from "./20260730_key_moments_category_key";
+import * as migration_20260731_event_categories_collection from "./20260731_event_categories_collection";
 
 export const migrations = [
   {
@@ -221,5 +222,10 @@ export const migrations = [
     up: migration_20260730_key_moments_category_key.up,
     down: migration_20260730_key_moments_category_key.down,
     name: "20260730_key_moments_category_key",
+  },
+  {
+    up: migration_20260731_event_categories_collection.up,
+    down: migration_20260731_event_categories_collection.down,
+    name: "20260731_event_categories_collection",
   },
 ];
