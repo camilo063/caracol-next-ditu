@@ -1,30 +1,7 @@
-import type { BasePayload, CollectionConfig } from "payload";
+import type { CollectionConfig } from "payload";
 
 import { anyone, authenticated } from "@/access";
-import { pageTag, revalidateTag } from "@/lib/payload/cache-tags";
-
-/**
- * Las marcas se embeben en las páginas vía relationship (BrandTabs, Hero,
- * AdFormats) y la query de páginas está cacheada con `unstable_cache`. Editar
- * una marca NO toca el doc de la página, así que hay que invalidar a mano el
- * cache de toda página que pueda referenciarla. Revalidamos todos los slugs de
- * `pages` (las marcas cambian poco; la query es barata).
- */
-async function revalidateAllPages(payload: BasePayload): Promise<void> {
-  try {
-    const pages = await payload.find({
-      collection: "pages",
-      limit: 100,
-      depth: 0,
-      pagination: false,
-    });
-    for (const p of pages.docs) {
-      if (p.slug) revalidateTag(pageTag(p.slug));
-    }
-  } catch {
-    // Fuera del contexto de Next (seed/scripts) o error de query — no-op.
-  }
-}
+import { revalidateAllPages } from "@/lib/payload/revalidate-pages";
 
 /**
  * Brands — marcas del ecosistema Caracol, editables desde el admin.

@@ -18,11 +18,16 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from "@payloadcms/db-postgres";
  * Migración de datos, sin perder nada:
  *  - Se siembran las 5 categorías acordadas con el cliente, con los hex del
  *    design system (Categorias/01..06 para Next, la gama de violetas de Ditu).
- *  - Cada evento existente se enlaza a su categoría buscando por nombre, sin
- *    distinguir mayúsculas ni tildes, contra su `category_key` o su texto libre.
- *  - Lo que no matchee se convierte en una categoría propia, creada a partir de
- *    su texto, para que ningún badge cambie de la noche a la mañana.
- *  - Las columnas viejas NO se dropean: quedan como red de rollback.
+ *  - Cada evento se enlaza a la categoría que se llama igual que el badge que
+ *    ese evento muestra HOY, comparando primero exacto y después sin tildes.
+ *  - Si esa categoría no existe, se crea con el nombre Y EL COLOR que el badge
+ *    tiene hoy. Ningún badge cambia de texto ni de color.
+ *  - Las categorías viejas no se colapsan dentro de las cinco nuevas: traducir
+ *    'NOTICIAS' a 'OTROS EVENTOS' sería una decisión de contenido, no de una
+ *    migración. El cliente fusiona o borra desde el admin.
+ *  - Las columnas viejas NO se tocan: ni se dropean ni se vacían. Son la red
+ *    que permite revertir, y como ya nadie las lee, el `down` alcanza con
+ *    quitar la relación.
  *
  * El nombre arranca con 20260731 a propósito: las migraciones se leen del
  * directorio ordenadas por nombre de archivo, y esta necesita correr DESPUÉS de
@@ -43,21 +48,42 @@ const SEED = [
 ];
 
 /**
- * Cómo se traduce cada valor del `select` viejo al nombre de la categoría
- * nueva. Los que no tienen equivalente caen en "OTROS EVENTOS".
+ * El texto que el badge muestra hoy para cada valor del `select` viejo, cuando
+ * el evento no tiene texto libre. Copiado de las etiquetas que devolvía
+ * `resolveCategoryLabel` antes de este cambio.
  */
-const DESDE_ENUM: Record<string, string> = {
-  futbol: "FÚTBOL",
-  ciclismo: "CICLISMO",
-  cultural: "CULTURAL",
-  deportes: "FÚTBOL",
-  entretenimiento: "CULTURAL",
-  musica: "CULTURAL",
-  noticias: "OTROS EVENTOS",
-  especial: "PRODUCCIONES PROPIAS",
-  comercial: "PRODUCCIONES PROPIAS",
-  otro: "OTROS EVENTOS",
-};
+const ETIQUETA_VIEJA = `
+  CASE e."category_key"::text
+    WHEN 'deportes'        THEN 'DEPORTES'
+    WHEN 'futbol'          THEN 'FÚTBOL'
+    WHEN 'ciclismo'        THEN 'CICLISMO'
+    WHEN 'cultural'        THEN 'CULTURAL'
+    WHEN 'entretenimiento' THEN 'ENTRETENIMIENTO'
+    WHEN 'musica'          THEN 'MÚSICA'
+    WHEN 'noticias'        THEN 'NOTICIAS'
+    WHEN 'especial'        THEN 'ESPECIAL'
+    WHEN 'comercial'       THEN 'COMERCIAL'
+    ELSE 'CATEGORÍA'
+  END
+`;
+
+/**
+ * El color que el calendario de Caracol Next le daba a cada categoría vieja
+ * cuando el evento no tenía color propio. Copiado del `CATEGORY_COLORS` que
+ * vivía en el componente antes de este cambio.
+ */
+const COLOR_VIEJO_NEXT = `
+  CASE e."category_key"::text
+    WHEN 'ciclismo'        THEN '#05E8FD'
+    WHEN 'noticias'        THEN '#0000C4'
+    WHEN 'especial'        THEN '#FFC200'
+    WHEN 'cultural'        THEN '#A139C6'
+    WHEN 'entretenimiento' THEN '#A139C6'
+    WHEN 'musica'          THEN '#A139C6'
+    WHEN 'comercial'       THEN '#FF0013'
+    ELSE '#2862FF'
+  END
+`;
 
 /** Normaliza para comparar nombres sin tildes ni mayúsculas. */
 const NORM = (col: string) => `translate(upper(btrim(${col})), 'ÁÉÍÓÚÑÜ', 'AEIOUNU')`;
@@ -170,127 +196,72 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   }
 
   // 4. Mapeo de los eventos existentes ------------------------------------------
-  for (const { eventos } of TABLAS) {
+  //
+  //    La regla es una sola: cada evento se enlaza a la categoría que se llama
+  //    igual que el badge que ese evento muestra HOY. Si esa categoría no
+  //    existe, se crea con el nombre y el color que el badge tiene hoy.
+  //
+  //    Deliberadamente NO se colapsan las categorías viejas dentro de las cinco
+  //    nuevas. Traducir 'NOTICIAS' a 'OTROS EVENTOS' le cambiaría el texto al
+  //    badge de eventos que hoy dicen otra cosa, y esa es una decisión de
+  //    contenido, no de una migración. Quedan todas listadas en el admin y el
+  //    cliente fusiona o borra las que no quiera: para eso son administrables.
+  for (const { eventos, landing } of TABLAS) {
     const texto = COL_TEXTO[eventos]!;
 
-    // 4a. El texto libre del badge manda: es lo que el evento muestra HOY.
-    //     Si coincide con el nombre de una categoría (sin tildes ni mayúsculas),
-    //     se enlaza a ella y el badge sigue diciendo exactamente lo mismo.
-    await db.execute(
-      sql.raw(`
-        UPDATE "${eventos}" AS e
-           SET "event_category_id" = c."id"
-          FROM "event_categories" AS c
-         WHERE e."event_category_id" IS NULL
-           AND ${NORM(`e."${texto}"`)} = ${NORM(`c."name"`)};
-      `),
-    );
+    /** El texto que el badge muestra hoy: el libre, y si no el de su categoría vieja. */
+    const ETIQUETA = `COALESCE(NULLIF(btrim(e."${texto}"), ''), ${ETIQUETA_VIEJA})`;
 
-    // 4b. Sin texto libre: se traduce el valor del select viejo.
-    const casos = Object.entries(DESDE_ENUM)
-      .map(([k, v]) => `WHEN '${k}' THEN '${v}'`)
-      .join(" ");
-    await db.execute(
-      sql.raw(`
-        UPDATE "${eventos}" AS e
-           SET "event_category_id" = c."id"
-          FROM "event_categories" AS c
-         WHERE e."event_category_id" IS NULL
-           AND (e."${texto}" IS NULL OR btrim(e."${texto}") = '')
-           AND c."name" = (CASE e."category_key"::text ${casos} ELSE 'OTROS EVENTOS' END);
-      `),
-    );
+    /** El color que el badge muestra hoy: el propio, y si no el de su categoría vieja. */
+    const COLOR =
+      landing === "next"
+        ? `COALESCE(NULLIF(btrim(e."badge_color"), ''), ${COLOR_VIEJO_NEXT})`
+        : `COALESCE(NULLIF(btrim(e."badge_color"), ''), '#77EDED')`;
 
-    // 4c. Texto libre que no coincide con ninguna categoría (por ejemplo
-    //     "PREVENTA 2027"): se crea la categoría con ese mismo nombre para no
-    //     perder lo que el evento muestra. Nace con el color por defecto de la
-    //     landing y el cliente la ajusta —o la borra— desde el admin.
+    /** Enlaza contra las categorías existentes con el criterio que se le pase. */
+    const enlazar = (comparacion: string) =>
+      db.execute(
+        sql.raw(`
+          UPDATE "${eventos}" AS e
+             SET "event_category_id" = c."id"
+            FROM "event_categories" AS c
+           WHERE e."event_category_id" IS NULL
+             AND ${comparacion};
+        `),
+      );
+
+    // 4a. Coincidencia exacta de nombre.
+    await enlazar(`upper(btrim(${ETIQUETA})) = upper(btrim(c."name"))`);
+
+    // 4b. Recién ahora, sin tildes: así un 'Futbol' sin acento cae en 'FÚTBOL'.
+    //     El orden importa — comparando sin tildes primero, 'PREVENTA' y
+    //     'PRÉVENTA' matchearían entre sí y Postgres elegiría cualquiera.
+    await enlazar(`${NORM(ETIQUETA)} = ${NORM(`c."name"`)}`);
+
+    // 4c. Lo que no matcheó nada se convierte en su propia categoría, con el
+    //     nombre y el color que ese badge tiene hoy. `DISTINCT ON` hace la
+    //     elección determinista cuando varios eventos comparten texto.
     await db.execute(
       sql.raw(`
         INSERT INTO "event_categories" ("name","scope","color_next","color_ditu","style","order")
-        SELECT DISTINCT upper(btrim(e."${texto}")),
+        SELECT DISTINCT ON (upper(btrim(${ETIQUETA})))
+               upper(btrim(${ETIQUETA})),
                'both'::"public"."enum_event_categories_scope",
-               '#2862FF', '#77EDED',
+               ${landing === "next" ? COLOR : `'#2862FF'`},
+               ${landing === "ditu" ? COLOR : `'#77EDED'`},
                'solid'::"public"."enum_event_categories_style",
                99
           FROM "${eventos}" AS e
          WHERE e."event_category_id" IS NULL
-           AND e."${texto}" IS NOT NULL
-           AND btrim(e."${texto}") <> ''
+           AND NULLIF(btrim(${ETIQUETA}), '') IS NOT NULL
+         ORDER BY upper(btrim(${ETIQUETA})), e."id"
         ON CONFLICT ("name") DO NOTHING;
       `),
     );
-    await db.execute(
-      sql.raw(`
-        UPDATE "${eventos}" AS e
-           SET "event_category_id" = c."id"
-          FROM "event_categories" AS c
-         WHERE e."event_category_id" IS NULL
-           AND ${NORM(`e."${texto}"`)} = ${NORM(`c."name"`)};
-      `),
-    );
+    await enlazar(`upper(btrim(${ETIQUETA})) = upper(btrim(c."name"))`);
 
-    // 4d. Lo que quede sin nada: "OTROS EVENTOS", que es el badge genérico.
-    await db.execute(
-      sql.raw(`
-        UPDATE "${eventos}" AS e
-           SET "event_category_id" = c."id"
-          FROM "event_categories" AS c
-         WHERE e."event_category_id" IS NULL
-           AND c."name" = 'OTROS EVENTOS';
-      `),
-    );
-
-    // 4e. El texto libre ya cumplió su función: pasa a ser una excepción vacía,
-    //     para que de ahora en más mande la categoría. Se limpia solo cuando
-    //     coincide con el nombre de la categoría enlazada; si el editor había
-    //     escrito algo realmente distinto, se conserva.
-    await db.execute(
-      sql.raw(`
-        UPDATE "${eventos}" AS e
-           SET "${texto}" = NULL
-          FROM "event_categories" AS c
-         WHERE e."event_category_id" = c."id"
-           AND e."${texto}" IS NOT NULL
-           AND ${NORM(`e."${texto}"`)} = ${NORM(`c."name"`)};
-      `),
-    );
-  }
-
-  // 5. El color por evento pasa a ser una excepción ------------------------------
-  //
-  //    En Ditu la columna tenía `DEFAULT '#77EDED'`, así que TODOS los eventos
-  //    nacían con un color explícito y la categoría nunca llegaba a pintarlos:
-  //    ese es el "al poner la categoría no cambia el color" que reportó el
-  //    cliente. Se quita el default.
-  for (const eventos of [
-    "pages_blocks_ditu_calendario_events",
-    "_pages_v_blocks_ditu_calendario_events",
-  ]) {
-    await db.execute(
-      sql.raw(`ALTER TABLE "${eventos}" ALTER COLUMN "badge_color" DROP DEFAULT;`),
-    );
-  }
-
-  //    Y se libera el color de los eventos cuyo color guardado es EXACTAMENTE el
-  //    que su categoría ya les daría. Para esos el badge se ve igual antes y
-  //    después —cero cambio visual— pero a partir de ahora siguen a la categoría:
-  //    si el cliente le cambia el color a "CULTURAL", todos sus eventos cambian.
-  //
-  //    Los que tienen un color distinto se dejan intactos: ahí el editor eligió
-  //    algo a propósito y se respeta como la excepción que es.
-  for (const { eventos, landing } of TABLAS) {
-    const colDeLanding = landing === "next" ? "color_next" : "color_ditu";
-    await db.execute(
-      sql.raw(`
-        UPDATE "${eventos}" AS e
-           SET "badge_color" = NULL
-          FROM "event_categories" AS c
-         WHERE e."event_category_id" = c."id"
-           AND e."badge_color" IS NOT NULL
-           AND upper(btrim(e."badge_color")) = upper(btrim(coalesce(c."${colDeLanding}", '')));
-      `),
-    );
+    // 4d. Un evento sin texto ni categoría vieja: al genérico.
+    await enlazar(`c."name" = 'OTROS EVENTOS'`);
   }
 }
 
@@ -311,14 +282,4 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
     DROP TYPE IF EXISTS "public"."enum_event_categories_scope";
     DROP TYPE IF EXISTS "public"."enum_event_categories_style";
   `);
-  for (const eventos of [
-    "pages_blocks_ditu_calendario_events",
-    "_pages_v_blocks_ditu_calendario_events",
-  ]) {
-    await db.execute(
-      sql.raw(
-        `ALTER TABLE "${eventos}" ALTER COLUMN "badge_color" SET DEFAULT '#77EDED';`,
-      ),
-    );
-  }
 }

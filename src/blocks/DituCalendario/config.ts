@@ -77,26 +77,6 @@ export const DituCalendarioBlock: Block = {
           },
         },
         eventCategoryField("ditu"),
-        {
-          name: "category",
-          type: "text",
-          label: "Texto del badge (excepción)",
-          admin: {
-            placeholder: "Se usa el nombre de la categoría",
-            description:
-              "Solo para un caso puntual en el que el badge deba decir algo distinto al nombre de la categoría. Normalmente va vacío.",
-          },
-        },
-        {
-          name: "badgeColor",
-          type: "text",
-          label: "Color del badge (excepción)",
-          admin: {
-            description:
-              "Normalmente va vacío: el color lo pone la categoría. Llenalo solo si este evento puntual necesita otro color. El texto se ajusta solo (claro/oscuro).",
-            placeholder: "Se usa el color de la categoría",
-          },
-        },
       ],
     },
     {

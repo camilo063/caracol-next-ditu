@@ -158,12 +158,7 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
   // Texto, color y estilo del badge salen de la categoría relacionada, que se
   // administra desde la colección "Categorías de evento". Los campos del evento
   // son excepciones puntuales y normalmente van vacíos.
-  const badge = resolveEventBadge(
-    event.eventCategory,
-    "next",
-    event.categoryLabel,
-    event.badgeColor,
-  );
+  const badge = resolveEventBadge(event.eventCategory, "next");
   // `?.trim() ||` y no `??`: Payload guarda cadena vacía, no NULL, cuando el
   // editor limpia un campo de texto. Con `??` la cadena vacía ganaba y el
   // fallback nunca corría — vaciar este campo hacía desaparecer la fecha entera
@@ -218,19 +213,14 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
     >
       <div className="flex flex-col items-start gap-2">
         <span
-          className="font-display inline-flex items-center justify-center rounded-[4px] border px-2 py-1 text-[12px] leading-3 font-bold uppercase"
+          className={cn(
+            "font-display inline-flex items-center justify-center rounded-[4px] px-2 py-1 text-[12px] leading-3 font-bold uppercase",
+            badge.style === "outline" && "border",
+          )}
           style={
             badge.style === "outline"
-              ? {
-                  backgroundColor: "transparent",
-                  borderColor: badge.color,
-                  color: badge.color,
-                }
-              : {
-                  backgroundColor: badge.color,
-                  borderColor: badge.color,
-                  color: "#FFFFFF",
-                }
+              ? { borderColor: badge.color, color: badge.color }
+              : { backgroundColor: badge.color, color: "#FFFFFF" }
           }
         >
           {badge.label}

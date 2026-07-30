@@ -216,6 +216,7 @@ export const eventCategoryField = (landing: "next" | "ditu"): Field => ({
   name: "eventCategory",
   type: "relationship",
   relationTo: "event-categories",
+  required: true,
   label: "Categoría",
   admin: {
     description:
