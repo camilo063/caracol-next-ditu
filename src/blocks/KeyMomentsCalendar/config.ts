@@ -57,13 +57,17 @@ export const KeyMomentsCalendarBlock: Block = {
         {
           name: "category",
           type: "select",
-          admin: { description: "Permite agrupar por tipo." },
+          label: "Categoría",
+          admin: {
+            description:
+              "Define el color por defecto del badge y, si no escribís un texto propio abajo, también su etiqueta.",
+          },
           options: [
-            { label: "Deportes", value: "sports" },
-            { label: "Entretenimiento", value: "entertainment" },
-            { label: "Noticias", value: "news" },
-            { label: "Especial", value: "special" },
-            { label: "Otro", value: "other" },
+            { label: "DEPORTES", value: "sports" },
+            { label: "ENTRETENIMIENTO", value: "entertainment" },
+            { label: "NOTICIAS", value: "news" },
+            { label: "ESPECIAL", value: "special" },
+            { label: "OTRO", value: "other" },
           ],
         },
         {
@@ -78,9 +82,11 @@ export const KeyMomentsCalendarBlock: Block = {
         {
           name: "categoryLabel",
           type: "text",
-          defaultValue: "CATEGORÍA",
+          label: "Etiqueta personalizada del badge (opcional)",
           admin: {
-            description: "Texto del pill superior. Default 'CATEGORÍA'.",
+            placeholder: "Se usa la categoría elegida arriba",
+            description:
+              "Solo si necesitás un texto distinto al de la categoría (ej. CICLISMO, PREVENTA). Si lo dejás vacío se usa el nombre de la categoría.",
           },
         },
         ctaField({ name: "cta", label: "CTA (opcional)" }),
