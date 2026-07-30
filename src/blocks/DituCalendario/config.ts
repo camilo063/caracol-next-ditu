@@ -1,4 +1,5 @@
 import type { Block } from "payload";
+import { CUSTOM_CATEGORY, eventCategoryOptions } from "@/lib/event-categories";
 import { anchorIdField, openInNewTabField } from "../shared-fields";
 
 export const DituCalendarioBlock: Block = {
@@ -30,29 +31,73 @@ export const DituCalendarioBlock: Block = {
       label: "Eventos del calendario",
       maxRows: 30,
       fields: [
-        {
-          name: "dateLabel",
-          type: "text",
-          required: true,
-          label: "Fecha texto (e.g. DEL 06 DE MARZO AL 04 DE MAYO)",
-        },
+        // Las fechas se eligen con calendario (antes eran texto libre en formato
+        // ISO, que el editor tenía que tipear a mano). Son las que ordenan el
+        // calendario y las que deciden cuándo el evento deja de mostrarse.
         {
           name: "startDate",
-          type: "text",
+          type: "date",
           required: true,
-          label: "Fecha inicio ISO (YYYY-MM-DD)",
-          admin: { placeholder: "2026-03-06" },
+          label: "Fecha de inicio",
+          admin: {
+            date: { pickerAppearance: "dayOnly", displayFormat: "d MMM yyyy" },
+            description: "Los eventos se ordenan del más cercano al más lejano.",
+          },
         },
         {
           name: "endDate",
-          type: "text",
+          type: "date",
           required: true,
-          label: "Fecha fin ISO (YYYY-MM-DD)",
-          admin: { placeholder: "2026-05-04" },
+          label: "Fecha de fin",
+          admin: {
+            date: { pickerAppearance: "dayOnly", displayFormat: "d MMM yyyy" },
+            description:
+              "El evento se muestra hasta este día inclusive; al día siguiente desaparece solo del calendario. Si dura un solo día, poné la misma fecha de inicio.",
+          },
+          // Sin esto, invertir las fechas por error produce textos absurdos en
+          // la web ("DEL 04 DE MAYO AL 06 DE MARZO") y un orden equivocado.
+          validate: (value: unknown, { siblingData }: { siblingData?: unknown }) => {
+            const start = (siblingData as { startDate?: unknown } | undefined)?.startDate;
+            if (!value || !start) return true;
+            const end = new Date(value as string).getTime();
+            const ini = new Date(start as string).getTime();
+            if (Number.isNaN(end) || Number.isNaN(ini)) return true;
+            return end >= ini || "La fecha de fin no puede ser anterior a la de inicio.";
+          },
         },
         { name: "title", type: "text", required: true },
         { name: "subtitle", type: "text" },
-        { name: "category", type: "text", defaultValue: "Categoría" },
+        {
+          name: "dateLabel",
+          type: "text",
+          label: "Texto de la fecha (opcional)",
+          admin: {
+            placeholder: "Se arma solo desde las fechas de arriba",
+            description:
+              "Si lo dejás vacío se escribe solo (ej. DEL 06 DE MARZO AL 04 DE MAYO). Llenalo únicamente si querés un texto distinto.",
+          },
+        },
+        {
+          name: "categoryKey",
+          type: "select",
+          label: "Categoría",
+          defaultValue: "otro",
+          options: eventCategoryOptions,
+          admin: {
+            description:
+              "Es el texto del badge de color. Elegí “Personalizada” si necesitás uno que no esté en la lista.",
+          },
+        },
+        {
+          name: "category",
+          type: "text",
+          label: "Etiqueta personalizada",
+          admin: {
+            condition: (_, siblingData) => siblingData?.categoryKey === CUSTOM_CATEGORY,
+            placeholder: "PREVENTA",
+            description: "Se muestra tal cual en el badge.",
+          },
+        },
         {
           name: "badgeColor",
           type: "text",
