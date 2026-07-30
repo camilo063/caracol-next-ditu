@@ -28,6 +28,19 @@ export function formatPercent(value: number | null | undefined): string {
   return `${sign}${value.toFixed(1)}%`;
 }
 
+/**
+ * Las fechas de eventos son días calendario, no instantes: se formatean en UTC
+ * para que el día mostrado sea el que el editor eligió y para que el server
+ * (Vercel corre en UTC) y el navegador rendeen exactamente lo mismo.
+ *
+ * Sin esto había hydration mismatch real en los bloques "use client": una fecha
+ * guardada como `2026-08-01T00:00:00Z` (data de seed) la rendea el server como
+ * "1 de ago" y el navegador colombiano la re-rendeaba como "31 de jul".
+ *
+ * Ver `@/lib/event-dates` — misma semántica que usan el filtro y el orden.
+ */
+const DAY_TIME_ZONE = "UTC";
+
 /** Fecha en formato "15 mar 2026". */
 export function formatDate(
   date: string | Date | null | undefined,
@@ -40,6 +53,7 @@ export function formatDate(
     day: "numeric",
     month: "short",
     year: "numeric",
+    timeZone: DAY_TIME_ZONE,
   }).format(d);
 }
 
@@ -57,11 +71,12 @@ export function formatDateRange(
   if (Number.isNaN(e.getTime()) || e.getTime() === s.getTime())
     return formatDate(s, locale);
 
-  const sameYear = s.getFullYear() === e.getFullYear();
+  const sameYear = s.getUTCFullYear() === e.getUTCFullYear();
   const startFmt = new Intl.DateTimeFormat(locale, {
     day: "numeric",
     month: "short",
     ...(sameYear ? {} : { year: "numeric" }),
+    timeZone: DAY_TIME_ZONE,
   }).format(s);
   const endFmt = formatDate(e, locale);
   return `${startFmt} – ${endFmt}`;

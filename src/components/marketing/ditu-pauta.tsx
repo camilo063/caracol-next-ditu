@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { MediaFill } from "@/components/marketing/media-fill";
+import { cn } from "@/lib/utils";
 
 /**
  * DituPautaBlock — Figma 892:6463.
@@ -63,6 +64,12 @@ interface AdFormat {
   youtubeUrl?: string;
   /** URL de video externo (si el preview es video). */
   videoExternalUrl?: string;
+  /**
+   * Cómo encajar la imagen en el marco vertical del preview.
+   *  - `cover`   (default) recorta lo que sobra y llena el marco.
+   *  - `contain` muestra la pieza completa, sin recortar.
+   */
+  imageFit?: "cover" | "contain";
 }
 
 interface Category {
@@ -574,8 +581,29 @@ function FormatRow({
       }`}
       style={isLast ? undefined : { borderColor: "rgba(255,255,255,0.4)" }}
     >
-      {/* Image/video preview — w-176 h-320 rounded-20 (imagen cropped; video fill) */}
-      <div className="relative h-[200px] w-[100px] shrink-0 overflow-hidden rounded-[20px] sm:h-[280px] sm:w-[140px] lg:h-[320px] lg:w-[176px]">
+      {/* Image/video preview — recorte centrado y predecible: `object-cover`
+          llena el marco conservando la proporción, `object-contain` muestra la
+          pieza entera.
+
+          Antes acá había un crop calcado del Figma (w-106.89% h-125.96% con
+          offsets negativos) que replicaba el encuadre de UN asset puntual: a
+          cualquier imagen subida le aplicaba un zoom del 126% descentrado, se
+          comía el 16.7% de abajo y las franjas de los costados. Ese era el "se
+          corta super raro" del reporte.
+
+          El marco es 9:16 en los tres breakpoints (113×200, 158×280, 180×320).
+          Antes era 0.5 en mobile y 0.55 en desktop, así que una pieza vertical
+          9:16 —el formato natural para este slot— perdía 5.6% por lado en
+          mobile aunque el recorte ya estuviera centrado. Con 9:16 exacto no se
+          recorta nada. */}
+      <div
+        className={cn(
+          "relative h-[200px] w-[113px] shrink-0 overflow-hidden rounded-[20px] sm:h-[280px] sm:w-[158px] lg:h-[320px] lg:w-[180px]",
+          // Sin recorte la pieza casi nunca llena el marco vertical: un fondo
+          // tenue hace que las bandas se lean como parte del diseño.
+          format.imageFit === "contain" && "bg-white/5",
+        )}
+      >
         <MediaFill
           youtubeUrl={format.youtubeUrl}
           videoExternalUrl={format.videoExternalUrl}
@@ -587,16 +615,10 @@ function FormatRow({
             <img
               src={format.image ?? "/ditu/pauta-card.png"}
               alt=""
-              className="absolute block"
-              style={{
-                // Figma crop exacto: h-125.96% w-106.89% top-(-4.98%) left-(-5.96%)
-                width: "106.89%",
-                height: "125.96%",
-                top: "-4.98%",
-                left: "-5.96%",
-                maxWidth: "none",
-                objectFit: "cover",
-              }}
+              className={cn(
+                "absolute inset-0 block h-full w-full object-center",
+                format.imageFit === "contain" ? "object-contain" : "object-cover",
+              )}
             />
           }
         />

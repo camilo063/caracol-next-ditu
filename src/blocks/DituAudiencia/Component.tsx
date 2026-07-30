@@ -18,14 +18,21 @@ export function DituAudienciaBlockComponent(block: DituAudienciaBlockProps) {
         }))
       : undefined;
 
-  const devices: DituAudienciaProps["devices"] =
-    block.devices && block.devices.length > 0
-      ? block.devices.map((d) => ({
-          label: d.label,
-          minutes: d.minutes,
-          icon: (d.icon ?? "smarttv") as "smarttv" | "mobile" | "tablet" | "web",
-        }))
-      : undefined;
+  // Ojo con la diferencia entre `undefined` y `[]`:
+  //
+  //  - `undefined` → el componente usa su data de demostración (sirve para
+  //    previsualizar el bloque fuera del CMS).
+  //  - `[]` → el editor borró todas las filas: no se muestra ninguna card.
+  //
+  // Antes las dos situaciones colapsaban en `undefined`, así que vaciar la
+  // lista desde Payload hacía reaparecer los 52/32/34/28 min hardcodeados del
+  // demo — el bug que reportó el cliente ("quité el tiempo por dispositivo" y
+  // siguió apareciendo). `showDevices` permite ocultarlas sin borrarlas.
+  const devices: DituAudienciaProps["devices"] = block.devices?.map((d) => ({
+    label: d.label,
+    minutes: d.minutes,
+    icon: (d.icon ?? "smarttv") as "smarttv" | "mobile" | "tablet" | "web",
+  }));
 
   const networks: DituAudienciaProps["networks"] =
     block.networks && block.networks.length > 0
@@ -48,6 +55,8 @@ export function DituAudienciaBlockComponent(block: DituAudienciaBlockProps) {
       stickerLabel={block.stickerLabel ?? undefined}
       heading={block.heading ?? undefined}
       watchTime={block.watchTime ?? undefined}
+      showWatchTime={block.showWatchTime ?? true}
+      showDevices={block.showDevices ?? true}
       topSource={block.topSource ?? undefined}
       totalFollowersHeadline={block.totalFollowersHeadline ?? undefined}
       followersSuffix={block.followersSuffix ?? undefined}

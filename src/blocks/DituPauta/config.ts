@@ -80,7 +80,23 @@ export const DituPautaBlock: Block = {
               admin: {
                 description:
                   "Subí una imagen o un video (mp4). Si es video, se reproduce en el preview. " +
-                  "También podés usar una URL de YouTube/externa abajo.",
+                  "También podés usar una URL de YouTube/externa abajo. " +
+                  "El marco del preview es vertical 9:16, así que una pieza vertical (ej. 1080×1920) entra completa sin recortarse.",
+              },
+            },
+            {
+              name: "imageFit",
+              type: "radio",
+              defaultValue: "cover",
+              label: "Ajuste de la imagen",
+              options: [
+                { label: "Recortar para llenar el marco", value: "cover" },
+                { label: "Mostrar la imagen completa (sin recortar)", value: "contain" },
+              ],
+              admin: {
+                condition: (_, siblingData) => Boolean(siblingData?.image),
+                description:
+                  "“Recortar” llena el marco vertical y recorta desde el centro lo que sobra. “Completa” muestra toda la pieza sin cortarle nada; como el marco es vertical, una imagen horizontal va a dejar espacio arriba y abajo.",
               },
             },
             ...videoUrlFields,

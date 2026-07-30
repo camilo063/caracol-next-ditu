@@ -88,6 +88,26 @@ export const BrandTabsBlock: Block = {
           label: "Por qué elegir esta marca (opcional, richText)",
         },
         {
+          name: "showWeb",
+          type: "checkbox",
+          defaultValue: true,
+          label: "Mostrar bloque WEB",
+          admin: {
+            description:
+              "Si lo apagás, el recuadro WEB no aparece en la página aunque tenga cifras cargadas.",
+          },
+        },
+        {
+          name: "showNetworks",
+          type: "checkbox",
+          defaultValue: true,
+          label: "Mostrar bloque REDES",
+          admin: {
+            description:
+              "Si lo apagás, el recuadro REDES no aparece en la página aunque tenga redes cargadas.",
+          },
+        },
+        {
           name: "webMetrics",
           type: "group",
           label: "WEB — métricas de la marca",

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { Container } from "@/components/ui";
+import { activeEventsSorted } from "@/lib/event-dates";
 import { formatDateRange } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { KeyMomentsBlockProps } from "../types";
@@ -42,6 +43,20 @@ const CATEGORY_COLORS: Record<string, string> = {
   other: "#2862FF",
 };
 
+/**
+ * Etiqueta del badge por categoría. Se usa cuando el evento no trae un texto
+ * propio en `categoryLabel`: antes, sin ese texto, el badge decía siempre
+ * "CATEGORÍA" aunque el editor hubiera elegido una categoría en el dropdown.
+ */
+const CATEGORY_LABELS: Record<string, string> = {
+  sports: "DEPORTES",
+  news: "NOTICIAS",
+  special: "ESPECIAL",
+  entertainment: "ENTRETENIMIENTO",
+  promo: "PROMO",
+  other: "CATEGORÍA",
+};
+
 const NAVY_DARK = "#003381";
 const PILL_GREY_BORDER = "#95999A";
 const TEXT_LIGHT = "rgba(207,206,204,0.81)";
@@ -61,22 +76,23 @@ export function KeyMomentsCalendarComponent({
   const mode = displayMode ?? "grid";
 
   // La página es force-dynamic: el server rendea con la fecha real en cada
-  // request, así que filtramos los eventos pasados directo en el render (sin
-  // useEffect). SSR e hidratación coinciden el mismo día, por lo que no hay
-  // hydration mismatch ni el flash de "aparecen y desaparecen" que provoca
-  // mostrar todo primero y recortar después del mount.
+  // request, así que filtramos y ordenamos directo en el render (sin useEffect).
+  // `activeEventsSorted` compara días calendario como texto, así que el server y
+  // la hidratación llegan al mismo resultado — sin hydration mismatch ni el
+  // flash de "aparecen y desaparecen" que provoca mostrar todo primero y
+  // recortar después del mount.
+  //
+  // Spec cliente (jul 2026): solo eventos vigentes, del más cercano al más
+  // lejano. El orden es cronológico siempre, incluso con `hidePastEvents`
+  // apagado — el toggle decide qué se muestra, no en qué orden.
   const shouldHide = hidePastEvents ?? true;
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  const visibleEvents = shouldHide
-    ? events.filter((e: EventItem) => {
-        // El evento sigue vigente hasta su fecha de fin (o la de inicio si no
-        // hay fin). Se oculta solo cuando ese día ya pasó por completo.
-        const endRaw = e.dateEnd ?? e.dateStart;
-        if (!endRaw) return true;
-        return new Date(endRaw).getTime() >= startOfToday.getTime();
-      })
-    : events;
+  const visibleEvents = activeEventsSorted(
+    events,
+    (e: EventItem) => ({ start: e.dateStart, end: e.dateEnd }),
+    { includeExpired: !shouldHide },
+  );
+  // El tope de 12 se aplica DESPUÉS de ordenar: quedan los 12 eventos más
+  // próximos, no los 12 primeros del admin.
   const cappedEvents = visibleEvents.slice(0, 12);
 
   const ctaHeading =
@@ -169,7 +185,10 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
   const dateLabel =
     event.dateLabelOverride ??
     formatDateRange(event.dateStart, event.dateEnd ?? undefined).toUpperCase();
-  const categoryLabel = event.categoryLabel ?? "CATEGORÍA";
+  // El texto propio manda; si está vacío se usa el nombre de la categoría
+  // elegida en el dropdown, y recién al final el genérico.
+  const categoryLabel =
+    event.categoryLabel?.trim() || CATEGORY_LABELS[cat] || "CATEGORÍA";
 
   return (
     <motion.article
