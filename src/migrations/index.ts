@@ -36,6 +36,7 @@ import * as migration_20260730_ditu_pauta_image_fit from "./20260730_ditu_pauta_
 import * as migration_20260730_key_moments_category_label_default from "./20260730_key_moments_category_label_default";
 import * as migration_20260730_key_moments_category_key from "./20260730_key_moments_category_key";
 import * as migration_20260731_event_categories_collection from "./20260731_event_categories_collection";
+import * as migration_20260801_event_categories_style_por_landing from "./20260801_event_categories_style_por_landing";
 
 export const migrations = [
   {
@@ -227,5 +228,10 @@ export const migrations = [
     up: migration_20260731_event_categories_collection.up,
     down: migration_20260731_event_categories_collection.down,
     name: "20260731_event_categories_collection",
+  },
+  {
+    up: migration_20260801_event_categories_style_por_landing.up,
+    down: migration_20260801_event_categories_style_por_landing.down,
+    name: "20260801_event_categories_style_por_landing",
   },
 ];
