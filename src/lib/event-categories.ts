@@ -1,3 +1,4 @@
+import { hexColorOr } from "@/lib/color";
 import type { EventCategory } from "@/payload-types";
 
 /**
@@ -66,7 +67,11 @@ export function resolveEventBadge(
     // `?.trim() ||` y no `??`: Payload guarda cadena vacía, no NULL, cuando se
     // limpia un campo de texto, y con `??` un campo vaciado seguiría ganando.
     label: doc?.name?.trim() || FALLBACK.label,
-    color: color?.trim() || FALLBACK[landing],
+    // El color se normaliza acá y no solo al guardarlo: los que ya están en la
+    // base sin `#` tienen que verse bien apenas salga el deploy, sin que nadie
+    // vuelva a abrir la categoría. Y un hex inválido cae al color por defecto en
+    // vez de llegar al `style` y dejar el badge sin fondo.
+    color: hexColorOr(color, FALLBACK[landing]),
     style: style === "outline" ? "outline" : "solid",
   };
 }

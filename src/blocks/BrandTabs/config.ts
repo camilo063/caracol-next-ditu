@@ -1,5 +1,6 @@
 import type { Block } from "payload";
 
+import { hexColorFieldProps } from "@/lib/color";
 import {
   anchorIdField,
   ctaField,
@@ -67,6 +68,7 @@ export const BrandTabsBlock: Block = {
           name: "brandColor",
           type: "text",
           label: "Color brand (hex)",
+          ...hexColorFieldProps,
           admin: {
             description:
               "Ej. #00ACFF. Se aplica como --color-primary dentro del tab activo.",
@@ -105,6 +107,16 @@ export const BrandTabsBlock: Block = {
           admin: {
             description:
               "Si lo apagás, el recuadro REDES no aparece en la página aunque tenga redes cargadas.",
+          },
+        },
+        {
+          name: "showAudience",
+          type: "checkbox",
+          defaultValue: true,
+          label: "Mostrar bloque AUDIENCIA",
+          admin: {
+            description:
+              "Si lo apagás, el recuadro AUDIENCIA no aparece en la página aunque tenga género o edad cargados.",
           },
         },
         {

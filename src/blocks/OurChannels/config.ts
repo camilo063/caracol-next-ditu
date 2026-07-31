@@ -1,5 +1,6 @@
 import type { Block } from "payload";
 
+import { hexColorFieldProps } from "@/lib/color";
 import { anchorIdField, sectionHeaderFields } from "../shared-fields";
 
 /**
@@ -23,7 +24,12 @@ export const OurChannelsBlock: Block = {
         { name: "name", type: "text", required: true },
         { name: "logo", type: "upload", relationTo: "media" },
         { name: "description", type: "textarea" },
-        { name: "color", type: "text", label: "Color brand (hex, opcional)" },
+        {
+          name: "color",
+          type: "text",
+          label: "Color brand (hex, opcional)",
+          ...hexColorFieldProps,
+        },
         { name: "href", type: "text", label: "Link al canal (opcional)" },
         {
           name: "category",

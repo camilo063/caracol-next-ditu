@@ -37,6 +37,7 @@ import * as migration_20260730_key_moments_category_label_default from "./202607
 import * as migration_20260730_key_moments_category_key from "./20260730_key_moments_category_key";
 import * as migration_20260731_event_categories_collection from "./20260731_event_categories_collection";
 import * as migration_20260801_event_categories_style_por_landing from "./20260801_event_categories_style_por_landing";
+import * as migration_20260801_brand_tabs_show_audience from "./20260801_brand_tabs_show_audience";
 
 export const migrations = [
   {
@@ -233,5 +234,10 @@ export const migrations = [
     up: migration_20260801_event_categories_style_por_landing.up,
     down: migration_20260801_event_categories_style_por_landing.down,
     name: "20260801_event_categories_style_por_landing",
+  },
+  {
+    up: migration_20260801_brand_tabs_show_audience.up,
+    down: migration_20260801_brand_tabs_show_audience.down,
+    name: "20260801_brand_tabs_show_audience",
   },
 ];

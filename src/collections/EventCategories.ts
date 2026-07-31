@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 
 import { anyone, authenticated } from "@/access";
+import { hexColorFieldProps } from "@/lib/color";
 import { revalidateAllPages } from "@/lib/payload/revalidate-pages";
 
 /**
@@ -82,6 +83,7 @@ export const EventCategories: CollectionConfig = {
       type: "text",
       label: "Color en Caracol Next",
       defaultValue: "#2862FF",
+      ...hexColorFieldProps,
       admin: {
         condition: (_, siblingData) => siblingData?.scope !== "ditu",
         description:
@@ -94,6 +96,7 @@ export const EventCategories: CollectionConfig = {
       type: "text",
       label: "Color en Ditu",
       defaultValue: "#77EDED",
+      ...hexColorFieldProps,
       admin: {
         condition: (_, siblingData) => siblingData?.scope !== "next",
         description:
