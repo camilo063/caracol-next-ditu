@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 
 import { anyone, authenticated } from "@/access";
+import { hexColorFieldProps } from "@/lib/color";
 import { revalidateAllPages } from "@/lib/payload/revalidate-pages";
 
 /**
@@ -67,6 +68,7 @@ export const Brands: CollectionConfig = {
       required: true,
       label: "Color primario (hex)",
       defaultValue: "#015BC4",
+      ...hexColorFieldProps,
       admin: {
         description:
           "Color de marca. Se aplica al heading y como --color-primary del tab.",
@@ -77,6 +79,7 @@ export const Brands: CollectionConfig = {
       name: "colorDark",
       type: "text",
       label: "Color oscuro (hex)",
+      ...hexColorFieldProps,
       admin: {
         description:
           "Usado en el panel derecho del tab. Si vacío, usa el color primario.",
@@ -87,6 +90,7 @@ export const Brands: CollectionConfig = {
       name: "colorAccent",
       type: "text",
       label: "Color accent (hex)",
+      ...hexColorFieldProps,
       admin: {
         description: "Accent secundario (slice menor del pie chart). Opcional.",
         placeholder: "#00ACFF",
@@ -96,6 +100,7 @@ export const Brands: CollectionConfig = {
       name: "chartPeak",
       type: "text",
       label: "Color pico de gráfica (hex)",
+      ...hexColorFieldProps,
       admin: {
         description:
           "Color de la barra pico en el bar chart de edad. Si vacío, usa el primario.",
@@ -106,6 +111,7 @@ export const Brands: CollectionConfig = {
       name: "pieColorMajor",
       type: "text",
       label: "Color segmento mayor del pie (género)",
+      ...hexColorFieldProps,
       admin: {
         description:
           "Color del segmento MÁS GRANDE del pie de género (en la mayoría de marcas es Mujeres). Si vacío, se deriva del accent/primario.",
@@ -116,6 +122,7 @@ export const Brands: CollectionConfig = {
       name: "pieColorMinor",
       type: "text",
       label: "Color segmento menor del pie (género)",
+      ...hexColorFieldProps,
       admin: {
         description:
           "Color del segmento MÁS PEQUEÑO del pie de género. Debe contrastar con el mayor para que se note la diferencia. Si vacío, usa el color oscuro de la marca.",
