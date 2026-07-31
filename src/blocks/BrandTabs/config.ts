@@ -110,6 +110,16 @@ export const BrandTabsBlock: Block = {
           },
         },
         {
+          name: "showAudience",
+          type: "checkbox",
+          defaultValue: true,
+          label: "Mostrar bloque AUDIENCIA",
+          admin: {
+            description:
+              "Si lo apagás, el recuadro AUDIENCIA no aparece en la página aunque tenga género o edad cargados.",
+          },
+        },
+        {
           name: "webMetrics",
           type: "group",
           label: "WEB — métricas de la marca",

@@ -289,6 +289,20 @@ function TabPanel({ tab }: { tab: Tab }) {
   const hasNetworks = showNetworks && !!tab.networks && tab.networks.length > 0;
   const showWebAndNetworksRow = hasWeb || hasNetworks;
 
+  // AUDIENCIA — mismo criterio que WEB y REDES: un toggle por marca, y cada
+  // mitad del recuadro se rendea según su propia data.
+  //
+  // Antes el recuadro entero colgaba del % de género: una marca con las barras
+  // de edad cargadas pero sin género no mostraba nada, ni siquiera las barras.
+  // Es el mismo reporte que WEB y REDES —cargo la data y no sale— aplicado al
+  // otro recuadro.
+  const showAudience = tab.showAudience ?? true;
+  const hasGender =
+    tab.audience?.genderSplit?.femalePercent !== undefined &&
+    tab.audience?.genderSplit?.femalePercent !== null;
+  const hasAgePicks = !!tab.audience?.agePicks && tab.audience.agePicks.length > 0;
+  const showAudienceBox = showAudience && (hasGender || hasAgePicks);
+
   // Figma La Kalle (402:8626): pie chart con colores invertidos vs el resto.
   // Mujeres (mayoría 71%) = NEGRO #353535, Hombres (29%) = AMARILLO #FEFF00.
   // En el resto de brands el slice MAYOR usa brandAccent (más claro).
@@ -497,8 +511,7 @@ function TabPanel({ tab }: { tab: Tab }) {
         ) : null}
 
         {/* AUDIENCIA — pie + bar charts */}
-        {tab.audience?.genderSplit?.femalePercent !== undefined &&
-        tab.audience?.genderSplit?.femalePercent !== null ? (
+        {showAudienceBox && tab.audience ? (
           <div
             className="m-auto flex flex-col items-start gap-2 rounded-[8px] bg-white p-4"
             style={{ border: `1px solid ${CARD_BORDER}` }}
@@ -509,57 +522,65 @@ function TabPanel({ tab }: { tab: Tab }) {
               {/* Género — text + pie chart side by side.
                   Mobile: flex-col o flex-row compacto. El w-[184px] fijo causa
                   overflow en mobile — se usa min-w-0 flex-1 en su lugar. */}
-              <div className="flex items-center justify-between gap-3 sm:justify-center sm:gap-2.5">
-                <div className="flex min-w-0 flex-1 flex-col items-start sm:w-46 sm:flex-none">
-                  <p
-                    className="font-display text-[22px] leading-7.5 font-bold sm:text-[24px] sm:leading-8"
-                    style={{ color: NEUTRO_NEGRO }}
+              {hasGender && tab.audience.genderSplit ? (
+                <div className="flex items-center justify-between gap-3 sm:justify-center sm:gap-2.5">
+                  <div className="flex min-w-0 flex-1 flex-col items-start sm:w-46 sm:flex-none">
+                    <p
+                      className="font-display text-[22px] leading-7.5 font-bold sm:text-[24px] sm:leading-8"
+                      style={{ color: NEUTRO_NEGRO }}
+                    >
+                      Género
+                    </p>
+                    <p
+                      className="font-display text-[14px] leading-normal font-normal"
+                      style={{ color: NEUTRO_GRIS_OSCURO }}
+                    >
+                      Del total de la audiencia{" "}
+                      <span className="font-semibold">
+                        {tab.audience.genderSplit.femalePercent}% son{" "}
+                        {(
+                          tab.audience.genderSplit.femaleLabel ?? "mujeres"
+                        ).toLowerCase()}
+                        .
+                      </span>
+                    </p>
+                  </div>
+                  <motion.div
+                    initial={{ scale: 0.4, opacity: 0 }}
+                    animate={
+                      containerInView
+                        ? { scale: 1, opacity: 1 }
+                        : { scale: 0.4, opacity: 0 }
+                    }
+                    transition={{
+                      duration: 0.55,
+                      ease: [0.34, 1.56, 0.64, 1],
+                      delay: 0.25,
+                    }}
+                    className="shrink-0"
                   >
-                    Género
-                  </p>
-                  <p
-                    className="font-display text-[14px] leading-normal font-normal"
-                    style={{ color: NEUTRO_GRIS_OSCURO }}
-                  >
-                    Del total de la audiencia{" "}
-                    <span className="font-semibold">
-                      {tab.audience.genderSplit.femalePercent}% son{" "}
-                      {(tab.audience.genderSplit.femaleLabel ?? "mujeres").toLowerCase()}.
-                    </span>
-                  </p>
+                    <GenderPieChart
+                      femalePercent={tab.audience.genderSplit.femalePercent ?? 0}
+                      femaleLabel={tab.audience.genderSplit.femaleLabel ?? "Mujeres"}
+                      maleLabel={tab.audience.genderSplit.maleLabel ?? "Hombres"}
+                      primaryColor={piePrimaryColor}
+                      secondaryColor={pieSecondaryColor}
+                    />
+                  </motion.div>
                 </div>
-                <motion.div
-                  initial={{ scale: 0.4, opacity: 0 }}
-                  animate={
-                    containerInView
-                      ? { scale: 1, opacity: 1 }
-                      : { scale: 0.4, opacity: 0 }
-                  }
-                  transition={{
-                    duration: 0.55,
-                    ease: [0.34, 1.56, 0.64, 1],
-                    delay: 0.25,
-                  }}
-                  className="shrink-0"
-                >
-                  <GenderPieChart
-                    femalePercent={tab.audience.genderSplit.femalePercent}
-                    femaleLabel={tab.audience.genderSplit.femaleLabel ?? "Mujeres"}
-                    maleLabel={tab.audience.genderSplit.maleLabel ?? "Hombres"}
-                    primaryColor={piePrimaryColor}
-                    secondaryColor={pieSecondaryColor}
-                  />
-                </motion.div>
-              </div>
+              ) : null}
 
-              {/* Divisor vertical */}
-              <div
-                className="hidden w-px sm:block"
-                style={{ backgroundColor: CARD_BORDER }}
-              />
+              {/* Divisor vertical — solo cuando separa dos mitades. Con una sola
+                  cargada quedaba una línea suelta al borde del recuadro. */}
+              {hasGender && hasAgePicks ? (
+                <div
+                  className="hidden w-px sm:block"
+                  style={{ backgroundColor: CARD_BORDER }}
+                />
+              ) : null}
 
               {/* Edad Pico */}
-              {tab.audience?.agePicks && tab.audience.agePicks.length > 0 ? (
+              {hasAgePicks && tab.audience.agePicks ? (
                 <div className="flex flex-col items-start gap-2.5">
                   <div className="flex flex-col items-end whitespace-nowrap">
                     <p
