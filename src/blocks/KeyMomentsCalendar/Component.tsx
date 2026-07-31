@@ -36,6 +36,9 @@ const NAVY_DARK = "#003381";
 const PILL_GREY_BORDER = "#95999A";
 const TEXT_LIGHT = "rgba(207,206,204,0.81)";
 
+/** Relleno de las variantes de contorno del badge. Blanco opaco, no transparente. */
+const BADGE_OUTLINE_FILL = "#FFFFFF";
+
 type EventItem = NonNullable<KeyMomentsBlockProps["events"]>[number];
 
 export function KeyMomentsCalendarComponent({
@@ -213,14 +216,25 @@ function CalendarCard({ event, index }: { event: EventItem; index: number }) {
     >
       <div className="flex flex-col items-start gap-2">
         <span
-          className={cn(
-            "font-display inline-flex items-center justify-center rounded-[4px] px-2 py-1 text-[12px] leading-3 font-bold uppercase",
-            badge.style === "outline" && "border",
-          )}
+          // El borde de 1px va siempre, también en relleno (donde es del mismo
+          // color del fondo y no se ve): si solo lo llevara el contorno, cambiar
+          // el diseño de una categoría movería el badge 2px.
+          className="font-display inline-flex items-center justify-center rounded-[4px] border px-2 py-1 text-[12px] leading-3 font-bold uppercase"
           style={
+            // Contorno = relleno blanco opaco + color de la categoría en borde y
+            // texto, igual que en el calendario de Ditu. Antes no pintaba ningún
+            // fondo, que no es ninguna de las variantes del design system.
             badge.style === "outline"
-              ? { borderColor: badge.color, color: badge.color }
-              : { backgroundColor: badge.color, color: "#FFFFFF" }
+              ? {
+                  backgroundColor: BADGE_OUTLINE_FILL,
+                  borderColor: badge.color,
+                  color: badge.color,
+                }
+              : {
+                  backgroundColor: badge.color,
+                  borderColor: badge.color,
+                  color: "#FFFFFF",
+                }
           }
         >
           {badge.label}

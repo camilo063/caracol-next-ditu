@@ -42,6 +42,12 @@ const NAVY_DARK = "#12082D";
 const VIOLET_MED = "#561BDB";
 
 /**
+ * Relleno de las variantes de contorno del badge — "BumBox/Neutro/Blanco" del
+ * design system. Es un blanco opaco, no ausencia de fondo.
+ */
+const BADGE_OUTLINE_FILL = "#FFFFFF";
+
+/**
  * Texto legible (oscuro/claro) según la luminancia del color de fondo del badge.
  * Permite cualquier color hex: si el fondo es claro → texto navy; si oscuro → blanco.
  */
@@ -58,10 +64,16 @@ function readableTextColor(hex: string): string {
 
 /** Estilo del badge a partir de un color hex (fondo + borde = color, texto auto). */
 function badgeStyle(hex: string, style: "solid" | "outline"): React.CSSProperties {
-  // "outline" es uno de los seis estilos del design system de Ditu: borde y
-  // texto del color, fondo transparente.
+  // "outline" es la forma de contorno del componente `Badget-Categorias Ditu`:
+  // relleno BLANCO opaco, y el color de la categoría en el borde y el texto.
+  //
+  // El relleno blanco no es un detalle: antes acá iba `transparent`, que no es
+  // ninguna de las variantes del design system. Sobre el degradado violeta del
+  // calendario eso dejaba el badge casi invisible, y el texto de ayuda del CMS
+  // terminó advirtiendo de un problema que no existe en el diseño —lo reportó
+  // el cliente— sino que lo producía este fondo.
   if (style === "outline") {
-    return { backgroundColor: "transparent", borderColor: hex, color: hex };
+    return { backgroundColor: BADGE_OUTLINE_FILL, borderColor: hex, color: hex };
   }
   return { backgroundColor: hex, borderColor: hex, color: readableTextColor(hex) };
 }

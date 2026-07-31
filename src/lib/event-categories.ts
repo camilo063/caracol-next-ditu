@@ -8,11 +8,11 @@ import type { EventCategory } from "@/payload-types";
  * El evento solo la referencia, y la categoría manda sobre texto, color y forma.
  *
  * Las seis variantes del design system salen de combinar color y forma: cuatro
- * de relleno y dos de contorno en Ditu, seis de relleno en Caracol Next. El
+ * de relleno y dos de contorno en Ditu, seis de relleno en Caracol Next. Las dos
+ * formas tienen relleno opaco —el contorno es blanco, no transparente— y el
  * color del texto no es un campo: en relleno se deduce del fondo (blanco u
  * oscuro) y en contorno es el mismo color del borde. Esa regla reproduce las
- * seis variantes exactamente, y evita que alguien pueda elegir blanco sobre
- * blanco.
+ * seis variantes exactamente con un solo color por landing.
  *
  * Que mande la categoría y punto —sin campos de excepción por evento— es
  * deliberado. La versión anterior tenía un texto y un color propios en cada
@@ -41,7 +41,11 @@ export interface ResolvedBadge {
   label: string;
   /** Color del badge para esta landing. */
   color: string;
-  /** `outline` pinta borde y texto con el color, sin fondo. */
+  /**
+   * `solid` pinta el fondo con el color; `outline` deja el fondo blanco y pone
+   * el color en el borde y el texto. Las dos formas tienen relleno opaco: en el
+   * design system no hay ninguna variante de badge con fondo transparente.
+   */
   style: "solid" | "outline";
 }
 
